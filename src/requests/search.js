@@ -16,7 +16,7 @@ export default {
   // Поиск постов по запросу
   posts(query) {
     if (Array.isArray(query))
-      return axios.get(`post?${query.join('&')}&sort=time,desc&isDelete=false`);
+      return axios.get(`post?${query.join('&')}&sort=time,desc&isDeleted=false`);
     if (typeof query === 'string') return axios.get(`post?${query}`);
 
     throw new TypeError('Недопустимое значение запроса');

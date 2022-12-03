@@ -5,19 +5,19 @@ export default {
   getById(id, params) {
     const query = createQuery(params);
     const queryString = !query.length ? '' : `&${query.join('&')}`;
-    return axios.get(`post?accountIds=${id}${queryString}&sort=time,desc&isDelete=false`);
+    return axios.get(`post?accountIds=${id}${queryString}&sort=time,desc&isDeleted=false`);
   },
 
   getFeeds(params) {
     const query = createQuery(params);
     const queryString = !query.length ? '' : `&${query.join('&')}`;
-    return axios.get(`post?withFriends=true${queryString}&sort=time,desc&isDelete=false&size=5`);
+    return axios.get(`post?withFriends=true${queryString}&sort=time,desc&isDeleted=false&size=5`);
   },
 
   get(params) {
     const query = createQuery(params);
     const queryString = !query.length ? '' : `&${query.join('&')}`;
-    return axios.get(`post?&sort=time,desc&isDelete=false&size=3${queryString}`);
+    return axios.get(`post?&sort=time,desc&isDeleted=false&size=3${queryString}`);
   },
 
   push(data, isPUT = true, id = '', query = '') {
