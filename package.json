@@ -1,18 +1,18 @@
 {
-  "name": "skillgroup25",
+  "name": "skillboxteam32",
   "version": "1.1.26",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --port=8088",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint --fix",
-    "docker:arm": "docker build . -t belov38/javapro-skillbox:%npm_package_version%-arm -t belov38/javapro-skillbox:latest-arm --platform linux/arm64/v8",
-    "docker:default": "docker build . -t belov38/javapro-skillbox:%npm_package_version% -t belov38/javapro-skillbox:latest-default",
-    "publish:arm": "docker push belov38/javapro-skillbox --all-tags",
-    "publish:default": "docker push belov38/javapro-skillbox --all-tags",
+    "docker:arm": "docker build . -t skillboxteam32/front:%npm_package_version%-arm -t skillboxteam32/front:latest-arm --platform linux/amd64",
+    "docker:default": "docker build . -t skillboxteam32/front:%npm_package_version% -t skillboxteam32/front:latest-default",
+    "publish:arm": "docker push skillboxteam32/front --all-tags",
+    "publish:default": "docker push skillboxteam32/front --all-tags",
     "release:path-arm": "cross-env yarn version --patch && yarn docker:arm && yarn publish:arm",
-    "docker:build": "docker build -t skillgroup25/frontend .",
-    "docker:push": "docker push skillgroup25/frontend:latest"
+    "docker:build": "docker build -t skillboxteam32/front .",
+    "docker:push": "docker push skillboxteam32/front:latest"
   },
   "dependencies": {
     "axios": "^0.23.0",
