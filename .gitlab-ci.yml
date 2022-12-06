@@ -4,7 +4,7 @@ image: node:16.13.1
 stages:
   - build
   - deploy_docker
-  - deploy_prod
+  # - deploy_prod
 
 build:
   stage: build
@@ -25,10 +25,11 @@ deploy_docker:
     - develop
   before_script:
     - docker logout
-    - docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS https://index.docker.io/v1/
+    - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
   script:
     - docker build -f Dockerfile-ci -t $BACK_IMAGE .
     - docker push $BACK_IMAGE
+    - echo "Frontend deploy stage end"
   artifacts:
     paths:
       - dist
