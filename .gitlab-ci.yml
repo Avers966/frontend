@@ -27,7 +27,7 @@ deploy_docker:
     - docker logout
     - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
   script:
-    - docker build -f Dockerfile-ci -t $BACK_IMAGE .
+    - docker build -f Dockerfile-ci --platform linux/arm64/v8 -t $BACK_IMAGE .
     - docker push $BACK_IMAGE
     - echo "Frontend deploy stage end"
   artifacts:
