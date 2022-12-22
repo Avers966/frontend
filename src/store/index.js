@@ -17,12 +17,12 @@ export default new Vuex.Store({
     users,
   },
   state: {
-    code: Math.floor(Math.random() * 10000)
+    captchaCode: Math.floor(Math.random() * 10000)
       .toString()
       .padStart(4, '0'),
   },
   getters: {
-    getCode: (s) => s.code,
+    getCode: (s) => s.captchaCode,
   },
   actions: {},
   mutations: {},

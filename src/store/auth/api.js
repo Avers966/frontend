@@ -4,7 +4,7 @@ import requestSettings from '@/requests/settings';
 export default {
   namespaced: true,
   state: {
-    token: localStorage.getItem('user-token') || '',
+    captchaSecret: localStorage.getItem('user-token') || '',
     jwt: '',
     status: '',
     pollingToken: null,
@@ -12,8 +12,8 @@ export default {
     isCode: true,
   },
   getters: {
-    apiToken: (s) => s.token,
-    isAuthenticated: (state) => !!state.token,
+    apiToken: (s) => s.captchaSecret,
+    isAuthenticated: (state) => !!state.captchaSecret,
     authStatus: (state) => state.status,
     getIsCode: (state) => state.isCode,
   },
@@ -28,7 +28,7 @@ export default {
       s.jwt = cookie.jwt || '';
     },
 
-    setToken: (s, token) => (s.token = token),
+    setToken: (s, token) => (s.captchaSecret = token),
     setIsCode: (s, isCode) => (s.isCode = isCode),
     setStatus: (s, status) => (s.status = status),
     addAttempts: (s) => (s.refreshAttempts = s.refreshAttempts + 1),

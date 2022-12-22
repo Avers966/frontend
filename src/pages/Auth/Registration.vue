@@ -49,9 +49,9 @@
 
         <code-field
           id="register-code"
-          v-model="code"
-          :v="$v.code"
-          :class="{ checked: $v.code.required && $v.code.isCode }"
+          v-model="captchaCode"
+          :v="$v.captchaCode"
+          :class="{ checked: $v.captchaCode.required && $v.captchaCode.isCode }"
         />
 
         <confirm-field id="register-confirm" v-model="confirm" :v="$v.confirm" />
@@ -92,8 +92,8 @@ export default {
     firstName: '',
     lastName: '',
     imgCode: '',
-    code: '',
-    token: '',
+    captchaCode: '',
+    captchaSecret: '',
     confirm: false,
     isCode: false,
   }),
@@ -102,7 +102,7 @@ export default {
     ...mapGetters('auth/captcha', ['getCaptcha']),
   },
   watch: {
-    code() {
+    captchaCode() {
       if (this.isCode === false) {
         this.isCode = true;
       }
@@ -124,7 +124,7 @@ export default {
     updateCatcha() {
       this.fetchCaptcha().then(() => {
         this.imgCode = this.getCaptcha.imgCode;
-        this.token = this.getCaptcha.secret;
+        this.captchaSecret = this.getCaptcha.secret;
       });
     },
 
@@ -133,15 +133,15 @@ export default {
         this.$v.$touch();
         return;
       }
-      const { email, password1, password2, firstName, lastName, code, token } = this;
+      const { email, password1, password2, firstName, lastName, captchaCode, captchaSecret } = this;
       this.register({
         email,
         password1,
         password2,
         firstName,
         lastName,
-        code,
-        token,
+        captchaCode,
+        captchaSecret,
       })
         .then(() => {
           this.$router.push({ name: 'RegisterSuccess' });
@@ -166,7 +166,7 @@ export default {
     },
     firstName: { required, minLength: minLength(3) },
     lastName: { required, minLength: minLength(3) },
-    code: {
+    captchaCode: {
       required,
       isCode() {
         return this.isCode;

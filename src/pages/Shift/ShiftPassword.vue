@@ -32,9 +32,9 @@
 
         <code-field
           id="register-code"
-          v-model="code"
-          :v="$v.code"
-          :class="{ checked: $v.code.required && $v.code.isCode }"
+          v-model="captchaCode"
+          :v="$v.captchaCode"
+          :class="{ checked: $v.captchaCode.required && $v.captchaCode.isCode }"
         />
       </div>
 
@@ -64,7 +64,7 @@ export default {
   data: () => ({
     password: '',
     passwordTwo: '',
-    code: '',
+    captchaCode: '',
     isCode: true,
     imgCode: '',
   }),
@@ -88,7 +88,7 @@ export default {
     updateCaptcha() {
       this.fetchCaptcha().then(() => {
         this.imgCode = this.getCaptcha.imgCode;
-        this.token = this.getCaptcha.secret;
+        this.captchaSecret = this.getCaptcha.secret;
       });
     },
 
@@ -99,7 +99,7 @@ export default {
       }
       this.changePassword({
         password: this.password,
-        code: this.code,
+        captchaCode: this.captchaCode,
         temp: this.temp,
       }).then(() => {
         this.$router.push({ name: 'change-password-success' });
@@ -115,7 +115,7 @@ export default {
       minLength: minLength(8),
     },
 
-    code: {
+    captchaCode: {
       required,
       isCode() {
         return this.isCode;

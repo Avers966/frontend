@@ -1,10 +1,10 @@
 <template>
-  <div class="form__group" :class="{ fill: code.length > 0 }">
+  <div class="form__group" :class="{ fill: captchaCode.length > 0 }">
     <input
       type="text"
       class="form__input_stylus"
       :id="id"
-      v-model="code"
+      v-model="captchaCode"
       name="code"
       :class="{ invalid: (v.$dirty && !v.required) || (v.$dirty && !v.isCode) }"
       @change="v.$touch()"
@@ -37,7 +37,7 @@ export default {
     },
   },
   computed: {
-    code: {
+    captchaCode: {
       get() {
         return this.value;
       },

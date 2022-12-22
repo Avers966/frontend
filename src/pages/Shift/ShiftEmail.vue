@@ -24,9 +24,9 @@
 
         <code-field
           id="register-code"
-          v-model="code"
-          :v="$v.code"
-          :class="{ checked: $v.code.required && $v.code.isCode }"
+          v-model="captchaCode"
+          :v="$v.captchaCode"
+          :class="{ checked: $v.captchaCode.required && $v.captchaCode.isCode }"
         />
       </div>
 
@@ -53,7 +53,7 @@ export default {
   data: () => ({
     email: '',
     imgCode: '',
-    code: '',
+    captchaCode: '',
     isCode: true,
     temp: '',
   }),
@@ -78,7 +78,7 @@ export default {
     updateCaptcha() {
       this.fetchCaptcha().then(() => {
         this.imgCode = this.getCaptcha.imgCode;
-        this.token = this.getCaptcha.secret;
+        this.captchaSecret = this.getCaptcha.secret;
       });
     },
 
@@ -90,7 +90,7 @@ export default {
 
       this.changeEmail({
         email: this.email,
-        code: this.code,
+        captchaCode: this.captchaCode,
         temp: this.temp,
       }).then(() => {
         const emailDomain = 'https://' + this.email.split('@').pop();
@@ -106,7 +106,7 @@ export default {
 
   validations: {
     email: { required, email },
-    code: {
+    captchaCode: {
       required,
       isCode() {
         return this.isCode;
