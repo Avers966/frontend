@@ -90,15 +90,16 @@ export default {
 
     async actionsFeed({ dispatch, commit, rootGetters }, payload) {
       const isPUT = payload.edit && !!payload.edit;
-      const publishDate = payload.publishDate ? '?publishDate=' + payload.publishDate : '';
+      // const publishDate = payload.publishDate ? '?publishDate=' + payload.publishDate : '';
       const data = {
         title: payload.title,
         postText: payload.postText,
+        publishDate: payload.publishDate,
         tags: payload.tags,
         imagePath: payload.imagePath,
       };
 
-      await posts.push(data, isPUT, payload.postId, publishDate);
+      await posts.push(data, isPUT, payload.postId);
 
       // if (isPUT) {
       //   dispatch('users/info/apiWallById', payload.postId, { root: true });
