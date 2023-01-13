@@ -172,7 +172,7 @@ export default {
     linkUrl: '',
     isOpenLinkMenu: false,
     modalShow: false,
-    isPlaning: false,
+    isPlaning: null,
     planingTime: new Date(),
     componentKey: 0,
     photo: '',
@@ -384,7 +384,7 @@ export default {
       this.modalShow = false;
     },
     onCancelPlaning() {
-      this.isPlaning = false;
+      this.isPlaning = null;
       this.year = 2000;
       this.month = { val: 0, text: 'Января' };
       this.day = 1;
