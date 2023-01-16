@@ -152,6 +152,7 @@ export default {
     city: '',
     countries: [],
     cities: [],
+    currentCountry: {},
   }),
 
   computed: {
@@ -186,17 +187,14 @@ export default {
       immediate: true,
       handler(value) {
         if (value && value !== 'none') {
-          const currentCountry = this.countries.find((country) => country.title === value);
-          this.loadCities(currentCountry.id);
+          this.currentCountry = this.countries.find((country) => country.title === value);
+          this.loadCities(this.currentCountry.id);
         } else this.city = 'none';
       },
     },
   },
 
   mounted() {
-    if (this.getInfo) {
-      this.setInfo();
-    }
     this.loadCountries();
   },
 
@@ -210,6 +208,9 @@ export default {
         .get('/geo/countries')
         .then((response) => {
           this.countries = response.data;
+          if (this.getInfo) {
+            this.setInfo();
+          }
         })
         .catch(() => {});
       return;
@@ -228,7 +229,6 @@ export default {
 
     async submitHandler() {
       let _birthDate = 'none';
-      console.log(this.country);
       if (this.year && this.month && this.day) {
         _birthDate = new Date(this.year, this.month.val, this.day).toISOString();
       }
@@ -280,10 +280,12 @@ export default {
       }
       this.about = this.getInfo.about;
       if (this.getInfo.country) {
-        this.country = this.getInfo.country.title;
+        this.country = this.getInfo.country;
+        this.currentCountry = this.countries.find((country) => country.title === this.country);
+        this.loadCities(this.currentCountry.id);
       }
       if (this.getInfo.city) {
-        this.city = this.getInfo.city.title;
+        this.city = this.getInfo.city;
       }
     },
   },

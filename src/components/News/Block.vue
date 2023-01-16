@@ -238,7 +238,7 @@ export default {
     },
 
     likeAction(active) {
-      if (active) this.deleteLike({ itemId: this.info.id, type: 'POST' });
+      if (active) this.deleteLike({ itemId: this.info.id, type: 'DELETE' });
       else this.putLike({ itemId: this.info.id, type: 'POST' });
     },
 
