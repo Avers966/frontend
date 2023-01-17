@@ -14,7 +14,7 @@ export default {
     },
     totalPage: {
       type: Number,
-      default: 20,
+      default: 200,
     },
     action: {
       type: Function,
@@ -30,6 +30,7 @@ export default {
 
   mounted() {
     this.pageCount = this.page;
+
     const loadingObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting && !this.loading) {

@@ -97,6 +97,7 @@ export default {
         publishDate: payload.publishDate,
         tags: payload.tags,
         imagePath: payload.imagePath,
+        id: payload.postId,
       };
 
       await posts.push(data, isPUT, payload.postId);

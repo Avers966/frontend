@@ -97,6 +97,7 @@ export default {
           postId: this.info.postId,
           type: 'COMMENT',
         });
+        this.like = !this.like;
         return;
       }
 
@@ -105,6 +106,7 @@ export default {
         postId: this.info.postId,
         type: 'COMMENT',
       });
+      this.like = !this.like;
     },
 
     onDeleteComment() {

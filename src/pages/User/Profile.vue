@@ -67,6 +67,7 @@ import Spinner from '@/components/Spinner.vue';
 import ErrorBlock from '@/components/ErrorBlock.vue';
 import AutoPaginator from '@/components/AutoPaginator.vue';
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex';
+
 export default {
   name: 'Profile',
   components: { ProfileInfo, NewsAdd, NewsBlock, Spinner, ErrorBlock, AutoPaginator },
@@ -82,7 +83,7 @@ export default {
   },
 
   mounted() {
-    window.scroll(0, 0);
+    window.scroll(0, 10);
   },
 
   async created() {
