@@ -100,7 +100,13 @@ export default {
         id: payload.postId,
       };
 
-      await posts.push(data, isPUT, payload.postId);
+      if (isPUT) {
+        await posts.push(data, isPUT);
+      } else {
+        await posts.push(data, isPUT, payload.postId);
+      }
+
+      // await posts.push(data, isPUT, payload.postId);
 
       // if (isPUT) {
       //   dispatch('users/info/apiWallById', payload.postId, { root: true });
