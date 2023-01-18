@@ -119,7 +119,10 @@
     <modal v-model="modalShow">
       <p v-if="modalText">{{ modalText }}</p>
       <template slot="actions">
-        <button-hover @click.native="onConfrim(info.id)">Да</button-hover>
+        <!-- <button-hover @click.native="onConfrim(info.id)">Да</button-hover> -->
+        <button-hover @click.native="onConfrim(info.fromAccountId ? info.fromAccountId : info.id)">
+          Да
+        </button-hover>
         <button-hover variant="red" bordered="bordered" @click.native="closeModal">
           Отмена
         </button-hover>

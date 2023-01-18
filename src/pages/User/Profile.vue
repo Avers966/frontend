@@ -83,7 +83,9 @@ export default {
   },
 
   mounted() {
-    window.scroll(0, 10);
+    this.$nextTick(function () {
+      window.scroll(0, 10);
+    });
   },
 
   async created() {
@@ -95,6 +97,7 @@ export default {
 
     if (!this.getWall.length) {
       this.setMyWall({ page: this.getWallPagination.page - 1 || 0 });
+      window.scroll(0, 10);
     }
   },
 
