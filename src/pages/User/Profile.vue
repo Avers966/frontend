@@ -82,11 +82,11 @@ export default {
     ...mapState('global/status', ['loading', 'error', 'errorMessage']),
   },
 
-  mounted() {
-    this.$nextTick(function () {
-      window.scroll(0, 10);
-    });
-  },
+  // mounted() {
+  //   this.$nextTick(function () {
+  //     window.scroll(0, 10);
+  //   });
+  // },
 
   async created() {
     this.clearWall();
@@ -97,7 +97,7 @@ export default {
 
     if (!this.getWall.length) {
       this.setMyWall({ page: this.getWallPagination.page - 1 || 0 });
-      window.scroll(0, 10);
+      // window.scroll(0, 10);
     }
   },
 

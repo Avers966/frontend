@@ -84,6 +84,7 @@ export default {
         author: this.author,
         tags: this.tags,
         text: this.searchText,
+        withFriends: true,
       });
       this.searchNews(searchQuery);
     },

@@ -34,7 +34,7 @@ export default {
     const loadingObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting && !this.loading) {
-          if (this.page === this.totalPage) return;
+          if (this.page >= this.totalPage) return;
 
           if (this.pageCount === 0) {
             this.action({ page: this.page - 1 || 0 });

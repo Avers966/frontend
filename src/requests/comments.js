@@ -22,7 +22,9 @@ export default {
   },
 
   edit(postId, commentId, data) {
-    return axios.put(`post/${postId}/comment/${commentId}`, data);
+    console.log(`edit${data}`);
+    // return axios.put(`post/${postId}/comment/${commentId}`, data);
+    return axios.put(`post/${postId}/comment`, data);
   },
 
   delete(postId, commentId) {
