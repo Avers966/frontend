@@ -84,7 +84,10 @@ export default {
 
   async mounted() {
     this.apiGeo();
-    if (!this.getInfo) this.apiInfo();
+    if (!this.getInfo) {
+      await this.apiInfo();
+    }
+    this.$store.dispatch('loadUser', this.getInfo.id);
     await this.$socket.connect();
     this.$socket.subscribe('socket event', (messagePayload) => {
       if (messagePayload.type === 'NOTIFICATION') {

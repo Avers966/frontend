@@ -120,9 +120,7 @@
       <p v-if="modalText">{{ modalText }}</p>
       <template slot="actions">
         <!-- <button-hover @click.native="onConfrim(info.id)">Да</button-hover> -->
-        <button-hover @click.native="onConfrim(info.fromAccountId ? info.fromAccountId : info.id)">
-          Да
-        </button-hover>
+        <button-hover @click.native="onConfrim(targetId)">Да</button-hover>
         <button-hover variant="red" bordered="bordered" @click.native="closeModal">
           Отмена
         </button-hover>
@@ -174,6 +172,20 @@ export default {
     },
     online() {
       return this.info.isOnline;
+    },
+    currentUser() {
+      return this.$store.getters.getUser;
+    },
+    targetId() {
+      if (this.info.fromAccountId) {
+        if (this.info.fromAccountId === this.currentUser) {
+          return this.info.toAccountId;
+        } else {
+          return this.info.fromAccountId;
+        }
+      } else {
+        return this.info.id;
+      }
     },
     modalText() {
       let text = '';
