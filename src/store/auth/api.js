@@ -47,10 +47,10 @@ export default {
         { root: true }
       );
 
-      await dispatch('login', {
-        email: user.email,
-        password: user.password1,
-      });
+      // await dispatch('login', {
+      //   email: user.email,
+      //   password: user.password1,
+      // });
     },
     // pollingToken({ commit, dispatch }) {
     //   const interval = setInterval(() => {
