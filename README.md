@@ -1,7 +1,7 @@
-# javapro-belov-front
+# Run frontend service into docker
 
 ```bash
-docker run -d -p 8099:80 -p 8098:80 -p 8097:80 belov38/javapro-skillbox:$VERSION-arm
+docker run -d -p 8098:80 -p 8099:81 -name frontend skillboxteam32/front:latest
 ```
 
 ## Project setup
@@ -34,33 +34,33 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Docker Build
 ```
-docker build -t skillgroup25/frontend .
+docker build -t skillgroup32/frontend .
 ```
 
 ### Docker push
 ```
-docker push skillgroup25/frontend:latest
+docker push skillgroup32/frontend:latest
 
 ```### Docker stop and rm
 ```
 ### Docker stop and rm
 ```
-docker stop frontend-alpha && docker rm frontend-alpha
+docker stop frontend && docker rm frontend
 ```
 ### Docker stop and rm and start
 ```
-docker stop frontend-alpha && docker rm frontend-alpha && docker run -d --name frontend-alpha -p 8099:80 -p 8098:80 -p 8097:80 skillgroup25/frontend:latest
+docker stop frontend && docker rm frontend && docker run -d -p 8098:80 -p 8099:81 -name frontend skillboxteam32/front:latestt
 ```
 ### Docker sh
 ```
 #!/bin/bash
 echo "Begin restart front";
 echo "Stop docker front";
-docker stop frontend-alpha;
+docker stop frontend;
 echo "rm docker front";
-docker rm frontend-alpha;
+docker rm frontend;
 echo "Pull image";
-docker image pull skillgroup25/frontend:latest;
+docker image pull skillgroup32/frontend:latest;
 echo "Start new docker front";
-docker run -d --name frontend-alpha -p 8099:80 -p 8098:80 -p 8097:80 skillgroup25/frontend:latest
+docker run -d -p 8098:80 -p 8099:81 -name frontend skillboxteam32/front:latestt
 ```
