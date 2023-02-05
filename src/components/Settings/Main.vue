@@ -205,7 +205,7 @@ export default {
 
     loadCountries() {
       axios
-        .get('/geo/countries')
+        .get('/geo/country')
         .then((response) => {
           this.countries = response.data;
           if (this.getInfo) {
@@ -221,7 +221,7 @@ export default {
         this.city = null;
         return;
       }
-      axios.get(`/geo/cities/${countryId}`).then((response) => {
+      axios.get(`/geo/country/${countryId}/city`).then((response) => {
         this.cities = response.data;
       });
       return countryId;
