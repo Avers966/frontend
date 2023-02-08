@@ -107,7 +107,7 @@ export default {
 
     async apiNotificationsSettings({ commit }) {
       const response = await notifications.getSettings();
-      commit('setNotificationsSettings', response.data.data);
+      commit('setNotificationsSettings', response.data);
     },
   },
 };
