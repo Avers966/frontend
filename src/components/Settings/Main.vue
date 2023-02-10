@@ -232,7 +232,13 @@ export default {
       if (this.year && this.month && this.day) {
         _birthDate = new Date(this.year, this.month.val, this.day).toISOString();
       }
-      if (this.photo) await this.apiStorage(this.photo);
+      if (this.photo) {
+        await this.apiStorage(this.photo).then((response) => {
+          this.photoName = response.data.photoName;
+          this.photo = response.data.photo;
+        });
+      }
+
       await this.apiChangeInfo({
         firstName: this.firstName,
         lastName: this.lastName,

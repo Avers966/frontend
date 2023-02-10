@@ -18,11 +18,8 @@ export default {
       const formData = new FormData();
       formData.append('file', file);
       const response = await storage.api(formData);
-      // commit('setStorage', response.data.data);
-      commit('setStorage', {
-        photo: response.data.photo,
-        photoName: response.data.photoName,
-      });
+      commit('setStorage', response.data.data);
+      return response;
     },
   },
 };
