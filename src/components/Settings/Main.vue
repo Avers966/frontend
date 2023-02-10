@@ -241,6 +241,8 @@ export default {
         about: this.about,
         country: this.country,
         city: this.city,
+        photoName: this.photoName,
+        photo: this.photo,
       }).then(() => this.setStorage(null));
     },
 
