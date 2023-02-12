@@ -146,7 +146,7 @@ export default {
       { val: 10, text: 'Ноября' },
       { val: 11, text: 'Декабря' },
     ],
-    photo: '',
+    photoPath: '',
     src: '',
     country: '',
     city: '',
@@ -232,10 +232,10 @@ export default {
       if (this.year && this.month && this.day) {
         _birthDate = new Date(this.year, this.month.val, this.day).toISOString();
       }
-      if (this.photo) {
-        await this.apiStorage(this.photo).then((response) => {
+      if (this.photoPath) {
+        await this.apiStorage(this.photoPath).then((response) => {
           this.photoName = response.data.photoName;
-          this.photo = response.data.photo;
+          this.photoPath = response.data.photoPath;
         });
       }
 
@@ -248,17 +248,17 @@ export default {
         country: this.country,
         city: this.city,
         photoName: this.photoName,
-        photo: this.photo,
+        photo: this.photoPath,
       }).then(() => this.setStorage(null));
     },
 
     processFile(event) {
-      [this.photo] = event.target.files;
+      [this.photoPath] = event.target.files;
       const reader = new window.FileReader();
       reader.onload = (e) => {
         this.src = e.target.result;
       };
-      reader.readAsDataURL(this.photo);
+      reader.readAsDataURL(this.photoPath);
     },
 
     loadPhoto() {
@@ -266,7 +266,7 @@ export default {
     },
 
     deletePhoto() {
-      this.photo = '';
+      this.photoPath = '';
       this.photoName = '';
       this.src = '';
       this.setStorage('');
