@@ -140,14 +140,6 @@ export default {
       console.log('watch');
       console.log(Object.keys(this.localFriends).length);
     },
-
-    // firstName(value) {
-    //   if (this.firstName === '') this.localFriends = this.friends;
-    //   else
-    //     this.localFriends = this.localFriends.filter(
-    //       (f) => f.firstName.includes(value) || f.lastName.includes(value)
-    //     );
-    // },
   },
 
   mounted() {

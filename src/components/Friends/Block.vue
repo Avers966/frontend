@@ -73,7 +73,7 @@
         <div
           class="friends-block__actions-block message"
           v-tooltip.bottom="'Написать сообщение'"
-          @click="sendMessage(info.id)"
+          @click="sendMessage(messageId)"
         >
           <simple-svg :filepath="'/static/img/sidebar/im.svg'" />
         </div>
@@ -208,7 +208,13 @@ export default {
       }
       return text;
     },
+    messageId() {
+      if (this.info.toAccountId) {
+        return this.info.toAccountId;
+      } else return this.info.id;
+    },
   },
+
   methods: {
     ...mapActions('profile/friends', ['apiAddFriends', 'apiDeleteFriends', 'apiSubscribe']),
 
@@ -305,6 +311,7 @@ export default {
     },
 
     openModal(id) {
+      console.log(this.info);
       this.modalType = id;
       this.modalShow = true;
     },
@@ -319,8 +326,10 @@ export default {
       } else if (this.modalType === 'deleteModerator') {
         console.log('delete moderator');
       } else if (this.modalType === 'block') {
+        this.blocked = true;
         this.apiBlockUser(id).then(() => this.closeModal());
       } else if (this.modalType === 'unblock') {
+        this.blocked = false;
         this.apiUnblockUser(id).then(() => this.closeModal());
       }
     },
