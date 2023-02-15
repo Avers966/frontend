@@ -35,22 +35,6 @@ deploy_docker:
     paths:
       - dist
 
-deploy_docker_local:
-  image: docker:19.03.12
-  stage: deploy_docker_local
-  only:
-    - develop
-  before_script:
-    - docker logout
-    - docker login -u $DOCKER_LOGIN -p $DOCKER_PASSWORD
-  script:
-    - docker build -f Dockerfile-ci-local -t $BACK_IMAGE_LOCAL .
-    - docker push $BACK_IMAGE_LOCAL
-    - echo "Frontend-local deploy stage end"
-  artifacts:
-    paths:
-      - dist
-
 deploy_prod:
   stage: deploy_prod
   only:
