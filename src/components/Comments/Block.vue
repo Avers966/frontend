@@ -179,6 +179,7 @@ export default {
         this.commentEdit = false;
         this.commentEditInfo = null;
         this.commentEditParentId = null;
+        this.isShowSubComments = true;
       });
     },
   },

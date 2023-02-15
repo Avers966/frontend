@@ -88,6 +88,7 @@ export default {
       like: this.info.myLike,
     };
   },
+
   methods: {
     ...mapActions('global/likes', ['putLike', 'deleteLike']),
     likeAction() {
