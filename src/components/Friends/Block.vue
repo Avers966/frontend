@@ -119,7 +119,6 @@
     <modal v-model="modalShow">
       <p v-if="modalText">{{ modalText }}</p>
       <template slot="actions">
-        <!-- <button-hover @click.native="onConfrim(info.id)">Да</button-hover> -->
         <button-hover @click.native="onConfrim(targetId)">Да</button-hover>
         <button-hover variant="red" bordered="bordered" @click.native="closeModal">
           Отмена
@@ -223,13 +222,6 @@ export default {
     ...mapActions('users/actions', ['apiBlockUser', 'apiUnblockUser']),
 
     acceptFriendRequest(id) {
-      if (this.info.statusCode === 'FRIEND_TO') {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'action',
-          text: 'Вы уже отправляли запрос на добавления в друзья этому пользователю!',
-        });
-        return;
-      }
       if (this.info.statusCode === 'FRIEND') {
         this.$store.dispatch('global/alert/setAlert', {
           status: 'action',
@@ -241,7 +233,7 @@ export default {
     },
 
     addToFriend(id) {
-      if (this.info.statusCode === 'FRIEND_TO') {
+      if (this.info.statusCode === 'REQUEST_TO') {
         this.$store.dispatch('global/alert/setAlert', {
           status: 'action',
           text: 'Вы уже отправляли запрос на добавления в друзья этому пользователю!',
@@ -284,7 +276,6 @@ export default {
     },
 
     subscribe(id) {
-      console.log('subscribe', this.info.statusCode);
       if (this.info.statusCode === 'WATCHING') {
         this.$store.dispatch('global/alert/setAlert', {
           status: 'action',
@@ -311,7 +302,6 @@ export default {
     },
 
     openModal(id) {
-      console.log(this.info);
       this.modalType = id;
       this.modalShow = true;
     },

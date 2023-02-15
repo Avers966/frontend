@@ -137,20 +137,14 @@ export default {
   watch: {
     friends() {
       this.localFriends = this.friends;
-      console.log('watch');
-      console.log(Object.keys(this.localFriends).length);
     },
   },
 
   mounted() {
-    if (!Object.keys(this.friends).length) {
-      this.statusCodes.forEach((statusCode) => {
-        this.apiFriends({ statusCode });
-      });
-    }
+    this.statusCodes.forEach((statusCode) => {
+      this.apiFriends({ statusCode });
+    });
     this.localFriends = this.friends;
-    console.log('mount');
-    console.log(Object.keys(this.friends).length);
   },
 
   methods: {
