@@ -136,6 +136,7 @@ export default {
 
   watch: {
     friends() {
+      console.log('watch');
       this.localFriends = this.friends;
     },
   },

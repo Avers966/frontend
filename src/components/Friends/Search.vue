@@ -88,7 +88,7 @@ export default {
       immediate: true,
       handler(value) {
         if (value && value.id) this.currentCities = this.cities[this.country.id];
-        else this.cities = [];
+        // else this.cities = [];
         this.city = null;
       },
     },

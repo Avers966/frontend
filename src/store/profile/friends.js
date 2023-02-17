@@ -4,10 +4,21 @@ import createQuery from '@/utils/createQuery';
 const dispatchSetAlert = (dispatch, text) =>
   dispatch('global/alert/setAlert', { status: 'success', text }, { root: true });
 
-const dispatchSearchUsers = (dispatch, users) =>
+const dispatchSearchUsers = (dispatch, users) => {
+  if (!users) {
+    users = {
+      firstName: null,
+      lastName: null,
+      ageFrom: null,
+      ageTo: null,
+      country: null,
+      city: null,
+    };
+  }
   dispatch('global/search/searchUsers', users, {
     root: true,
   });
+};
 
 export default {
   namespaced: true,
@@ -55,7 +66,7 @@ export default {
   },
 
   actions: {
-    async apiFriends({ commit }, payload) {
+    async apiFriends({ commit }, payload = '') {
       const query = createQuery(payload);
       const { data } = await friends.get(query);
       const { content } = data;
@@ -73,7 +84,6 @@ export default {
 
     async apiAddFriends({ dispatch, getters, rootGetters }, { id, isApprove = false }) {
       const _friend = getters.getResult.friends.find((fr) => fr.id === id);
-
       if (_friend && _friend.statusCode === 'REQUEST_TO') {
         dispatchSetAlert(dispatch, 'Вы уже отправляли запрос этому пользователю!');
         return;
@@ -93,7 +103,6 @@ export default {
         dispatchSetAlert(dispatch, 'Вы уже друзья с этим пользователем!');
         return;
       }
-
       const { data } = await friends.addFriends(id, isApprove);
 
       if (data && data.message === 'request already sent!') {
@@ -101,7 +110,6 @@ export default {
       } else if (data && data.message === 'Blocked!') {
         dispatchSetAlert(dispatch, 'Этот пользователь заблокировал Вас!');
       } else dispatchSetAlert(dispatch, 'Заявка отправлена');
-
       dispatch('apiFriends');
       dispatchSearchUsers(dispatch, rootGetters['global/search/getLastSearchUsersRequest']);
     },
