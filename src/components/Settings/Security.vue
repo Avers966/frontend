@@ -3,15 +3,15 @@
     <div class="settings-security__block">
       <h3 class="settings-security__title">E-mail:</h3>
 
-      <span class="settings-security__value">{{ getInfo.email }}</span>
+      <input class="settings-security__value" v-model="changeEmail" />
 
       <button-hover @click.native="openModal('email')">Изменить</button-hover>
     </div>
 
     <div class="settings-security__block">
       <h3 class="settings-security__title">Пароль:</h3>
-
-      <span class="settings-security__value">********</span>
+      <input class="settings-security__value not-first" type="password" v-model="password" placeholder="Введите пароль" />
+      <input class="settings-security__value" type="password" v-model="passwordTwo" placeholder="Повторите пароль" />
 
       <button-hover @click.native="openModal('password')">Изменить</button-hover>
     </div>
@@ -27,9 +27,9 @@
 </template>
 
 <script>
-import axios from 'axios';
 import Modal from '@/components/Modal';
-import { mapGetters } from 'vuex';
+import auth from '@/requests/auth';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'SettingsSecurity',
@@ -38,30 +38,51 @@ export default {
   data: () => ({
     modalShow: false,
     modalText: '',
+    changeEmail: '',
+    password: '',
+    passwordTwo: '',
+    currentPasswordInput: '',
   }),
 
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
   },
 
+  mounted() {
+    setTimeout(() => {
+      this.changeEmail = this.getInfo.email;
+      this.password = '';
+      this.passwordTwo = '';
+    }, 300);
+  },
+
   methods: {
+    ...mapActions('auth/api', ['logout']),
+
     closeModal() {
       this.modalShow = false;
     },
 
-    openModal(id) {
+    async openModal(id) {
       if (id === 'email') {
-        axios.post('auth/change-email-link', { email: this.getInfo.email }).then(() => {
-          this.modalText = 'На ваш E-mail было отправлено письмо со ссылкой для смены почты.';
+        await auth.requestChangeEmailLink({ email: this.changeEmail }).then(() => {
+          this.modalText = `Адрес электронной почты успешно изменен на ${this.changeEmail}`;
           this.modalShow = true;
+          setTimeout(() => {
+            this.logout().finally(() => {
+              this.$router.push('/login');
+            });
+          }, 3000);
         });
       }
 
       if (id === 'password') {
-        axios.post('auth/change-password-link', { email: this.getInfo.email }).then(() => {
-          this.modalText = 'На ваш E-mail было отправлено письмо со ссылкой для смены пароля.';
-          this.modalShow = true;
-        });
+        if (this.password === this.passwordTwo) {
+          await auth.requestChangePasswordLink({ password: this.passwordTwo }).then(() => {
+            this.modalText = `Пароль успешно изменен`;
+            this.modalShow = true;
+          });
+        }
       }
     },
   },
@@ -76,7 +97,7 @@ export default {
   box-shadow standart-boxshadow
   display flex
   align-items center
-  height 95px
+  min-height 95px
   padding 0 33px 0 50px
   font-size 15px
 
@@ -87,8 +108,16 @@ export default {
   color #5F5E7A
   width 100px
 
+.form__input_stylus
+  color #000000
+
 .settings-security__value
   color #414141
   display block
   margin-right auto
+  border-bottom 1px solid eucalypt
+  padding 7px 0
+
+.not-first
+  margin-right: 15px
 </style>

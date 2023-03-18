@@ -7,11 +7,12 @@
       v-model="tag"
       ref="input"
       @change="addTag"
+      v-touppercase
     />
 
     <div class="add-tags__block">
-      <div class="add-tags__item" v-for="(tag, index) in tags" :key="index">
-        #{{ tag }}
+      <div class="add-tags__item" v-for="(tag, index) in updateTags" :key="index">
+        #{{ tag.name }}
         <span class="add-tags__delete" @click="deleteTag(index)"> &#10005; </span>
       </div>
     </div>
@@ -19,30 +20,53 @@
 </template>
 
 <script>
+import Vue from 'vue';
+
+Vue.directive( 'touppercase', {
+    update (el) {
+      const sourceValue = el.value;
+      const newValue = sourceValue.toLowerCase();
+
+      if (sourceValue !== newValue) {
+        el.value = newValue;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    },
+})
+
 export default {
   name: 'AddTags',
+
   props: {
     tags: Array,
   },
 
   data: () => ({
-    tagsComponent: [],
+    tagsList: [],
     tag: '',
   }),
 
+  computed: {
+    updateTags() {
+      return this.tags;
+    }
+  },
+
   mounted() {
-    this.tagsComponent = this.tags;
+    setTimeout(() => {
+      this.tagsList = this.tags;
+    }, 200)
   },
 
   methods: {
     deleteTag(index) {
-      this.tagsComponent = this.tags.filter((tag) => tag !== this.tags[index]);
-      this.$emit('change-tags', this.tagsComponent);
+      this.tagsList = this.tags.filter((tag) => tag !== this.tags[index]);
+      this.$emit('change-tags', this.tagsList);
     },
 
     addTag() {
       if (this.tag.length <= 0) return;
-      if (this.tags.find((tag) => tag === this.tag)) {
+      if (this.tags.find((tag) => tag.name === this.tag)) {
         this.$store.dispatch('global/alert/setAlert', {
           status: 'response',
           text: 'Такой тег уже есть',
@@ -52,9 +76,11 @@ export default {
         }, 0);
         return;
       }
-      this.tagsComponent = [...this.tags, this.tag];
+      this.tagsList.push({
+        name: this.tag,
+      });
       this.tag = '';
-      this.$emit('change-tags', this.tagsComponent);
+      this.$emit('change-tags', this.tags);
       setTimeout(() => {
         this.$refs.input.focus();
       }, 0);

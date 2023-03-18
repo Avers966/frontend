@@ -21,9 +21,8 @@ export default {
     return axios.post(`post/${postId}/comment`, data);
   },
 
-  edit(postId, commentId, data) {
-    console.log(`edit${data}`);
-    return axios.put(`post/${postId}/comment/${commentId}`, data);
+  edit(postId, data) {
+    return axios.put(`post/${postId}/comment`, data);
   },
 
   delete(postId, commentId) {

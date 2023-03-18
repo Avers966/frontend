@@ -118,16 +118,24 @@ export default {
       dispatch('commentsById', { postId: payload.postId, commentId: payload.parentId || null });
     },
 
-    async editComment({ dispatch, commit }, payload) {
-      await comments.edit(payload.postId, payload.id, {
+    async editComment({ dispatch }, payload) {
+      await comments.edit(payload.postId, {
         commentText: payload.text,
-        id: payload.id,
+        commentId: payload.id
       });
-      if (payload.parentId) commit('clearSubComments');
-      else commit('clearComments');
-
-      dispatch('commentsById', { postId: payload.postId, commentId: payload.parentId || null });
+      dispatch('commentsById', { postId: payload.postId });
     },
+
+    // async editComment({ dispatch, commit }, payload) {
+    //   await comments.edit(payload.postId, payload.id, {
+    //     commentText: payload.text,
+    //     id: payload.id,
+    //   });
+    //   if (payload.parentId) commit('clearSubComments');
+    //   else commit('clearComments');
+
+    //   dispatch('commentsById', { postId: payload.postId, commentId: payload.parentId || null });
+    // },
 
     async deleteComment({ commit }, payload) {
       await comments.delete(payload.postId, payload.id);

@@ -28,4 +28,6 @@ Vue.use(chat, { server: '82.202.214.42:80' });
 // import VueSocketIO from 'vue-socket.io';
 // Vue.use(chat, { server: 'localhost:8088' });
 
-// Vue.use(chat, { server: 'localhost:8099' });
+// Vue.use(chat, { server: "localhost:7000" });
+Vue.use(chat, { server: '82.202.214.42' });
+// Vue.use(chat, { server: "84.201.189.234:8080" });

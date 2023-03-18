@@ -320,7 +320,9 @@ export default {
         id: this.getInfo.id,
         title: this.title,
         postText: this.editor.getHTML(),
-        tags: this.tags,
+        tags: this.tags.map((tag) => {
+          return tag.name;
+        }),
         publishDate:
           this.isPlaning &&
           moment({
@@ -435,4 +437,14 @@ export default {
 
 .news-add__text-main
   cursor text
+
+.news-add__text-title
+  border-bottom: 1px solid #e6e6e6
+  padding-bottom 10px
+
+.ProseMirror
+
+  p
+    height 210px
+
 </style>
