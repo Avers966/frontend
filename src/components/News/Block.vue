@@ -94,7 +94,7 @@
         <ul class="news-block__content-tags" v-if="info.tags && info.tags.length > 0">
           <li class="news-block__content-tag" v-for="(tag, index) in info.tags" :key="index">
             <router-link :to="{ name: 'Search', query: { tab: 'news', tags: tag } }">
-              {{ '#' + tag }}
+              {{ '#' + tag.name }}
             </router-link>
           </li>
         </ul>
@@ -123,6 +123,7 @@
             width="16px"
             height="16px"
             font-size="15px"
+            color="#21a45d"
             comment="comment"
           />
         </div>
@@ -183,7 +184,7 @@ export default {
         time: 1559751301818,
         likes: 44,
         id: 1,
-        tags: ['tag1'],
+        tags: [],
         comments: {},
         author: '',
       }),
@@ -409,12 +410,14 @@ export default {
   color eucalypt
 
 .news-block__content-tags
-  background-color #F5F7FB
+  display flex
+  flex-wrap wrap
   padding 20px
   max-width 230px
   flex none
   align-self flex-start
   margin-left 40px
+  gap 10px
 
   @media (max-width breakpoint-xxl)
     margin-left 20px
@@ -424,7 +427,17 @@ export default {
   font-size 13px
   line-height 22px
   display inline-block
-  margin 0 7px
+
+  a
+    background-color #F5F7FB
+    border-radius 5px
+    color eucalypt
+    padding 5px
+    transition background-color .2s ease-in-out, color .2s ease-in-out
+
+    &:hover
+      background-color eucalypt
+      color #fff
 
 .news-block__actions
   display flex

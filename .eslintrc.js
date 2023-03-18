@@ -136,12 +136,6 @@ module.exports = {
       },
     ],
     'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
-    'prettier/prettier': [
-      'error',
-      {
-        singleQuote: true,
-        endOfLine: 'auto',
-      },
-    ],
+    'prettier/prettier': 0,
   },
 };

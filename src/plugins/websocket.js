@@ -7,6 +7,7 @@ export default {
     Vue.prototype.$socket = {
       connect() {
         const serverUrl = 'ws://' + options.server + '/api/v1/streaming/ws';
+        console.log(serverUrl);
         socket = new WebSocket(serverUrl);
         console.log('function connect');
         socket.onopen = () => {

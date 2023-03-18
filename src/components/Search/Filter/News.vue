@@ -17,7 +17,7 @@
     </div>
 
     <div class="search-filter__block tags">
-      <add-tags :tags="tags" @change-tags="onChangeTags" />
+      <add-tags :tags="updateTags" @change-tags="onChangeTags" />
     </div>
 
     <div class="search-filter__block btn-news">
@@ -36,7 +36,7 @@ export default {
   components: { AddTags },
 
   data: () => ({
-    tags: [],
+    updateTags: [],
     dateFrom: 'year',
     dateTo: 0,
     page: 1,
@@ -48,16 +48,16 @@ export default {
     ...mapGetters('global/search', ['getNewsQueryParams', 'searchText']),
   },
 
-  watch: {
-    '$route.query.tags': {
-      immediate: true,
-      handler(value) {
-        if (value) {
-          this.tags = value.split(',');
-        }
-      },
-    },
-  },
+  // watch: {
+  //   '$route.query.tags': {
+  //     immediate: true,
+  //     handler(value) {
+  //       if (value) {
+  //         this.updateTags = value.split(',');
+  //       }
+  //     },
+  //   },
+  // },
 
   mounted() {
     this.dateTo = moment().valueOf();
@@ -67,23 +67,27 @@ export default {
     ...mapActions('global/search', ['searchNews']),
 
     onChangeTags(tags) {
-      this.tags = tags;
+      this.updateTags = tags;
+      const dataTagsSplit = tags.map(tag => tag.name);
       this.$router.replace({
         query: {
           ...this.$route.query,
-          tags: tags.toString(),
+          tags: dataTagsSplit.join(','),
         },
       });
     },
 
     onSearchNews() {
+      const dataTags = this.updateTags;
+      const dataTagsSplit = dataTags.map(tag => tag.name);
       const dateFrom = this.dateFrom === 'null' ? 0 : moment().subtract(1, this.dateFrom).valueOf();
       let searchQuery = Object.assign({}, this.getNewsQueryParams, {
         dateFrom: Math.floor(dateFrom / 1000),
         dateTo: Math.floor(this.dateTo / 1000),
         author: this.author,
-        tags: this.tags,
+        tags: dataTagsSplit.join(','),
         text: this.searchText,
+        withFriends: true,
       });
       this.searchNews(searchQuery);
     },

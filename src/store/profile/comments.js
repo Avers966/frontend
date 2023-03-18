@@ -119,7 +119,10 @@ export default {
     },
 
     async editComment({ dispatch }, payload) {
-      await comments.edit(payload.postId, payload.id, { commentText: payload.text });
+      await comments.edit(payload.postId, {
+        commentText: payload.text,
+        commentId: payload.id
+      });
       dispatch('commentsById', { postId: payload.postId });
     },
 

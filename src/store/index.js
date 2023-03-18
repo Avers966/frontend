@@ -17,14 +17,24 @@ export default new Vuex.Store({
     users,
   },
   state: {
-    code: Math.floor(Math.random() * 10000)
+    captchaCode: Math.floor(Math.random() * 10000)
       .toString()
       .padStart(4, '0'),
+    currentUser: null,
   },
   getters: {
-    getCode: (s) => s.code,
+    getCode: (s) => s.captchaCode,
+    getUser: (s) => s.currentUser,
   },
-  actions: {},
-  mutations: {},
+  actions: {
+    loadUser(contex, payload) {
+      contex.commit('loadUser', payload);
+    },
+  },
+  mutations: {
+    loadUser(state, payload) {
+      state.currentUser = payload;
+    },
+  },
   strict: process.env.NODE_ENV !== 'production',
 });

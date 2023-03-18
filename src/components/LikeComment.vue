@@ -1,9 +1,10 @@
 <template>
   <div class="like-comment" :class="{ active, fill }">
     <template v-if="comment">
-      <comment-icon />
+      <comment-icon v-if="quantity >= 1" :stroke="`#21a45d`" />
+      <comment-icon v-else-if="quantity === 0" />
 
-      <span v-if="quantity >= 1" :style="{ 'font-size': fontSize }">
+      <span v-if="quantity >= 1" :style="{ 'font-size': fontSize, color: color }">
         {{ quantity }}
       </span>
     </template>
@@ -40,6 +41,10 @@ export default {
     fontSize: {
       type: String,
       default: '12px',
+    },
+    color: {
+      type: String,
+      default: '#aeaebd',
     },
     comment: Boolean,
     id: Number,
@@ -85,10 +90,10 @@ export default {
 
   &:hover
     svg
-      fill wild-watermelon
+      fill eucalypt
 
       path
-        stroke wild-watermelon
+        stroke eucalypt !important
 
   &.fill
     &:hover
@@ -102,7 +107,7 @@ export default {
       fill silver-sand
 
       path
-        stroke silver-sand
+        stroke eucalypt
 
   &.active
     &:hover

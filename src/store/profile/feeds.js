@@ -40,7 +40,7 @@ export default {
         ...s.feeds[postIndex],
         imagePath: payload.imagePath,
         postText: payload.postText,
-        tags: payload.tags,
+        tags: payload.tags.map(tag => ({ name: tag })),
         title: payload.title,
         timeChanged: new Date(),
       };
@@ -90,15 +90,23 @@ export default {
 
     async actionsFeed({ dispatch, commit, rootGetters }, payload) {
       const isPUT = payload.edit && !!payload.edit;
-      const publishDate = payload.publishDate ? '?publishDate=' + payload.publishDate : '';
+      // const publishDate = payload.publishDate ? '?publishDate=' + payload.publishDate : '';
       const data = {
         title: payload.title,
         postText: payload.postText,
-        tags: payload.tags,
+        publishDate: payload.publishDate,
+        tags: payload.tags.map(tag => ({ name: tag })),
         imagePath: payload.imagePath,
+        id: payload.postId,
       };
 
-      await posts.push(data, isPUT, payload.postId, publishDate);
+      if (isPUT) {
+        await posts.push(data, isPUT);
+      } else {
+        await posts.push(data, isPUT, payload.postId);
+      }
+
+      // await posts.push(data, isPUT, payload.postId);
 
       // if (isPUT) {
       //   dispatch('users/info/apiWallById', payload.postId, { root: true });

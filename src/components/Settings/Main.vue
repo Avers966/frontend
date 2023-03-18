@@ -146,12 +146,13 @@ export default {
       { val: 10, text: 'Ноября' },
       { val: 11, text: 'Декабря' },
     ],
-    photo: '',
+    photoPath: '',
     src: '',
     country: '',
     city: '',
     countries: [],
     cities: [],
+    currentCountry: {},
   }),
 
   computed: {
@@ -186,8 +187,8 @@ export default {
       immediate: true,
       handler(value) {
         if (value && value !== 'none') {
-          const currentCountry = this.countries.find((country) => country.title === value);
-          this.loadCities(currentCountry.id);
+          this.currentCountry = this.countries.find((country) => country.title === value);
+          this.loadCities(this.currentCountry?.id);
         } else this.city = 'none';
       },
     },
@@ -207,9 +208,10 @@ export default {
 
     loadCountries() {
       axios
-        .get('/geo/countries')
+        .get('/geo/country')
         .then((response) => {
           this.countries = response.data;
+          if (this.getInfo) this.setInfo();
         })
         .catch(() => {});
       return;
@@ -220,7 +222,7 @@ export default {
         this.city = null;
         return;
       }
-      axios.get(`/geo/cities/${countryId}`).then((response) => {
+      axios.get(`/geo/country/${countryId}/city`).then((response) => {
         this.cities = response.data;
       });
       return countryId;
@@ -229,10 +231,15 @@ export default {
     async submitHandler() {
       let _birthDate = 'none';
       console.log(this.country);
+      console.log(this.city);
       if (this.year && this.month && this.day) {
         _birthDate = new Date(this.year, this.month.val, this.day).toISOString();
       }
-      if (this.photo) await this.apiStorage(this.photo);
+      if (this.photoPath) {
+        await this.apiStorage(this.photoPath).then((t) => {
+          (this.photoName = t.data.photoName), (this.photoPath = t.data.photoPath);
+        });
+      }
       await this.apiChangeInfo({
         firstName: this.firstName,
         lastName: this.lastName,
@@ -241,16 +248,18 @@ export default {
         about: this.about,
         country: this.country,
         city: this.city,
+        photoName: this.photoName,
+        photo: this.photoPath,
       }).then(() => this.setStorage(null));
     },
 
     processFile(event) {
-      [this.photo] = event.target.files;
+      [this.photoPath] = event.target.files;
       const reader = new window.FileReader();
       reader.onload = (e) => {
         this.src = e.target.result;
       };
-      reader.readAsDataURL(this.photo);
+      reader.readAsDataURL(this.photoPath);
     },
 
     loadPhoto() {
@@ -278,12 +287,17 @@ export default {
         this.month = this.months[birthDate.getMonth()];
         this.year = birthDate.getFullYear();
       }
+
       this.about = this.getInfo.about;
+
       if (this.getInfo.country) {
-        this.country = this.getInfo.country.title;
+        this.country = this.getInfo.country;
+        this.currentCountry = this.countries.find((t) => t.title === this.country);
+        this.loadCities(this.currentCountry?.id);
       }
+
       if (this.getInfo.city) {
-        this.city = this.getInfo.city.title;
+        this.city = this.getInfo.city;
       }
     },
   },

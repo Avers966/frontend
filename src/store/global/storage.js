@@ -19,6 +19,7 @@ export default {
       formData.append('file', file);
       const response = await storage.api(formData);
       commit('setStorage', response.data.data);
+      return response;
     },
   },
 };
