@@ -6,8 +6,8 @@
         :key="dialog.id"
         :info="dialog"
         :push="countPush(dialog.unreadСount)"
-        :me="+info.id === +dialog.lastMessage.authorId"
-        :active="+dialog.id === +activeDialogId"
+        :me="+info?.id === +dialog.lastMessage?.authorId"
+        :active="+dialog?.id === +activeDialogId"
         :online="checkOnlineUser(dialog)"
         @click.native="clickOnDialog(dialog.id)"
       />
