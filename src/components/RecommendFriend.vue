@@ -15,11 +15,6 @@
 
         </div>
         <a class="recommend-block__button" href="#" @click.prevent="apiAddFriends({ id: user.id })">Добавить</a>
-
-        <router-link class="friends-possible__btn" href="#" :to="{ name: 'FriendsFind' }">
-          <search-icon class="friends-possible__icon" />
-          <span class="friends-possible__link">Искать друзей</span>
-        </router-link>
       </li>
     </ul>
     <div v-else class="recommend-block__not">

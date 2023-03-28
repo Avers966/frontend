@@ -17,18 +17,16 @@
           </div>
         </div>
         <ul class="friends__tabs">
-          <li class="friends__tabs__item">
+          <li class="friends__tabs__item" v-if="localFriends.REQUEST_FROM">
             <button
-              :disabled="!localFriends.REQUEST_FROM"
               :class="{ 'friends__tabs__link active': isActive('application') }"
               @click.prevent="setActive('application')"
             >
               {{ 'Запросы в друзья' + ' ' + `(${localFriends.REQUEST_FROM?.length || 0})` }}
             </button>
           </li>
-          <li class="friends__tabs__item">
+          <li class="friends__tabs__item" v-if="localFriends.REQUEST_TO">
             <button
-              :disabled="!localFriends.REQUEST_TO"
               :class="{ 'friends__tabs__link active': isActive('outgoing') }"
               @click.prevent="setActive('outgoing')"
             >
@@ -36,45 +34,40 @@
               {{ 'Исходящие запросы' + ' ' + `(${localFriends.REQUEST_TO?.length || 0})` }}
             </button>
           </li>
-          <li class="friends__tabs__item">
+          <li class="friends__tabs__item" v-if="localFriends.FRIEND">
             <button
-              :disabled="!localFriends.FRIEND"
               :class="{ 'friends__tabs__link active': isActive('friends') }"
               @click.prevent="setActive('friends')"
             >
               {{ 'Друзья' + ' ' + `(${localFriends.FRIEND?.length || 0})` }}
             </button>
           </li>
-          <li class="friends__tabs__item">
+          <li class="friends__tabs__item" v-if="localFriends.SUBSCRIBED">
             <button
-              :disabled="!localFriends.SUBSCRIBED"
               :class="{ 'friends__tabs__link active': isActive('subscribers') }"
               @click.prevent="setActive('subscribers')"
             >
               {{ 'Подписчики' + ' ' + `(${localFriends.SUBSCRIBED?.length || 0})` }}
             </button>
           </li>
-          <li class="friends__tabs__item">
+          <li class="friends__tabs__item" v-if="localFriends.BLOCKED">
             <button
-              :disabled="!localFriends.BLOCKED"
               :class="{ 'friends__tabs__link active': isActive('blocked') }"
               @click.prevent="setActive('blocked')"
             >
               {{ 'Заблокированные' + ' ' + `(${localFriends.BLOCKED?.length || 0})` }}
             </button>
           </li>
-          <li class="friends__tabs__item">
+          <li class="friends__tabs__item" v-if="localFriends.REJECTING">
             <button
-              :disabled="!localFriends.REJECTING"
               :class="{ 'friends__tabs__link active': isActive('rejected') }"
               @click.prevent="setActive('rejected')"
             >
               {{ 'Отклоненные запросы' + ' ' + `(${localFriends.REJECTING?.length || 0})` }}
             </button>
           </li>
-          <li class="friends__tabs__item">
+          <li class="friends__tabs__item" v-if="localFriends.WATCHING">
             <button
-              :disabled="!localFriends.WATCHING"
               :class="{ 'friends__tabs__link active': isActive('signed') }"
               @click.prevent="setActive('signed')"
             >
