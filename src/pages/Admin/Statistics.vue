@@ -7,7 +7,7 @@
       </div>
       <div class="admin__pages-info">
         <h4 class="admin__pages-title">Пользователей зарегестрировано</h4>
-        <span class="admin__pages-statistic">357</span>
+          <span class="admin__pages-statistic">357</span>
       </div>
     </li>
     <li class="admin__pages-item">

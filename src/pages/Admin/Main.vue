@@ -69,6 +69,7 @@ export default {
   display flex
   align-items center
   max-height 130px
+  min-height 130px
   justify-content space-between
   padding 30px
   background #21A45D
