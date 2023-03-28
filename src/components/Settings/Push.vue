@@ -55,10 +55,17 @@ export default {
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 
+.settings__wrap
+  .inner-page__main
+    max-width 100%
+
+
 .settings-push
   background #fff
   box-shadow standart-boxshadow
-  padding 10px 40px
+  padding 30px
+  border-radius 20px
+  width 550px
 
 .settings-push__item
   display flex
@@ -69,19 +76,19 @@ export default {
     border-top 1px solid #E6E6E6
 
 .settings-push__icon
-  margin-right 30px
+  margin-right 15px
   width 23px
   height 23px
 
 .settings-push__name
   margin-right auto
-  font-size 15px
+  font-size 13px
+  font-weight 400
   font-family Open Sans
   color #5F5E7A
 
 .settings-push__check
   width 43px
-  height 22px
 
 .settings-push__check-input
   display none

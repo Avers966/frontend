@@ -235,7 +235,7 @@ export default {
   background #FFFFFF
   box-shadow standart-boxshadow
   position relative
-  border-radius 3%
+  border-radius 10px
 
   @media (max-width breakpoint-xxl)
     padding 25px

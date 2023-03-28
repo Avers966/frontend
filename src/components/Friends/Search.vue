@@ -51,19 +51,16 @@
       </div>
     </div>
 
-    <button class="friends-possible__btn" type="submit">
-      <search-icon class="friends-possible__icon" />
-      <span class="friends-possible__link">Искать друзей</span>
+    <button class="recommend-block__search" type="submit">
+      Искать друзей
     </button>
   </form>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import SearchIcon from '../../Icons/SearchIcon.vue';
 export default {
   name: 'FriendsSearch',
-  components: { SearchIcon },
   data: () => ({
     firstName: null,
     lastName: null,
@@ -198,6 +195,9 @@ export default {
 .friends-search__select
   display block
   width 100%
+  border-radius 5px
+  padding 13px 10px
+  height unset
 
   &+&
     margin-left 12px

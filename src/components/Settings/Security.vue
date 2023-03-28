@@ -1,19 +1,18 @@
 <template>
   <div class="settings-security">
     <div class="settings-security__block">
-      <h3 class="settings-security__title">E-mail:</h3>
+      <div class="settings-security__mail">
+        <h3 class="settings-security__title">E-mail:</h3>
 
-      <input class="settings-security__value" v-model="changeEmail" />
+        <input class="settings-security__value" v-model="changeEmail" />
 
-      <button-hover @click.native="openModal('email')">Изменить</button-hover>
-    </div>
+        <button class="settings-security__btn" @click.prevent="openModal('email')">Изменить</button>
+      </div>
 
-    <div class="settings-security__block">
       <h3 class="settings-security__title">Пароль:</h3>
-      <input class="settings-security__value not-first" type="password" v-model="password" placeholder="Введите пароль" />
-      <input class="settings-security__value" type="password" v-model="passwordTwo" placeholder="Повторите пароль" />
-
-      <button-hover @click.native="openModal('password')">Изменить</button-hover>
+      <input class="settings-security__value not-first" type="password" v-model="password" placeholder="Введите текущий пароль" />
+      <input class="settings-security__value" type="password" v-model="passwordTwo" placeholder="Введите новый пароль" />
+      <button class="settings-security__btn" @click.prevent="openModal('password')">Изменить</button>
     </div>
 
     <modal v-model="modalShow">
@@ -41,7 +40,6 @@ export default {
     changeEmail: '',
     password: '',
     passwordTwo: '',
-    currentPasswordInput: '',
   }),
 
   computed: {
@@ -50,7 +48,7 @@ export default {
 
   mounted() {
     setTimeout(() => {
-      this.changeEmail = this.getInfo.email;
+      this.changeEmail = this.getInfo?.email;
       this.password = '';
       this.passwordTwo = '';
     }, 300);
@@ -92,32 +90,57 @@ export default {
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 
+
 .settings-security__block
   background #fff
   box-shadow standart-boxshadow
   display flex
-  align-items center
-  min-height 95px
-  padding 0 33px 0 50px
+  flex-direction column
+  width 550px
+  padding 30px
   font-size 15px
+  border-radius 20px
 
   &+&
     margin-top 20px
 
+.settings-security__mail
+  margin-bottom 30px
+
+.settings-security__btn
+  display block
+  min-width 180px
+  max-width 180px
+  color #21a45d
+  border-radius 10px
+  text-align center
+  background #fff
+  border 1px solid #21a45d
+  font-size 14px
+  padding 10px
+  @media (any-hover: hover)
+    &:hover
+      background #21a45d
+      color #fff
+
 .settings-security__title
-  color #5F5E7A
-  width 100px
+  color #000
+  margin-bottom 15px
+  font-family 'Exo', Arial, sans-serif
+  font-size 24px
+  font-weight 600
 
 .form__input_stylus
   color #000000
 
 .settings-security__value
-  color #414141
   display block
-  margin-right auto
-  border-bottom 1px solid eucalypt
-  padding 7px 0
-
-.not-first
-  margin-right: 15px
+  width 100%
+  color #767676
+  border-radius 10px
+  background #fff
+  border 1px solid #ababab
+  font-size 14px
+  padding 10px 15px
+  margin-bottom 15px
 </style>

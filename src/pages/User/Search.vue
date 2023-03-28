@@ -71,12 +71,7 @@ export default {
 .search__tabs
   background #fff
   box-shadow standart-boxshadow
-  position fixed
-  top header-height
-  left sidebar-width
-  right 0
-  padding 0 20px
-  z-index 10
+  padding 20px
 
   @media (max-width breakpoint-xxl)
     left sidebar-width-xl
@@ -84,10 +79,9 @@ export default {
 .search__main
   padding 100px 40px 50px
   height 100%
-  overflow-y auto
 
   &.high
-    padding-top 250px
+    padding-top 20px
 
 @media (max-width 1024px)
   .search__tabs

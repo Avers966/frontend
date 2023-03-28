@@ -1,25 +1,23 @@
 <template>
-  <div class="search-filter">
-    <div class="search-filter__block">
-      <label class="search__label" for="search-news-author">Автор:</label>
-      <input class="search__input" type="text" id="search-news-author" v-model="author" />
+  <div>
+    <div class="search-filter">
+      <div class="search-filter__block">
+        <label class="search__label" for="search-news-author">Автор:</label>
+        <input class="search__input" type="text" placeholder="Введите автора" id="search-news-author" v-model="author" />
+      </div>
+      <div class="search-filter__block time">
+        <label class="search__label">Время публикации:</label>
+        <select class="select search-filter__select" v-model="dateFrom">
+          <option value="null">За все время</option>
+          <option value="year">За последний год</option>
+          <option value="month">За последний месяц</option>
+          <option value="week">За последнюю неделю</option>
+        </select>
+      </div>
+      <div class="search-filter__block tags">
+        <add-tags :tags="updateTags" @change-tags="onChangeTags" />
+      </div>
     </div>
-
-    <div class="search-filter__block time">
-      <label class="search__label">Время публикации:</label>
-
-      <select class="select search-filter__select" v-model="dateFrom">
-        <option value="null">За все время</option>
-        <option value="year">За последний год</option>
-        <option value="month">За последний месяц</option>
-        <option value="week">За последнюю неделю</option>
-      </select>
-    </div>
-
-    <div class="search-filter__block tags">
-      <add-tags :tags="updateTags" @change-tags="onChangeTags" />
-    </div>
-
     <div class="search-filter__block btn-news">
       <button-hover @click.native="onSearchNews">Применить</button-hover>
     </div>
@@ -37,7 +35,7 @@ export default {
 
   data: () => ({
     updateTags: [],
-    dateFrom: 'year',
+    dateFrom: 'null',
     dateTo: 0,
     page: 1,
     itemPerPage: 5,

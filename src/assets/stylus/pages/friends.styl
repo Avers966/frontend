@@ -1,20 +1,27 @@
 .friends__header
   display flex
-  align-items center
-  margin-bottom 10px
-  top:40
+  align-items flex-end
+  justify-content space-between
+  gap 40px
+  margin-bottom 25px
+  padding-bottom 25px
+  border-bottom 1px solid #cacaca
 
 .friends__title
-  margin-right 40px
+  margin-bottom 15px
   font-family font-exo
-  font-weight 200
+  font-weight 600
   font-size 30px
   color #000
 
 .friends__search
   display flex
   align-items center
-  flex auto
+  min-width 350px
+  background #FFFFFF
+  border-radius 10px
+  padding 5px 10px
+  box-shadow 0px 2px 8px rgba(0,0,0,0.08)
 
 .friends__search-icon
   .simple-svg-wrapper
@@ -29,7 +36,7 @@
   font-size 13px
   color #000
   background-color transparent
-  cursor pointer
+  cursor inherit
   padding 10px
   margin-top 1px
   display block
@@ -39,6 +46,38 @@
     color #5F5E7A
   
 .friends__list
-  margin 0 -10px
   display flex
   flex-direction column
+
+.friends
+	&__tabs
+		display flex
+		flex-wrap wrap
+		gap 10px
+
+		li button
+			display block
+			color #767676;
+			border-radius 10px
+			text-align center
+			background #fff
+			border 1px solid #ababab
+			font-size 14px
+			padding 10px
+			@media (any-hover: hover)
+				&:hover:not(:disabled)
+					color #fff
+					background #21a45d
+					border-color #21a45d
+				&:disabled
+					color #fff
+					background #b3b3b3
+					border-color #919191
+					cursor not-allowed
+					opacity 35%
+			&.active
+				color #fff
+				background #21a45d
+				border-color #21a45d
+
+	

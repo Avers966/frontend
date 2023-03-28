@@ -1,8 +1,11 @@
 <template>
   <div class="profile inner-page" ref="page">
     <div class="inner-page__main">
-      <div class="profile__info">
-        <profile-info me="me" online="online" :info="getInfo" />
+      <div class="profile__info-top">
+        <div class="profile__info">
+          <profile-info me="me" online="online" :info="getInfo" />
+        </div>
+        <weather-block />
       </div>
 
       <div class="profile__news">
@@ -66,11 +69,12 @@ import NewsBlock from '@/components/News/Block';
 import Spinner from '@/components/Spinner.vue';
 import ErrorBlock from '@/components/ErrorBlock.vue';
 import AutoPaginator from '@/components/AutoPaginator.vue';
+import WeatherBlock from '@/components/WeatherBlock.vue';
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex';
 
 export default {
   name: 'Profile',
-  components: { ProfileInfo, NewsAdd, NewsBlock, Spinner, ErrorBlock, AutoPaginator },
+  components: { ProfileInfo, NewsAdd, NewsBlock, Spinner, ErrorBlock, AutoPaginator, WeatherBlock },
 
   data: () => ({
     activeTab: 'POSTED',
@@ -114,3 +118,15 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus">
+.profile
+  .inner-page__main
+    max-width 100%
+    margin-right 0
+
+.profile__info-top
+  display grid
+  grid-template-columns 1100px 1fr
+  gap 50px
+</style>

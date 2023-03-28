@@ -1,5 +1,5 @@
 <template>
-  <div class="user-info-form__block">
+  <div class="settings-main-input">
     <span class="user-info-form__label_stylus">{{ label }}</span>
 
     <div class="user-info-form__wrap">
@@ -44,3 +44,9 @@ export default {
   },
 };
 </script>
+
+<style lang="stylus">
+.settings-main-input
+  &:not(:last-child)
+    margin-bottom 15px
+</style>

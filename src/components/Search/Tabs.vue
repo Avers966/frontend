@@ -32,22 +32,24 @@ export default {
 .search-tabs
   display flex
   align-items center
-  height 40px
+  gap 15px
+  margin-bottom 15px
 
 .search-tabs__item
-  display flex
-  height 100%
-  padding 0 10px
-  border-bottom 4px solid transparent
-  color #808080
-  align-items center
-  font-size 18px
+  display block
+  min-width 120px
+  max-width 120px
+  color #767676
+  border-radius 5px
+  text-align center
+  background #fff
+  border 1px solid #ababab
+  font-size 14px
+  padding 10px
   cursor pointer
 
-  &+&
-    margin-left 50px
-
   &.active
-    color eucalypt
-    border-bottom-color eucalypt
+    color #fff
+    background #21a45d
+    border-color #21a45d
 </style>

@@ -48,14 +48,14 @@
         <div class="comment-main__actions">
           <span class="comment-main__time">{{ info.time | moment('from') }}</span>
 
-          <template v-if="!admin && !isSubcomment">
+          <template>
             <a class="comment-main__review" href="#" @click.prevent="$emit('answer-comment')">
               Ответить
             </a>
             <like-comment
               fill="fill"
               :quantity="info.likeAmount"
-              :active="info.myLike"
+              :active="info.myLike || info.likeAmount"
               :id="info.id"
               @liked="likeAction"
             />
@@ -102,7 +102,7 @@ export default {
         return;
       }
 
-      this.putLike({
+        this.putLike({
         itemId: this.info.id,
         postId: this.info.postId,
         type: 'COMMENT',

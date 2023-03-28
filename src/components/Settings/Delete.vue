@@ -61,7 +61,8 @@ export default {
 .settings-delete
   background #fff
   box-shadow standart-boxshadow
-  padding 45px 65px
+  padding 30px
+  border-radius 20px
 
   @media (max-width breakpoint-xl)
     padding 20px

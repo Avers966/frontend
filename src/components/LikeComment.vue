@@ -28,7 +28,7 @@ export default {
   components: { CommentIcon },
   props: {
     quantity: Number,
-    active: Boolean,
+    active: null,
     fill: Boolean,
     width: {
       type: String,

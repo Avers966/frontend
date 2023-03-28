@@ -60,3 +60,15 @@ export default {
   },
 };
 </script>
+
+
+<style lang="stylus">
+.catalog__pagination
+  margin-top 30px
+
+.pagination__link--arrow
+  border-radius 10px
+
+.pagination__link
+  padding: 10px 3px
+</style>

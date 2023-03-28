@@ -1,10 +1,14 @@
 <template>
-  <div class="search-news">
-    <search-block title="Новости" id="news">
-      <news-block v-for="n in news" :key="n.id" :info="n" />
-    </search-block>
-
+  <div class="search-news" v-if="news.length > 0">
+    <div>
+      <search-block title="Новости" id="news">
+        <news-block v-for="n in news" :key="n.id" :info="n" />
+      </search-block>
+    </div>
     <pagination :count="total" v-model="page" :per-page="size" />
+  </div>
+  <div class="search-news__nonews" v-else>
+    В данный момент нет новостей для отображения.
   </div>
 </template>
 

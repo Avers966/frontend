@@ -14,7 +14,7 @@
           @input="setSearchText($event.target.value)"
         />
       </form>
-
+      <change-theme />
       <div class="main-layout__push" @click="togglePush">
         <push-icon :isNotEmpty="getNotificationsLength > 0" />
 
@@ -47,9 +47,11 @@ import { mapGetters, mapMutations, mapActions, mapState } from 'vuex';
 import SearchIcon from '../../Icons/SearchIcon.vue';
 import PushIcon from '../../Icons/PushIcon.vue';
 import Push from '@/components/MainLayout/Push';
+import ChangeTheme from '../Theme/ChangeTheme.vue';
+
 export default {
   name: 'MainLayoutHeader',
-  components: { Push, SearchIcon, PushIcon },
+  components: { Push, SearchIcon, PushIcon, ChangeTheme },
 
   data: () => ({
     isOpenPush: false,
@@ -193,7 +195,8 @@ export default {
   font-size 15px
   width 100%
   background transparent
-  padding 5px
+  padding 10px
+  border-radius 10px
   border-bottom 2px solid rgba(255, 255, 255, 0.12)
   color #fff
   transition all 0.2s

@@ -49,6 +49,12 @@ export default {
     },
   },
 
+  watch: {
+    likeAmout() {
+      return this.info.totalElements
+    }
+  },
+
   methods: {
     ...mapActions('profile/comments', ['commentActions']),
 
@@ -119,5 +125,4 @@ export default {
 .comments__list
   width 100%
   max-width 550px
-  padding-left 30px
 </style>

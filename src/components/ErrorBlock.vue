@@ -20,7 +20,6 @@ export default {
 
 <style lang="stylus">
 .error
-  padding 50px
   font-size 20px
   &__title
     font-weight bold

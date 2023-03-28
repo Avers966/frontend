@@ -33,6 +33,37 @@ export default {
         text: 'Новости',
       },
     ],
+    // admin: [
+    //   // Навигация статистика
+    //   {
+    //     link: {
+    //       name: 'AdminStatistics',
+    //     },
+    //     icon: 'statistics',
+    //     text: 'Статистика',
+    //   },
+    //   {
+    //     link: {
+    //       name: 'AdminUsers',
+    //     },
+    //     icon: 'users',
+    //     text: 'Люди',
+    //   },
+    //   {
+    //     link: {
+    //       name: 'AdminPosts',
+    //     },
+    //     icon: 'posts',
+    //     text: 'Публикации',
+    //   },
+    //   {
+    //     link: {
+    //       name: 'AdminComments',
+    //     },
+    //     icon: 'comments',
+    //     text: 'Комментарии',
+    //   },
+    // ],
     admin: [
       {
         link: {
@@ -43,28 +74,28 @@ export default {
       },
       {
         link: {
-          name: 'AdminUsers',
+          name: 'UsersPanel',
         },
         icon: 'users',
         text: 'Люди',
       },
       {
         link: {
-          name: 'AdminPosts',
+          name: 'PublicationPanel',
         },
         icon: 'posts',
         text: 'Публикации',
       },
       {
         link: {
-          name: 'AdminComments',
+          name: 'CommentsPanel',
         },
         icon: 'comments',
         text: 'Комментарии',
       },
       {
         link: {
-          name: 'AdminModerators',
+          name: 'AdministratorPanel',
         },
         icon: 'moderators',
         text: 'Администраторы и модераторы',

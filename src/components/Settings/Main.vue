@@ -1,5 +1,40 @@
 <template>
   <div class="settings-main">
+
+    <div class="settings-main-photoblock">
+      <div class="user-info-form__block user-info-form__block--photo">
+        <div class="settings-main__top">
+          <div class="main-layout__user-pic" v-if="src">
+            <img :src="src" :alt="firstName[0]" />
+          </div>
+          <div class="main-layout__user-pic" style="background-color: #333;" v-else>
+            <img src="https://yastatic.net/s3/yandex-id-static/yandex-id/_/_next/static/media/avatar-placeholder.f27a38d6.png" alt="Нет фото" />
+          </div>
+        </div>
+
+        <div class="user-info-form__wrap">
+          <div class="user-info-form__photo-wrap">
+            <input
+              class="user-info-form__input_stylus-photo"
+              type="file"
+              ref="photo"
+              id="photo"
+              @change="processFile($event)"
+              accept="image/*"
+            />
+            <button class="setting-main__buttons" @click.prevent="loadPhoto">
+              <load-photo /> Добавить фото
+            </button>
+            <div v-if="src" class="settings-main__top--delete" @click="deletePhoto">
+              <div class="settings-main__top--delete-icon">
+                <delete-icon />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <user-info-form-block label="Имя:" placeholder="Введите имя" v-model="firstName" />
 
     <user-info-form-block label="Фамилия:" placeholder="Введите фамилию" v-model="lastName" />
@@ -11,7 +46,7 @@
       phone="phone"
     />
 
-    <div class="user-info-form__block">
+    <div class="settings-main-input">
       <span class="user-info-form__label_stylus">Страна:</span>
 
       <div class="user-info-form__wrap">
@@ -24,7 +59,7 @@
       </div>
     </div>
 
-    <div class="user-info-form__block">
+    <div class="settings-main-input">
       <span class="user-info-form__label_stylus">Город:</span>
 
       <div class="user-info-form__wrap">
@@ -37,7 +72,7 @@
       </div>
     </div>
 
-    <div class="user-info-form__block">
+    <div class="settings-main-input">
       <span class="user-info-form__label_stylus">Дата рождения:</span>
 
       <div class="user-info-form__wrap">
@@ -60,52 +95,15 @@
       </div>
     </div>
 
-    <div class="user-info-form__block user-info-form__block--photo">
-      <span class="user-info-form__label_stylus">Фотография:</span>
-
-      <div class="user-info-form__wrap">
-        <div class="user-info-form__photo-wrap">
-          <input
-            class="user-info-form__input_stylus-photo"
-            type="file"
-            ref="photo"
-            id="photo"
-            @change="processFile($event)"
-            accept="image/*"
-          />
-
-          <label
-            class="user-info-form__input_stylus user-info-form__input_stylus--photo"
-            for="photo"
-          >
-            <span class="setting-main__photo-delete" v-if="photoName">
-              {{ photoName }}
-
-              <delete-icon class="setting-main__delete-icon" @click.native.prevent="deletePhoto" />
-            </span>
-          </label>
-
-          <button-hover variant="fill" bordered="bordered" @click.native="loadPhoto">
-            Загрузить
-          </button-hover>
-        </div>
-
-        <div class="main-layout__user-pic" v-if="src" style="margin: 10px">
-          <img :src="src" :alt="firstName[0]" />
-        </div>
-      </div>
-    </div>
-
     <user-info-form-block label="О себе:" v-model="about" about="about" />
 
     <div class="user-info-form__block user-info-form__block--actions">
-      <span class="user-info-form__label_stylus" />
-
       <div class="user-info-form__wrap">
-        <button-hover @click.native.prevent="submitHandler"> Сохранить </button-hover>
-
-        <router-link class="settings-main__back" :to="{ name: 'Profile' }">
-          <button-hover variant="red" bordered="bordered"> Отменить </button-hover>
+        <button class="setting-main__buttons button-submit" @click.prevent="submitHandler">
+          Сохранить
+        </button>
+        <router-link :to="{ name: 'Profile' }" tag="button" class="setting-main__buttons canceled">
+          Отменить
         </router-link>
       </div>
     </div>
@@ -115,13 +113,14 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex';
 import DeleteIcon from '../../Icons/DeleteIcon.vue';
+import LoadPhoto from '@/Icons/LoadPhoto.vue';
 // import moment from 'moment';
 import UserInfoFormBlock from '@/components/Settings/UserInfoForm/Block.vue';
 import axios from 'axios';
 
 export default {
   name: 'SettingsMain',
-  components: { UserInfoFormBlock, DeleteIcon },
+  components: { UserInfoFormBlock, DeleteIcon, LoadPhoto },
 
   data: () => ({
     photoName: 'Фотография',
@@ -187,8 +186,8 @@ export default {
       immediate: true,
       handler(value) {
         if (value && value !== 'none') {
-          this.currentCountry = this.countries.find((country) => country.title === value);
-          this.loadCities(this.currentCountry.id);
+          this.currentCountry = this.countries?.find((country) => country.title === value);
+          this.loadCities(this.currentCountry?.id);
         } else this.city = 'none';
       },
     },
@@ -290,7 +289,7 @@ export default {
       if (this.getInfo.country) {
         this.country = this.getInfo.country;
         this.currentCountry = this.countries.find((country) => country.title === this.country);
-        this.loadCities(this.currentCountry.id);
+        this.loadCities(this.currentCountry?.id);
       }
       if (this.getInfo.city) {
         this.city = this.getInfo.city;
@@ -305,8 +304,10 @@ export default {
 
 .settings-main
   background #fff
+  width 550px
   box-shadow standart-boxshadow
-  padding 40px 10px 50px
+  padding 40px 20px
+  border-radius 20px
 
   .user-info-form__label_stylus
     white-space pre-wrap
@@ -326,4 +327,83 @@ export default {
 
 .country
   width 100%
+
+.user-info-form__block
+  display flex
+  justify-content center
+  flex-direction column
+  .main-layout__user-pic
+    width 96px
+    height 96px
+    border 2px solid grey
+    margin-right 0
+  img
+    width 100%
+    height 100%
+
+.settings-main__top
+  display flex
+  align-items center
+  gap 15px
+  justify-content center
+  margin-bottom 15px
+  &--delete
+    display flex
+    flex-direction column
+    font-size 11px
+    cursor pointer
+    &-icon
+      display inline-flex
+      justify-content center
+      align-items center
+      background #e9e9e9
+      padding 9px 10px
+      border-radius 100%
+      margin-left 10px
+      @media (any-hover: hover)
+        &:hover
+          background #c5c5c5
+
+.setting-main__buttons
+  background #e9e9e9
+  padding 10px
+  border-radius 20px
+  font-size 14px
+  &.button-submit
+    min-width 150px
+  @media (any-hover: hover)
+    &:hover
+      background #c5c5c5
+  &.canceled
+    margin-left 10px
+    background transparent
+    border: 1px solid #c5c5c5
+    color #8e8e8e
+    @media (any-hover: hover)
+      &:hover
+        background #c85252
+        border-color #c85252
+        color #fff
+
+.settings-main-photoblock
+  margin-bottom 25px
+
+.settings-main-input
+  display flex
+  flex-direction column
+  align-items flex-start
+
+.user-info-form__select
+  width 100%
+  border 1px solid #E3E3E3
+  padding 15px 20px
+  font-size 15px
+  color #000
+  display flex
+  height auto
+  align-items center
+  white-space nowrap
+  overflow hidden
+  position relative
+  border-radius 10px
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="friends-block">
+  <div class="friends-block" ref="dropdown">
     <div class="friends-block__img">
       <img v-if="info.photo" :src="info.photo" :alt="info.firstName" />
       <img v-else src="/static/img/avatar.png" :alt="info.firstName" />
@@ -22,98 +22,97 @@
       <span class="friends-block__age-city" v-else>профиль не заполнен</span>
     </div>
 
-    <div class="friends-block__actions">
-      <template v-if="moderator">
-        <div class="friends-block__actions-block" v-tooltip.bottom="'Редактировать'">
-          <simple-svg :filepath="'/static/img/edit.svg'" />
-        </div>
-
-        <div
-          class="friends-block__actions-block"
-          v-tooltip.bottom="'Удалить из списка'"
-          @click="openModal('deleteModerator')"
-        >
-          <simple-svg :filepath="'/static/img/delete.svg'" />
-        </div>
-      </template>
-
-      <template v-else-if="admin">
-        <div
-          class="friends-block__actions-block"
-          v-tooltip.bottom="'Разблокировать'"
-          v-if="blocked || info.isBlocked"
-        >
-          <simple-svg class="filter-green" :filepath="'/static/img/security-system-unlock.svg'" />
-        </div>
-
-        <div class="friends-block__actions-block" v-tooltip.bottom="'Заблокировать'" v-else>
-          <simple-svg :filepath="'/static/img/unblocked.svg'" />
-        </div>
-      </template>
-
-      <template v-else>
-        <div
-          v-if="subscribeButton"
-          class="friends-block__actions-block message"
-          v-tooltip.bottom="'Подписаться'"
-          @click="subscribe(info.id)"
-        >
-          <simple-svg :filepath="'/static/img/sidebar/admin/comments.svg'" />
-        </div>
-
-        <div
-          v-if="acceptButton"
-          class="friends-block__actions-block message"
-          v-tooltip.bottom="'Принять запрос'"
-          @click="acceptFriendRequest(info.id)"
-        >
-          <simple-svg class="accept" :filepath="'/static/img/add.svg'" />
-        </div>
-
-        <div
-          class="friends-block__actions-block message"
-          v-tooltip.bottom="'Написать сообщение'"
-          @click="sendMessage(messageId)"
-        >
-          <simple-svg :filepath="'/static/img/sidebar/im.svg'" />
-        </div>
-
-        <div
-          class="friends-block__actions-block delete"
-          v-tooltip.bottom="'Удалить'"
-          @click="openModal('delete')"
-          v-if="friend"
-        >
-          <simple-svg :filepath="'/static/img/delete.svg'" />
-        </div>
-
-        <div
-          class="friends-block__actions-block add"
-          v-tooltip.bottom="'Добавить в друзья'"
-          @click="addToFriend(info.id)"
-          v-else
-        >
-          <simple-svg :filepath="'/static/img/friend-add.svg'" />
-        </div>
-
-        <div
-          class="friends-block__actions-block"
-          v-tooltip.bottom="'Разблокировать'"
-          v-if="blocked || info.isBlocked || info.statusCode === 'BLOCKED'"
-          @click="openModal('unblock')"
-        >
-          <simple-svg class="filter-green" :filepath="'/static/img/security-system-unlock.svg'" />
-        </div>
-
-        <div
-          v-else
-          class="friends-block__actions-block"
-          v-tooltip.bottom="'Заблокировать'"
-          @click="openModal('block')"
-        >
-          <simple-svg :filepath="'/static/img/unblocked.svg'" />
-        </div>
-      </template>
+    <div>
+      <button
+        :class="{ 'friends-block__showmore': true, 'active': showDropdown }"
+        @click.prevent="toggleDropdown"
+      >
+        <actions-show />
+      </button>
+      <div class="friends-block__actions" v-show="showDropdown">
+        <template v-if="moderator">
+          <div class="friends-block__actions-block" v-tooltip.bottom="'Редактировать'">
+            <simple-svg :filepath="'/static/img/edit.svg'" />
+          </div>
+          <div
+            class="friends-block__actions-block"
+            @click="openModal('deleteModerator')"
+          >
+            <span>Удалить из списка</span>
+            <simple-svg :filepath="'/static/img/delete.svg'" />
+          </div>
+        </template>
+        <template v-else-if="admin">
+          <div
+            class="friends-block__actions-block"
+            v-if="blocked || info.isBlocked"
+          >
+            <span>Разблокировать</span>
+            <simple-svg class="filter-green" :filepath="'/static/img/security-system-unlock.svg'" />
+          </div>
+          <div class="friends-block__actions-block" v-else>
+            <span>Заблокировать</span>
+            <simple-svg :filepath="'/static/img/unblocked.svg'" />
+          </div>
+        </template>
+        <template v-else>
+          <div
+            v-if="subscribeButton"
+            class="friends-block__actions-block message subscribe__icon"
+            @click="subscribe(info.id)"
+          >
+            <span>Подписаться</span>
+            <simple-svg :filepath="'/static/img/sidebar/admin/comments.svg'" />
+          </div>
+          <div
+            v-if="acceptButton"
+            class="friends-block__actions-block message"
+            @click="acceptFriendRequest(info.id)"
+          >
+            <span>Принять запрос</span>
+            <simple-svg class="accept" :filepath="'/static/img/add.svg'" />
+          </div>
+          <div
+            class="friends-block__actions-block message"
+            @click="sendMessage(messageId)"
+          >
+            <span>Cообщение</span>
+            <simple-svg :filepath="'/static/img/sidebar/im.svg'" />
+          </div>
+          <div
+            class="friends-block__actions-block delete"
+            @click="openModal('delete')"
+            v-if="friend"
+          >
+            <span>Удалить</span>
+            <simple-svg :filepath="'/static/img/delete.svg'" />
+          </div>
+          <div
+            class="friends-block__actions-block add"
+            @click="addToFriend(info.id)"
+            v-else
+          >
+            <span>Добавить в друзья</span>
+            <simple-svg :filepath="'/static/img/friend-add.svg'" />
+          </div>
+          <div
+            class="friends-block__actions-block"
+            v-if="blocked || info.isBlocked || info.statusCode === 'BLOCKED'"
+            @click="openModal('unblock')"
+          >
+            <span>Разблокировать</span>
+            <simple-svg class="filter-green" :filepath="'/static/img/security-system-unlock.svg'" />
+          </div>
+          <div
+            v-else
+            class="friends-block__actions-block"
+            @click="openModal('block')"
+          >
+            <span>Заблокировать</span>
+            <simple-svg :filepath="'/static/img/unblocked.svg'" />
+          </div>
+        </template>
+      </div>
     </div>
 
     <modal v-model="modalShow">
@@ -130,11 +129,12 @@
 
 <script>
 import Modal from '@/components/Modal';
+import ActionsShow from '@/Icons/ActionsShow.vue';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'FriendsBlock',
-  components: { Modal },
+  components: { Modal, ActionsShow },
   props: {
     friend: Boolean,
     admin: Boolean,
@@ -163,7 +163,9 @@ export default {
   data: () => ({
     modalShow: false,
     modalType: 'delete',
+    showDropdown: false
   }),
+
   computed: {
     ...mapGetters('profile/dialogs', ['dialogs']),
     statusText() {
@@ -214,11 +216,18 @@ export default {
     },
   },
 
+  mounted() {
+    document.addEventListener('click', this.hideDropdown);
+    this.$refs.dropdown.addEventListener('click', this.stopPropagation);
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.hideDropdown);
+    this.$refs.dropdown.removeEventListener('click', this.stopPropagation);
+  },
+
   methods: {
     ...mapActions('profile/friends', ['apiAddFriends', 'apiDeleteFriends', 'apiSubscribe']),
-
     ...mapActions('profile/dialogs', ['openDialog']),
-
     ...mapActions('users/actions', ['apiBlockUser', 'apiUnblockUser']),
 
     acceptFriendRequest(id) {
@@ -323,6 +332,20 @@ export default {
         this.apiUnblockUser(id).then(() => this.closeModal());
       }
     },
+
+    toggleDropdown() {
+      this.showDropdown = !this.showDropdown;
+    },
+
+    hideDropdown(event) {
+      if (this.showDropdown && !this.$refs.dropdown.contains(event.target)) {
+        this.showDropdown = false
+      }
+    },
+
+    stopPropagation(event) {
+      event.stopPropagation()
+    },
   },
 };
 </script>
@@ -333,17 +356,42 @@ export default {
 .accept path
   fill sea-green
 
+.subscribe__icon
+    path
+      stroke sea-green
+      stroke-opacity 1
+      stroke-width 2
+
 .friends-block
+  position relative
   align-items center
   background #fff
   box-shadow standart-boxshadow
   padding 20px
   width 100%
-  max-width calc(90% - 20px)
   display inline-flex
-  margin 0 10px 20px
-  border-radius 3%
-  min-width 300px
+  border-radius 10px
+  &:not(:last-child)
+    margin-bottom 20px
+
+  .friends-block__showmore
+    background transparent
+    padding 0
+    svg path:nth-child(1)
+      fill none
+      stroke #ababab
+    svg path:nth-child(2),
+    svg path:nth-child(3),
+    svg path:nth-child(4)
+      fill #ababab
+    &.active
+      svg path:nth-child(1)
+        fill none
+        stroke #21a45d
+      svg path:nth-child(2),
+      svg path:nth-child(3),
+      svg path:nth-child(4)
+        fill #21a45d
 
 .friends-block__img
   width 65px
@@ -383,11 +431,34 @@ export default {
     font-size 13px
 
 .friends-block__actions
+  background-color #fff
+  position absolute
+  right 20px
+  top 70%
   display flex
-  align-items center
-
-.friends-block__actions-block
-  cursor pointer
+  flex-direction column
+  align-items flex-start
+  border-radius 10px
+  box-shadow 0px 2px 8px rgba(0,0,0,0.08)
+  transition all 0.3s ease
+  z-index 15
+  overflow hidden
+  &-block
+    display flex
+    width 100%
+    align-items center
+    font-size 14px
+    font-weight 500
+    justify-content flex-end
+    gap 7px
+    padding 12px
+    flex-direction row-reverse
+    cursor pointer
+    @media (any-hover: hover)
+      &:hover
+        background #fbfbfb
+        span
+          color #21a45d
 
   @media (max-width breakpoint-xxl)
     & + &
@@ -410,6 +481,7 @@ export default {
     margin-left 15px
 
   .simple-svg-wrapper
-    width 20px
-    height 20px
+    font-size 0
+    width 15px
+    height 15px
 </style>

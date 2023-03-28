@@ -76,6 +76,13 @@ export default {
 };
 </script>
 
+<style lang="stylus">
+.friends-possible
+  border-radius 10px
+  .friends-possible__btn
+    color
+</style>
+
 <style lang="stylus" scoped>
 @import '../../assets/stylus/base/vars.styl';
 .inner-page__main, .friends-block
@@ -84,10 +91,10 @@ export default {
 .friends__content
   position relative
   display flex
-  align-items flex-start
+  justify-content space-between
 
 .friends__list-wrapper
-  flex 0 1 680px
+  width 100%
   margin-right 40px
 
 .friends__list
@@ -95,6 +102,9 @@ export default {
 
 .friends-block
   margin-right 0
+
+.friends-search__select
+  border-radius 5px
 
 .friends-possible
   margin-top 0

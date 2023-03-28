@@ -1,5 +1,5 @@
 <template>
-  <div class="search-users">
+  <div class="search-users" v-if="users.length > 0">
     <search-block title="Люди" id="users">
       <div class="friends__list">
         <friends-block v-for="user in users" :key="user.id" :info="user" subscribe-button />
@@ -7,6 +7,9 @@
 
       <pagination :count="total" v-model="page" :per-page="size" />
     </search-block>
+  </div>
+  <div class="search-news__nonews" v-else>
+    В данный момент нет людей для отображения.
   </div>
 </template>
 

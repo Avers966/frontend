@@ -76,6 +76,13 @@ export default {
         }, 0);
         return;
       }
+      if (this.tags.length >= 10) {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'response',
+          text: 'Можно добавить максимум 10 тэгов',
+        });
+        return;
+      }
       this.tagsList.push({
         name: this.tag,
       });
@@ -114,6 +121,7 @@ export default {
   background-color #F5F7FB
   padding 5px
   margin 0 5px 10px
+  border-radius 5px
 
 .add-tags__delete
   margin-left 5px

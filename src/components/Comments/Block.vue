@@ -190,11 +190,7 @@ export default {
 @import '../../assets/stylus/base/vars.styl'
 
 .comment-block
-  padding-top 20px
   position relative
-
-  & + &
-    margin-top 20px
 
     &:after
       display block
@@ -208,14 +204,20 @@ export default {
 
     .comment-block__reviews
       border-top 1px solid #e7e7e7
-      padding-top 40px
 
   .comment-add
-    height 50px
+
+    &.is-subcomment
+      padding 15px 0
+      margin-top 0
+      border-top 0
+
+  .comment-main
+    padding 15px 0
 
 
 .comment-block__reviews
-  margin-top 15px
+  margin-top 10px
   max-width calc(100% - 50px)
   margin-left auto
 
@@ -240,7 +242,6 @@ export default {
 
 .comment-block__reviews-list
   .comment-main + .comment-main
-    margin-top 15px
     padding-top 15px
     border-top 1px solid #e7e7e7
 
