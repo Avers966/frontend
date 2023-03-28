@@ -74,7 +74,7 @@ mutations: {
       }
     });
   },
-},
+  },
 
   actions: {
     passwordRecovery(context, email) {
