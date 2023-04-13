@@ -31,11 +31,8 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import SearchIcon from '@/Icons/SearchIcon.vue';
 export default {
   name: 'FriendsPossible',
-
-  components: { SearchIcon },
 
   computed: {
     ...mapGetters('profile/friends', ['getResultById']),

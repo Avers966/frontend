@@ -41,7 +41,23 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'AdminStatistics',
+  data() {
+    return {
+      statsData: null,
+    }
+  },
+  created() {
+    this.loadStatistics()
+  },
+  methods: {
+    loadStatistics () {
+      axios.get('/admin-console/statistic/account')
+        .then(response => this.statsData = response.data)
+    },
+  },
 };
 </script>

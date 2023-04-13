@@ -37,12 +37,11 @@ export default {
 </script>
 
 <style lang="stylus">
-@import '../../assets/stylus/base/vars.styl'
-
 .admin-sidebar
   background #fff
-  box-shadow standart-boxshadow
+  box-shadow 0px 2px 8px rgba(0, 0, 0, 0.08)
   padding 0 40px
+  border-radius 10px
 
   @media (max-width breakpoint-xl)
     background transparent
@@ -65,11 +64,11 @@ export default {
   &.active
     cursor default
     font-weight 600
-    color eucalypt
+    color #21A45D
 
   @media (max-width breakpoint-xl)
     padding 0
-    color steel-gray
+    color gray
     display block
     padding 20px
     flex auto

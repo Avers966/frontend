@@ -3,9 +3,9 @@
     <input
       class="form__input_stylus"
       :id="id"
-      v-model="email"
+      v-model.trim="email"
       name="email"
-      :class="{ invalid: (v.$dirty && !v.required) || (v.$dirty && !v.email) }"
+      :class="{ invalid: (v.$dirty && !v.required) || (v.$dirty && !v.email) || (/\s/.test(email)) }"
       @change="v.$touch()"
     />
 

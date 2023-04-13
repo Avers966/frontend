@@ -87,7 +87,7 @@
       <div class="profile-info__block">
         <span class="profile-info__title">О себе:</span>
 
-        <span class="profile-info__val" v-if="info.about"> {{ info.about }}</span>
+        <span class="profile-info__val info-about__text" v-if="info.about"> {{ info.about }}</span>
 
         <span class="profile-info__val" v-else>не заполнено</span>
       </div>
@@ -336,4 +336,9 @@ export default {
 .profile-info__val
   color #747487
   line-height 25px
+
+.info-about__text
+  width 100%
+  max-width 490px
+  word-break break-all
 </style>

@@ -31,7 +31,11 @@
       </button>
       <div class="friends-block__actions" v-show="showDropdown">
         <template v-if="moderator">
-          <div class="friends-block__actions-block" v-tooltip.bottom="'Редактировать'">
+          <div
+            class="friends-block__actions-block"
+            @click="openModal('deleteModerator')"
+          >
+            <span>Редактировать</span>
             <simple-svg :filepath="'/static/img/edit.svg'" />
           </div>
           <div
@@ -151,11 +155,11 @@ export default {
     info: {
       type: Object,
       default: () => ({
-        firstName: 'Артем',
-        lastName: 'Иващенко',
+        firstName: 'Михаил',
+        lastName: 'Веселов',
         birthDate: 1559751301818,
         town_id: 1,
-        photo: '/static/img/user/1.jpg',
+        photo: '/static/img/user/user_1.jpg',
         id: 124,
       }),
     },

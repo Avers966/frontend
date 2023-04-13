@@ -8,6 +8,7 @@
       name="name"
       :class="{ invalid: (v.$dirty && !v.required) || (v.$dirty && !v.minLength) }"
       @change="v.$touch()"
+      v-pattern
     />
 
     <label :for="id" class="form__label_stylus">{{ label }}</label>
@@ -21,6 +22,22 @@
 </template>
 
 <script>
+import Vue from 'vue';
+
+Vue.directive( 'pattern', {
+  update (el) {
+    const sourceValue = el.value;
+
+    const newValue = sourceValue
+    .replace(/[^a-zA-Zа-яА-ЯёЁ_]/g, '') // убираем знаки препиния, кирилица/латиница/
+
+    if (sourceValue !== newValue) {
+      el.value = newValue;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  },
+})
+
 export default {
   name: 'NameField',
   props: {

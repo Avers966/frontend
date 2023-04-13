@@ -60,19 +60,21 @@ export default {
     getNotificationsSettings: (s) => s.notifications,
   },
 
-  mutations: {
-    setNotificationsSettings(state, notifications) {
-      let newSetting = [...state.notifications];
-      newSetting.map((el) => {
-        const foundElem = notifications.find((item) => {
-          return item.notification_type === el.type;
-        });
-        el.enable = foundElem.enable;
-        return el;
-      });
-      state.notifications = newSetting;
-    },
+mutations: {
+  setNotificationsSettings(state, notifications) {
+    state.notifications.forEach((el) => {
+      switch (el.type){
+        case 'POST': el.enable = notifications.enablePost; break;
+        case 'POST_COMMENT': el.enable = notifications.enablePostComment; break;
+        case 'COMMENT_COMMENT': el.enable = notifications.enableCommentComment; break;
+        case 'FRIEND_REQUEST': el.enable = notifications.enableFriendRequest; break;
+        case 'MESSAGE': el.enable = notifications.enableMessage; break;
+        case 'FRIEND_BIRTHDAY': el.enable = notifications.enableSendEmailMessage; break;
+        case 'SEND_EMAIL_MESSAGE': el.enable = notifications.enableFriendBirthday;
+      }
+    });
   },
+},
 
   actions: {
     passwordRecovery(context, email) {

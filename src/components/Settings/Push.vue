@@ -44,7 +44,7 @@ export default {
     onChecked(item) {
       console.log(item);
       this.changeNotifications({
-        notification_type: item.type,
+        notificationType: item.type,
         enable: !item.enable,
       });
     },

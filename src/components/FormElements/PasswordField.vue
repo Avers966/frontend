@@ -12,6 +12,7 @@
       :class="{
         invalid: (v.$dirty && !v.required) || (v.$dirty && !v.minLength),
       }"
+      pattern="[A-Za-z0-9!@#$%^&*]+"
     />
 
     <span class="form__error" v-if="v.$dirty && !v.required">Введите пароль</span>

@@ -12,7 +12,6 @@
           placeholder="Дайте тему"
           v-model="title"
         />
-
         <div v-if="src">
           <img :src="src" :alt="'photo'" class="post-image" />
         </div>
@@ -25,6 +24,7 @@
             id="photo"
             @change="processFile($event)"
             accept="image/*"
+            max-size="3MB"
           />
         </div>
 
@@ -94,57 +94,46 @@
         <div class="is_planing" v-if="isPlaning">
           <h6>Запланированное время</h6>
 
-          <p>{{ day }} {{ month.text }} {{ year }}, {{ time }}</p>
+          <p>{{ day }} {{ monthNames[month] }} {{ year }} г. в {{ dateTime }}</p>
         </div>
 
-        <button-hover
-          class="news-add__planning"
-          variant="white"
-          bordered
-          @click.native="openModal"
-          v-if="!edit || deffered"
-        >
-          Запланировать
-        </button-hover>
-
-        <button-hover @click.native="submitForm">Опубликовать</button-hover>
+        <div class="plaining-list__btns">
+          <button v-if="!edit || deffered" class="post-btn-planing plaining-hole" @click.prevent="openModal">Запланировать</button>
+          <button class="post-btn-planing" @click.prevent="submitForm">Опубликовать</button>
+        </div>
       </div>
     </form>
 
     <modal class="news-add__modal" v-model="modalShow">
-      <input
-        v-model="planingTime"
-        @input="onChangeDatePicker"
-        title-position="left"
-        :min-date="new Date()"
-        is-inline
-        :attributes="attrs"
-        :key="componentKey"
-      />
-
-      <div class="news-add__modal-selects">
-        <select class="select news-add__modal-select day" v-model="day" @change="changeDate">
-          <option v-for="d in days" :key="d">{{ d }}</option>
-        </select>
-
-        <select class="select news-add__modal-select month" v-model="month" @change="changeDate">
-          <option v-for="month in months" :key="month.val" :value="month">
-            {{ month.text }}
-          </option>
-        </select>
-
-        <select class="select news-add__modal-select year" v-model="year" @change="changeDate">
-          <option v-for="i in years" :key="i">{{ i }}</option>
-        </select>
-
-        <select class="select news-add__modal-select time" v-model="time" @change="changeDate">
-          <option v-for="t in times" :key="t">{{ t }}</option>
-        </select>
+      <div class="news-add__modal-selects deferred-post">
+        <div class="alert-deferred-post">
+          <span>Публикация будет опубликована:</span>
+          <span>{{ day || '01' }} {{ monthNames[month] || 'январь' }} {{ year || '1970' }} г. в {{ dateTime || '00:00' }}</span>
+        </div>
+        <div class="data-pickers-list">
+          <date-picker
+            v-model="date"
+            type="date"
+            placeholder="Выберите дату"
+          >
+          </date-picker>
+          <date-picker
+            v-model="dateTime"
+            :hour-options="hours"
+            format="HH:mm"
+            value-type="format"
+            type="time"
+            placeholder="Выберите время"
+          >
+          </date-picker>
+        </div>
       </div>
 
       <template slot="actions">
-        <button-hover @click.native="onPlaning">Планировать</button-hover>
-        <button-hover variant="red" bordered @click.native="onCancelPlaning">Отмена</button-hover>
+        <div class="plaining-list__btns on_plaining">
+          <button class="post-btn-planing" @click.prevent="onPlaning">Планировать</button>
+          <button class="post-btn-planing plaining-hole" @click.prevent="onCancelPlaning">Отмена</button>
+        </div>
       </template>
     </modal>
   </div>
@@ -152,30 +141,46 @@
 
 <script>
 import { Editor, EditorContent, EditorMenuBar } from 'tiptap';
-import { Bold, Italic, Underline, Link } from 'tiptap-extensions';
+import { Bold, Italic, Underline, Link, Image } from 'tiptap-extensions';
 import { mapGetters, mapActions, mapMutations } from 'vuex';
-import moment from 'moment';
 import AddTags from '@/components/News/AddTags';
 import Modal from '@/components/Modal';
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
+
 export default {
   name: 'NewsAddForm',
-  components: { AddTags, EditorContent, EditorMenuBar, Modal },
+
+  components: { AddTags, Modal, DatePicker, EditorContent, EditorMenuBar },
+
   props: {
     edit: Boolean,
     deffered: Boolean,
     info: Object,
   },
+
   data: () => ({
     title: '',
+    content: '',
     tags: [],
-    editor: null,
     linkUrl: '',
     isOpenLinkMenu: false,
     modalShow: false,
     isPlaning: null,
-    planingTime: new Date(),
+    editor: null,
+
+    day: '',
+    month: '',
+    monthNames: ['', 'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+    year: '',
+    date: '',
+    dateTime: '',
+    hours: Array.from({ length: 16 }).map((_, i) => i + 8),
+    lastDate: null,
+    currentUtcDateTime: null,
+
     componentKey: 0,
-    photo: '',
+	  photo: '',
     src: '',
     attrs: [
       {
@@ -188,65 +193,50 @@ export default {
         },
       },
     ],
-    day: 1,
-    month: { val: 0, text: 'Января' },
-    year: 2000,
-    months: [
-      { val: 0, text: 'Января' },
-      { val: 1, text: 'Февраля' },
-      { val: 2, text: 'Марта' },
-      { val: 3, text: 'Апреля' },
-      { val: 4, text: 'Мая' },
-      { val: 5, text: 'Июня' },
-      { val: 6, text: 'Июля' },
-      { val: 7, text: 'Августа' },
-      { val: 8, text: 'Сентября' },
-      { val: 9, text: 'Октября' },
-      { val: 10, text: 'Ноября' },
-      { val: 11, text: 'Декабря' },
-    ],
-    time: '12:00',
-    times: [
-      '8:00',
-      '9:00',
-      '10:00',
-      '11:00',
-      '12:00',
-      '13:00',
-      '14:00',
-      '15:00',
-      '16:00',
-      '17:00',
-      '18:00',
-      '19:00',
-      '20:00',
-      '21:00',
-      '22:00',
-      '23:00',
-    ],
   }),
+
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
-    years() {
-      return Array.from({ length: 60 }, (value, index) => 1970 + index);
+
+    fullDate() {
+      if (this.dateTime) {
+        const date = new Date(this.date)
+        const time = this.dateTime.split(':')
+        date.setHours(Number(time[0]))
+        date.setMinutes(Number(time[1]))
+        return date.toISOString()
+      } else {
+        return ''
+      }
     },
-    days() {
-      return this.month.val === 2
-        ? this.year & 3 || (!(this.year % 25) && this.year & 15)
-          ? 28
-          : 29
-        : 30 + ((this.month.val + (this.month.val >> 3)) & 1);
+
+    currentUtc() {
+      if (this.dateTime) {
+        const date = new Date(this.date)
+        const time = this.dateTime.split(':')
+        date.setHours(Number(time[0]))
+        date.setMinutes(Number(time[1]))
+        return date
+      } else {
+        return ''
+      }
     },
   },
+
   watch: {
-    planingTime(val) {
-      console.log(val);
-      this.day = moment(val).date();
-      this.month = this.months[moment(val).month()];
-      this.year = moment(val).year();
-      this.time = `${moment(val).hour()}:00`;
+    dateTime: function() {
+      this.lastDate = this.fullDate;
+      this.currentUtcDateTime = this.currentUtc
+    },
+
+    lastDate: function(newDate) {
+      const date = new Date(newDate);
+      this.day = date.getUTCDate();
+      this.month = date.getUTCMonth() + 1;
+      this.year = date.getUTCFullYear();
     },
   },
+
   mounted() {
     if (this.info && this.info.imagePath) {
       this.src = this.info.imagePath;
@@ -256,28 +246,26 @@ export default {
       this.tags = this.info.tags;
       this.editor = new Editor({
         content: `${this.info.postText}`,
-        extensions: [new Bold(), new Italic(), new Underline(), new Link()],
+        extensions: [new Bold(), new Italic(), new Underline(), new Link(), new Image(null, null, this.processFile)],
       });
-      if (this.deffered) {
-        this.isPlaning = true;
-        this.day = moment(this.info.time).date();
-        this.month = this.months[moment(this.info.time).month()];
-        this.year = moment(this.info.time).year();
-        console.log(moment.unix(this.info.time));
-        this.planingTime = moment.unix(this.info.time);
-      }
+
     } else {
       this.editor = new Editor({
         content: '',
-        extensions: [new Bold(), new Italic(), new Underline(), new Link()],
+        extensions: [new Bold(), new Italic(), new Underline(), new Link(), new Image(null, null, this.processFile)],
       });
-      this.day = moment().date();
-      this.month = this.months[moment().month()];
-      this.year = moment().year();
+
     }
   },
+
   beforeDestroy() {
     this.editor.destroy();
+  },
+
+
+  created() {
+    this.lastDate = this.fullDate;
+    this.currentUtcDateTime = this.currentUtc;
   },
 
   methods: {
@@ -288,6 +276,25 @@ export default {
 
     onChangeTags(tags) {
       this.tags = tags;
+    },
+
+    loadPhoto() {
+      this.$refs.photo.click();
+    },
+
+    deletePhoto() {
+      this.photo = '';
+      this.src = '';
+      this.setStoragePostPhoto('');
+    },
+
+    processFile(event) {
+      [this.photo] = event.target.files;
+      const reader = new window.FileReader();
+      reader.onload = (e) => {
+        this.editor.commands.setImage({ src: e.target.result });
+      };
+      reader.readAsDataURL(this.photo);
     },
 
     async submitForm() {
@@ -325,31 +332,13 @@ export default {
         }),
         publishDate:
           this.isPlaning &&
-          moment({
-            years: this.year,
-            months: this.month.val,
-            date: this.day,
-            hours: this.time.substring(0, 2),
-          }).valueOf() / 1000,
+          this.lastDate
       }).then(() => {
         this.$emit('submit-complete');
         this.setStoragePostPhoto(null);
       });
     },
-    loadPhoto() {
-      this.$refs.photo.click();
-    },
-    deletePhoto() {
-      this.photo = '';
-      this.src = '';
-      this.setStoragePostPhoto('');
-    },
-    processFile(event) {
-      [this.photo] = event.target.files;
-      const reader = new window.FileReader();
-      reader.onload = (e) => (this.src = e.target.result);
-      reader.readAsDataURL(this.photo);
-    },
+
     openLinkMenu(attrs) {
       this.linkUrl = attrs.href;
       this.isOpenLinkMenu = true;
@@ -373,9 +362,7 @@ export default {
       this.modalShow = false;
     },
     onPlaning() {
-      console.log(this.planingTime);
-      console.log(new Date());
-      if (this.planingTime < new Date()) {
+      if (this.currentUtcDateTime < new Date()) {
         this.$store.dispatch('global/alert/setAlert', {
           status: 'validation',
           text: 'Запланированное время не может быть в прошлом времени!',
@@ -387,34 +374,14 @@ export default {
     },
     onCancelPlaning() {
       this.isPlaning = null;
-      this.year = 2000;
-      this.month = { val: 0, text: 'Января' };
+      this.year = 1970;
+      this.month = 1;
       this.day = 1;
-      this.time = '12:00';
+      this.dateTime = '00:00';
       this.modalShow = false;
     },
     closeAddForm() {
       this.$emit('close-form');
-    },
-    setInfo(val) {
-      this.day = moment(val).date();
-      this.month = this.months[moment(val).month()];
-      this.year = moment(val).year();
-    },
-    changeDate() {
-      console.log('changeDate', this.year, this.month.val, this.day, this.time);
-      this.componentKey += 1;
-      this.planingTime = new Date(
-        this.year,
-        this.month.val,
-        this.day,
-        this.time.split(':')[0].toString()
-      );
-    },
-    onChangeDatePicker(value) {
-      this.day = moment(value).date();
-      this.month = this.months[moment(value).month()];
-      this.year = moment(value).year();
     },
   },
 };
@@ -427,9 +394,13 @@ export default {
   width 25px
 
 .is_planing
-  margin-bottom 7px
+  font-size 13px
+  background #fafafa
+  padding 5px
+  color #6b6b6b
   display flex
   flex-direction column
+  border-radius 10px 10px 0 0
 
 .post-image
   width 250px
@@ -438,13 +409,73 @@ export default {
 .news-add__text-main
   cursor text
 
+.deferred-post
+  display flex
+  flex-direction column
+  gap 20px
+  align-items center
+  justify-content center
+  border-top 0
+  padding-top 0
+
+.data-pickers-list
+  display flex
+  align-items center
+  gap 15px
+  .mx-datepicker
+    width auto
+
+.alert-deferred-post
+  display flex
+  width 100%
+  flex-direction column
+  align-items center
+  justify-content center
+  padding 10px
+  font-size 16px
+  background #f6f6f6
+  border-radius 5px
+  border 1px solid #d9d9d9
+  span:nth-child(1)
+    font-weight bold
+
+
 .news-add__text-title
   border-bottom: 1px solid #e6e6e6
   padding-bottom 10px
 
-.ProseMirror
 
-  p
-    height 210px
+.post-btn-planing
+  display block
+  text-align center
+  color #fff
+  width 100%
+  padding 10px 5px
+  border 2px solid #21a45d
+  transition all 0.2s ease-in-out
+  background #21a45d
+  @media (any-hover: hover)
+    &:hover
+      background #333
+      border-color #333
+      color #fff
+
+.post-btn-planing.plaining-hole
+  background transparent
+  color #21a45d
+  @media (any-hover: hover)
+    &:hover
+      background #21a45d
+      border-color #21a45d
+      color #fff
+
+.plaining-list__btns
+  display flex
+  flex-direction column
+  gap 10px
+  width 100%
+
+.plaining-list__btns.on_plaining
+  flex-direction row
 
 </style>

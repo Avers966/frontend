@@ -1,4 +1,5 @@
 import dialogsApi from '@/requests/dialogs';
+import store from "@/store";
 
 export default {
   namespaced: true,
@@ -66,22 +67,29 @@ export default {
 
     async fetchDialogs({ commit }) {
       try {
+        const info = store.getters['profile/info/getInfo'];
+
         const response = await dialogsApi.getDialogs();
-        if (response.data?.data?.length === 0) return;
+        if (response.data?.content?.length === 0) return;
 
         const dialogs = [];
-        const { data } = response.data;
-        data.forEach((d) => {
-          const conversationPartnerId = d.conversationPartner.id;
+        response.data.content.forEach((d) => {
+          let partner = "";
+          if(d.conversationPartner1.id === info.id){
+            partner = d.conversationPartner2
+          } else {
+            partner = d.conversationPartner1
+          }
+          const conversationPartnerId = partner.id;
           const newDialog = {
             id: conversationPartnerId,
             unreadCount: d.unreadCount,
             lastMessage: {
-              time: d.lastMessage.time,
-              messageText: d.lastMessage.messageText,
-              authorId: d.lastMessage.authorId,
+              time: d.lastMessage[0].time,
+              messageText: d.lastMessage[0].messageText,
+              authorId: d.lastMessage[0].authorId,
             },
-            conversationPartner: d.conversationPartner,
+            conversationPartner: partner,
           };
           dialogs.push(newDialog);
         });
@@ -93,7 +101,9 @@ export default {
 
     async apiUnreadedMessages({ commit }) {
       const response = await dialogsApi.unreadedMessages();
-      const { count } = response.data.data;
+      let {totalElement} = response.data;
+      console.log(totalElement)
+      const { count } = totalElement;
       commit('setUnreadedMessages', count);
     },
 

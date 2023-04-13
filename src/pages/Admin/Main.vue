@@ -54,9 +54,6 @@ export default {
   line-height 24px
   margin-bottom 30px
 
-.panel-publications
-  padding 30px 40px
-
 .panel-dynamics__title
   display block
   font-family 'Exo', Arial, sans-serif

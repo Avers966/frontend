@@ -3,11 +3,11 @@
     <input
       class="add-tags__input"
       type="text"
-      placeholder="Добавить тег..."
+      placeholder="Начните вводить..."
       v-model="tag"
-      ref="input"
+      @input="searchTags"
       @change="addTag"
-      v-touppercase
+      v-touppercase="10"
     />
 
     <div class="add-tags__block">
@@ -16,22 +16,38 @@
         <span class="add-tags__delete" @click="deleteTag(index)"> &#10005; </span>
       </div>
     </div>
+    <transition name="fade">
+      <div class="add-tags__search-results fade-in" v-if="searchResults.length > 0 || tag.length === 0">
+        <div class="add-tags__search-item" v-for="(result, index) in searchResults" :key="index" @click="addTagFromSearch(result)">
+          #{{ result.name }}
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
 import Vue from 'vue';
+import axios from 'axios';
+import { debounce } from 'lodash';
 
 Vue.directive( 'touppercase', {
-    update (el) {
-      const sourceValue = el.value;
-      const newValue = sourceValue.toLowerCase();
+  update (el, binding) {
+    const sourceValue = el.value;
+	  const maxLength = parseInt(binding.value);
+	  el.maxLength = maxLength;
 
-      if (sourceValue !== newValue) {
-        el.value = newValue;
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-    },
+    const newValue = sourceValue
+    .toLowerCase() // все вводимые знаки с маленькой буквы.
+		.replace(/ /g, '_') // заменяем пробелы на нижние подчёркивания. Подмена автоматический.
+    .replace(/[^a-zA-Zа-яА-ЯёЁ0-9_]/g, '') // убираем знаки препиния, кирилица/латиница/0-9 - разрешены.
+		.substring(0, maxLength); // ограничиваем колличество вводимых знаков, дублируя ограничение атрибутом.
+
+    if (sourceValue !== newValue) {
+      el.value = newValue;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  },
 })
 
 export default {
@@ -44,12 +60,13 @@ export default {
   data: () => ({
     tagsList: [],
     tag: '',
+    searchResults: [],
   }),
 
   computed: {
     updateTags() {
       return this.tags;
-    }
+    },
   },
 
   mounted() {
@@ -64,33 +81,76 @@ export default {
       this.$emit('change-tags', this.tagsList);
     },
 
-    addTag() {
-      if (this.tag.length <= 0) return;
-      if (this.tags.find((tag) => tag.name === this.tag)) {
+    searchTagsApi(tag) {
+      axios.get(`/tag?name=${tag}`)
+        .then(response => {
+          this.searchResults = response.data.slice(0, 5);
+        })
+        .catch(error => console.error(error));
+    },
+
+    searchTags: debounce(function() {
+      if (this.tag.length < 2) {
+        this.searchResults = [];
+        return;
+      }
+      this.searchTagsApi(this.tag);
+    }, 1000),
+
+    addTagFromSearch(tag) {
+      if (this.tagsList.find((t) => t.name === tag.name)) {
         this.$store.dispatch('global/alert/setAlert', {
           status: 'response',
           text: 'Такой тег уже есть',
         });
-        setTimeout(() => {
-          this.$refs.input.focus();
-        }, 0);
         return;
       }
-      if (this.tags.length >= 10) {
+      if (this.tagsList.length > 10) {
         this.$store.dispatch('global/alert/setAlert', {
           status: 'response',
           text: 'Можно добавить максимум 10 тэгов',
         });
+        console.log('Я сработал в методе addTagFromSearch')
         return;
       }
-      this.tagsList.push({
-        name: this.tag,
-      });
+      this.tagsList.push(tag);
       this.tag = '';
-      this.$emit('change-tags', this.tags);
-      setTimeout(() => {
-        this.$refs.input.focus();
-      }, 0);
+      this.searchResults = [];
+      this.$emit('change-tags', this.tagsList);
+    },
+
+    addTag() {
+      if (this.tag.length <= 0) return;
+      const existingTag = this.tags.find((tag) => tag.name === this.tag);
+      if (existingTag) {
+        this.addTagFromSearch(existingTag);
+        return;
+      }
+
+      const newTag = {
+        name: this.tag,
+      };
+
+      if (this.tagsList.some((tag) => tag.name === newTag.name)) {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'response',
+          text: 'Тэг уже добавлен',
+        });
+        return;
+      }
+
+      if (this.tagsList.length >= 10) {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'response',
+          text: 'Можно добавить максимум 10 тэгов',
+        });
+        console.log('Я сработал в методе addTag')
+        return;
+      }
+
+      this.tagsList.push(newTag);
+      this.tag = '';
+      this.$emit('change-tags', this.tagsList);
     },
   },
 };
@@ -98,6 +158,30 @@ export default {
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+.add-tags
+  position relative
+
+.add-tags__search-results
+  position: absolute
+  top 24px
+  left 0
+  background-color #fbfbfb
+  border-radius: 0 0 5px 5px;
+  width 86%
+  max-height 250px
+  overflow-y auto
+  box-shadow 0px 4px 4px rgba(0, 0, 0, 0.15)
+  transition all .2s ease-in-out
+
+.add-tags__search-item
+  font-family "Roboto"
+  padding 10px
+  cursor pointer
+  font-size 13px
+  transition background-color .2s ease-in-out
+  @media (any-hover: hover)
+    &:hover
+      background-color #ededed
 
 .add-tags__input
   border-bottom 1px solid rgba(0, 0, 0, 0.12)
@@ -129,4 +213,12 @@ export default {
   font-size 10px
   font-weight 600
   cursor pointer
+
+.fade-enter-active, .fade-leave-active
+  transition opacity .5s
+
+.fade-enter, .fade-leave-to
+  opacity: 0
+
+
 </style>

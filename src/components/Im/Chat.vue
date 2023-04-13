@@ -144,7 +144,7 @@ export default {
         type: 'MESSAGE',
         accountId: this.info.conversationPartner.id,
         data: {
-          id: this.lastId,
+          id: "",
           authorId: this.getInfo().id,
           messageText: this.mes,
           recipientId: this.info.conversationPartner.id,

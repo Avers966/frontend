@@ -1,6 +1,6 @@
 <template>
   <div class="news-add" :class="{ open: isOpen }">
-    <div class="news-add__mask" v-if="!isOpen">
+    <div class="news-add__mask" v-if="!isOpen" @click.prevent="openForm">
       <template v-if="getInfo">
         <div class="news-add__pic imgDiv" v-if="user">
           <img

@@ -36,7 +36,7 @@
       <div class="news-block__deffered" v-if="deffered">
         <span class="news-block__deffered-text">
           Дата и время публикации:
-          {{ info.time }} (будет опубликован {{ info.time }})
+          {{ info.time | moment('LLLL') }} (будет опубликован {{ info.publishDate | moment('LLLL') }})
         </span>
       </div>
 
@@ -93,7 +93,7 @@
 
         <ul class="news-block__content-tags" v-if="info.tags && info.tags.length > 0">
           <li class="news-block__content-tag" v-for="(tag, index) in info.tags" :key="index">
-            <router-link :to="{ name: 'Search', query: { tab: 'news', tags: tag } }">
+            <router-link :to="{ name: 'Search', query: { tab: 'news', tags: tag.name } }">
               {{ '#' + tag.name }}
             </router-link>
           </li>
@@ -248,7 +248,7 @@ export default {
     },
 
     routerLink(infoAuthorId) {
-      return this.getInfo.id === infoAuthorId
+      return this.getInfo?.id === infoAuthorId
         ? { name: 'Profile' }
         : { name: 'ProfileId', params: { id: infoAuthorId } };
     },
@@ -301,22 +301,6 @@ export default {
   height 45px
   margin-bottom 20px
   display flex
-
-  &:after
-    content ''
-    display block
-    position absolute
-    left -40px
-    right -40px
-    bottom 0
-    width calc(100% + 80px)
-    height 2px
-    background-color #e7e7e7
-
-  @media (max-width breakpoint-xxl)
-    &:after
-      left -30px
-      width calc(100% + 60px)
 
 .news-block__deffered-text
   color #5F5E7A

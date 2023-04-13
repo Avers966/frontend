@@ -1,54 +1,100 @@
 <template>
-  <div>
-    <button class="theme-switcher__button" aria-label="Сменить тему" @click="changeTheme">
-      <change-icon />
-    </button>
+  <div class="theme-switch">
+    <input type="checkbox" id="theme-switch-checkbox" v-model="darkMode">
+    <label for="theme-switch-checkbox"></label>
   </div>
 </template>
 
 <script>
-import ChangeIcon from '@/Icons/ChangeIcon.vue';
 
 export default {
-  components: { ChangeIcon },
 
   data() {
     return {
-      selectedTheme: 'light'
+      darkMode: localStorage.getItem('theme') === 'dark',
     }
   },
 
-  mounted() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      this.selectedTheme = savedTheme;
-      this.changeTheme();
-    }
+  computed: {
+    bodyClasses() {
+      return {
+        'dark-theme': this.darkMode,
+      };
+    },
   },
-
-  methods: {
-    changeTheme() {
-      if (this.selectedTheme === 'light') {
-        this.selectedTheme = 'dark';
-        document.documentElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('theme', 'light');
-      } else {
-        this.selectedTheme = 'light';
-        document.documentElement.setAttribute('data-theme', 'dark');
+  watch: {
+    darkMode(value) {
+      if (value) {
         localStorage.setItem('theme', 'dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        localStorage.setItem('theme', 'light');
+        document.documentElement.removeAttribute('data-theme');
       }
+    },
+  },
+  mounted() {
+    if (this.darkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
     }
   },
 }
 </script>
 
 <style lang="stylus">
-.theme-switcher__button
-  border none
-  background-color transparent
-  cursor pointer
-  svg
-    fill #000
+.theme-switch
+  position relative
+  display inline-block
+  width 45px
+  height 25px
+  margin-right 10px
+
+
+.theme-switch input[type="checkbox"]
+  display none
+
+
+.theme-switch label
+  position absolute
+  top 0
+  left 0
+  width 100%
+  height 100%
+  background-color #E3E4E8
+  background-image url('/static/img/moon.svg')
+  background-size 14px 14px
+  background-repeat no-repeat
+  background-position right 5px center
+  border-radius 20px
+  transition background-color 0.2s ease-in-out
+
+
+.theme-switch label::before
+  content ""
+  position absolute
+  top 2px
+  left 2px
+  width 20px
+  height 20px
+  background-color #fff
+  border-radius 50%
+  transition transform 0.2s ease-in-out
+
+
+.theme-switch input[type="checkbox"]:checked + label
+  background-color #3fb3ff
+  background-image url('/static/img/sun.svg')
+  background-position left 5px center
+
+
+.theme-switch input[type="checkbox"]:checked + label::before
+  transform translateX(20px)
+  background-color #000
+
+
+.dark-theme
+  background-color #222
+  color #fff
 
 //========================================
 
@@ -69,9 +115,29 @@ export default {
   *
     transition all .2s ease-in-out
 
+  .news-block__content-text a
+    color #8bc49e
+
   .theme-switcher__button
     svg
       fill #e7e20e
+
+  .vs__dropdown-toggle
+    border-color #686868
+  .vs__selected
+    color #fff
+  .vs__search
+    color #fff
+  .vs__search::placeholder
+    color #fff
+  .vs__clear
+    fill #868686
+  .vs__open-indicator
+    fill #868686
+
+  .is_planing
+    background #1d1d1d
+    color #d7d7d7
 
   .error
     &__title

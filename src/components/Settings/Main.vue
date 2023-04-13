@@ -35,9 +35,21 @@
       </div>
     </div>
 
-    <user-info-form-block label="Имя:" placeholder="Введите имя" v-model="firstName" />
+    <user-info-form-block
+      label="Имя:"
+      placeholder="Введите имя"
+      text="firstName"
+      v-model="firstName"
+      ref="firstName"
+    />
 
-    <user-info-form-block label="Фамилия:" placeholder="Введите фамилию" v-model="lastName" />
+    <user-info-form-block
+      label="Фамилия:"
+      placeholder="Введите фамилию"
+      text="lastName"
+      v-model="lastName"
+      ref="lastName"
+    />
 
     <user-info-form-block
       label="Телефон:"
@@ -50,12 +62,13 @@
       <span class="user-info-form__label_stylus">Страна:</span>
 
       <div class="user-info-form__wrap">
-        <select class="select user-info-form__select country" v-model="country">
-          <option value="">Неизвестно</option>
-          <option v-for="c in countries" :key="c.id" :value="c.title">
-            {{ c.title }}
-          </option>
-        </select>
+        <v-select
+          placeholder="Выберите страну"
+          class="country"
+          v-model="country"
+          :options="countryNames"
+          :key="countries.id"
+        />
       </div>
     </div>
 
@@ -63,12 +76,13 @@
       <span class="user-info-form__label_stylus">Город:</span>
 
       <div class="user-info-form__wrap">
-        <select class="select user-info-form__select country" v-model="city">
-          <option value="">Неизвестно</option>
-          <option v-for="c in cities" :key="c.id" :value="c.title">
-            {{ c.title }}
-          </option>
-        </select>
+        <v-select
+          placeholder="Выберите город"
+          class="country"
+          v-model="city"
+          :options="cityNames"
+          :key="cities.id"
+        />
       </div>
     </div>
 
@@ -111,13 +125,18 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { mapGetters, mapActions, mapMutations } from 'vuex';
 import DeleteIcon from '../../Icons/DeleteIcon.vue';
 import LoadPhoto from '@/Icons/LoadPhoto.vue';
+import VSelect from 'vue-select'
+import 'vue-select/dist/vue-select.css'
 // import moment from 'moment';
 import UserInfoFormBlock from '@/components/Settings/UserInfoForm/Block.vue';
 import axios from 'axios';
 
+
+Vue.component('VSelect', VSelect)
 export default {
   name: 'SettingsMain',
   components: { UserInfoFormBlock, DeleteIcon, LoadPhoto },
@@ -166,6 +185,14 @@ export default {
       return Array.from({ length: 61 }, (value, index) => 1962 + index);
     },
 
+    countryNames () {
+      return this.countries.map(country => country.title)
+    },
+
+    cityNames () {
+      return this.cities.map(city => city.title)
+    },
+
     days() {
       return this.month.val === 1
         ? this.year & 3 || (!(this.year % 25) && this.year & 15)
@@ -184,13 +211,23 @@ export default {
     },
     country: {
       immediate: true,
-      handler(value) {
-        if (value && value !== 'none') {
-          this.currentCountry = this.countries?.find((country) => country.title === value);
-          this.loadCities(this.currentCountry?.id);
-        } else this.city = 'none';
-      },
-    },
+      handler(newValue) {
+        if (newValue && newValue !== '') {
+          setTimeout(() => {
+          this.currentCountry = this.countries.find(country => country.title === newValue);
+          this.loadCities(this.currentCountry.id);
+
+            if (this.city && this.currentCountry && this.city !== '' && this.currentCountry.id !== this.cities.find(city => city.title === this.city).countryId) {
+              this.city = '';
+              this.country = '';
+            }
+          }, 700)
+        } else {
+          this.city = '';
+          this.country = '';
+        }
+      }
+    }
   },
 
   mounted() {
@@ -228,13 +265,34 @@ export default {
 
     async submitHandler() {
       let _birthDate = 'none';
-      if (this.year && this.month && this.day) {
-        _birthDate = new Date(this.year, this.month.val, this.day).toISOString();
+        if (this.year && this.month && this.day) {
+          _birthDate = new Date(this.year, this.month.val, this.day).toISOString();
+        }
+
+        if (!this.$refs.firstName.validate() && !this.$refs.lastName.validate()) {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'error',
+          text: 'Поля "Имя" и "Фамилия" являются обязательными',
+        });
+        return
+      } else if (!this.$refs.firstName.validate()) {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'error',
+          text: 'Поле "Имя" является обязательным',
+        });
+        return
+      } else if (!this.$refs.lastName.validate()) {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'error',
+          text: 'Поле "Фамилия" является обязательным',
+        });
+        return
       }
+
       if (this.photoPath) {
         await this.apiStorage(this.photoPath).then((response) => {
           this.photoName = response.data.photoName;
-          this.photoPath = response.data.photoPath;
+          this.photoPath = response.data.fileName;
         });
       }
 
@@ -248,7 +306,9 @@ export default {
         city: this.city,
         photoName: this.photoName,
         photo: this.photoPath,
-      }).then(() => this.setStorage(null));
+      }).then(() =>
+      this.setStorage(null))
+      this.$router.push('/profile');;
     },
 
     processFile(event) {
@@ -406,4 +466,36 @@ export default {
   overflow hidden
   position relative
   border-radius 10px
+
+.vs__dropdown-toggle
+  width 100%
+  border 1px solid #e3e3e3
+  padding 0
+  background transparent
+  font-size 15px
+  color #000
+  display flex
+  align-items center
+  white-space nowrap
+  overflow hidden
+  position relative
+  border-radius 10px
+.vs__selected
+  margin 0
+  padding 0
+  color #000
+.vs__selected-options
+  padding 11px 20px
+.vs__search,
+.vs__search:focus
+  margin 0
+  padding 0
+.vs__actions
+  padding-right 10px
+  margin 0
+.vs__clear
+  vertical-align unset
+  svg
+    height 10px
+    display block
 </style>
