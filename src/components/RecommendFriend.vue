@@ -31,14 +31,14 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import axios from 'axios';
+// import axios from 'axios';
 
 export default {
   name: 'FriendsPossible',
 
-  data: () => ({
-    userInfo: null
-  }),
+  // data: () => ({
+  //   userInfo: null
+  // }),
 
   computed: {
     ...mapGetters('profile/friends', ['getResultById']),
@@ -47,29 +47,29 @@ export default {
       return this.getResultById('recommendations');
     },
 
-    getInfo() {
-      return this.possibleFriends.map(friend => friend.idFrom);
-    },
+    // getInfo() {
+    //   return this.possibleFriends.map(friend => friend.idFrom);
+    // },
   },
 
   mounted() {
     if (this.possibleFriends.length === 0) this.apiRecommendations();
-    this.fetchUserInfo();
+    // this.fetchUserInfo();
   },
 
   methods: {
     ...mapActions('profile/friends', ['apiAddFriends', 'apiRecommendations']),
 
-    fetchUserInfo() {
-      const user = this.getInfo();
-      axios.get(`/account/${user}`)
-        .then(response => {
-          this.userInfo = response.data;
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
+    // fetchUserInfo() {
+    //   const user = this.getInfo();
+    //   axios.get(`/account/${user}`)
+    //     .then(response => {
+    //       this.userInfo = response.data;
+    //     })
+    //     .catch(error => {
+    //       console.log(error);
+    //     });
+    // },
   },
 };
 </script>

@@ -1,8 +1,13 @@
 <template>
-  <div class="search-users" v-if="users.length > 0">
+  <div class="search-users" v-if="users">
     <search-block title="Люди" id="users">
       <div class="friends__list">
-        <friends-block v-for="user in users" :key="user.id" :info="user" subscribe-button />
+        <block-search
+          v-for="user in users"
+          :key="user.id"
+          :info="user"
+          subscribe-button
+        />
       </div>
 
       <pagination :count="total" v-model="page" :per-page="size" />
@@ -16,12 +21,12 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex';
 import SearchBlock from '@/components/Search/Block';
-import FriendsBlock from '@/components/Friends/Block';
+import BlockSearch from '@/components/Friends/BlockSearch.vue';
 import Pagination from '@/components/Pagination.vue';
 
 export default {
   name: 'SearchUsers',
-  components: { SearchBlock, FriendsBlock, Pagination },
+  components: { SearchBlock, BlockSearch, Pagination },
   data() {
     return {
       page: 1,

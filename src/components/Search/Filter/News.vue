@@ -15,7 +15,7 @@
         </select>
       </div>
       <div class="search-filter__block tags">
-        <add-tags :tags="updateTags" @change-tags="onChangeTags" />
+        <add-tags :allowManualAddition="false" :tags="updateTags" @change-tags="onChangeTags" />
       </div>
     </div>
     <div class="search-filter__block btn-news">

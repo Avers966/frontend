@@ -63,6 +63,10 @@ export default {
 
   props: {
     tags: Array,
+    allowManualAddition: {
+      type: Boolean,
+      default: true,
+    },
   },
 
   data: () => ({
@@ -136,6 +140,7 @@ export default {
     },
 
     addTag() {
+      if (!this.allowManualAddition) return;
       if (this.tag.length <= 0) return;
       const existingTag = this.tags.find((tag) => tag.name === this.tag);
       if (existingTag) {

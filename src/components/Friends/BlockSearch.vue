@@ -1,22 +1,22 @@
 <template>
-  <div class="friends-block" ref="dropdown" v-if="userInfo">
+  <div class="friends-block" ref="dropdown">
     <div class="friends-block__img">
-      <img v-if="userInfo.photo" :src="userInfo.photo" :alt="userInfo.firstName" />
-      <img v-else src="/static/img/avatar.png" :alt="userInfo.firstName" />
+      <img v-if="info.photo" :src="info.photo" :alt="info.firstName" />
+      <img v-else src="/static/img/avatar.png" :alt="info.firstName" />
     </div>
 
     <div class="friends-block__info">
-      <router-link class="friends-block__name" :to="{ name: 'ProfileId', params: { id: userInfo.id } }">
-        {{ userInfo.firstName }}
-        {{ userInfo.lastName }}
+      <router-link class="friends-block__name" :to="{ name: 'ProfileId', params: { id: info.id } }">
+        {{ info.firstName }}
+        {{ info.lastName }}
         <span class="user-status" :class="{ online, offline: !online }">{{ statusText }}</span>
       </router-link>
 
       <span class="friends-block__age-city" v-if="moderator">модератор</span>
 
-      <span class="friends-block__age-city" v-else-if="userInfo.birthDate && userInfo.country">
-        {{ userInfo.birthDate | moment('from', true) }},
-        {{ userInfo.city ? userInfo.city : (userInfo.country ? userInfo.country : 'не заполнено') }}
+      <span class="friends-block__age-city" v-else-if="info.birthDate && info.country">
+        {{ info.birthDate | moment('from', true) }},
+        {{ info.city ? info.city : (info.country ? info.country : 'не заполнено') }}
       </span>
 
       <span class="friends-block__age-city" v-else>профиль не заполнен</span>
@@ -135,7 +135,6 @@
 import Modal from '@/components/Modal';
 import ActionsShow from '@/Icons/ActionsShow.vue';
 import { mapActions, mapGetters } from 'vuex';
-import axios from 'axios';
 
 export default {
   name: 'FriendsBlock',
@@ -164,17 +163,12 @@ export default {
         id: 124,
       }),
     },
-    allowManualAddition: {
-      type: Boolean,
-      default: true,
-    },
   },
 
   data: () => ({
     modalShow: false,
     modalType: 'delete',
     showDropdown: false,
-    userInfo: null
   }),
 
   computed: {
@@ -212,28 +206,28 @@ export default {
       let text = '';
       if (this.modalType === 'delete') {
         text = `Вы уверены, что хотите удалить пользователя ${
-          this.userInfo.firstName + ' ' + this.userInfo.lastName
+          this.info.firstName + ' ' + this.info.lastName
         } из друзей?`;
       } else if (this.modalType === 'deleteModerator') {
         text = `Вы уверены, что хотите удалить ${
-          this.userInfo.firstName + ' ' + this.userInfo.lastName
+          this.info.firstName + ' ' + this.info.lastName
         } из списка модераторов?`;
       } else if (this.modalType === 'block') {
         text = `Вы уверены, что хотите заблокировать пользователя ${
-          this.userInfo.firstName + ' ' + this.userInfo.lastName
+          this.info.firstName + ' ' + this.info.lastName
         }?`;
       } else if (this.modalType === 'unblock') {
         text = `Вы уверены, что хотите разблокировать  пользователя ${
-          this.userInfo.firstName + ' ' + this.userInfo.lastName
+          this.info.firstName + ' ' + this.info.lastName
         }?`;
       }
       return text;
     },
 
     messageId() {
-      if (this.userInfo.toAccountId) {
-        return this.userInfo.toAccountId;
-      } else return this.userInfo.id;
+      if (this.info.toAccountId) {
+        return this.info.toAccountId;
+      } else return this.info.id;
     },
   },
 
@@ -243,8 +237,6 @@ export default {
     if (dropdown) {
       dropdown.addEventListener('click', this.stopPropagation);
     }
-
-    this.fetchUserInfo();
   },
 
   beforeDestroy() {
@@ -332,17 +324,6 @@ export default {
         return;
       }
       this.apiSubscribe(id);
-    },
-
-    fetchUserInfo() {
-      if (!this.allowManualAddition) return;
-      axios.get(`/account/${this.getInfo}`)
-        .then(response => {
-          this.userInfo = response.data;
-        })
-        .catch(error => {
-          console.log(error);
-        });
     },
 
     closeModal() {
