@@ -379,6 +379,12 @@ export default {
   left 95%
   width 25px
 
+.ProseMirror-focused
+  height 200px
+
+.ProseMirror
+  height 200px
+
 .is_planing
   font-size 13px
   background #fafafa

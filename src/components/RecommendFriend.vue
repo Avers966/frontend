@@ -1,20 +1,20 @@
 <template>
   <div class="recommend-block">
     <h3 class="recommend-block__title">Возможно вы их знаете</h3>
-    <ul v-if="possibleFriends.length > 0" class="recommend-block__list">
-      <li class="recommend-block__item" v-for="user in possibleFriends" :key="user.id">
+    <ul v-if="userInfo.length > 0" class="recommend-block__list">
+      <li class="recommend-block__item" v-for="user in userInfo" :key="user?.id">
         <div>
-          <img class="recommend-block__img" :src="user.photo" :alt="user.firstName">
+          <img class="recommend-block__img" :src="user?.photo" :alt="user?.firstName">
 
           <router-link
             class="recommend-block__name"
-            :to="{ name: 'ProfileId', params: { id: user.id } }"
+            :to="{ name: 'ProfileId', params: { id: user?.id } }"
           >
-            {{ user.firstName + ' ' + user.lastName }}
+            {{ user?.firstName + ' ' + user?.lastName }}
           </router-link>
 
         </div>
-        <a class="recommend-block__button" href="#" @click.prevent="apiAddFriends({ id: user.id })">Добавить</a>
+        <a class="recommend-block__button" href="#" @click.prevent="apiAddFriends({ id: user?.id })">Добавить</a>
       </li>
     </ul>
     <div v-else class="recommend-block__not">
@@ -31,14 +31,14 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-// import axios from 'axios';
+import axios from 'axios';
 
 export default {
   name: 'FriendsPossible',
 
-  // data: () => ({
-  //   userInfo: null
-  // }),
+  data: () => ({
+    userInfo: null
+  }),
 
   computed: {
     ...mapGetters('profile/friends', ['getResultById']),
@@ -47,29 +47,29 @@ export default {
       return this.getResultById('recommendations');
     },
 
-    // getInfo() {
-    //   return this.possibleFriends.map(friend => friend.idFrom);
-    // },
+    getInfo() {
+      return this.possibleFriends.map(friend => friend.idFrom);
+    },
   },
 
   mounted() {
     if (this.possibleFriends.length === 0) this.apiRecommendations();
-    // this.fetchUserInfo();
+    this.fetchUserInfo();
   },
 
   methods: {
     ...mapActions('profile/friends', ['apiAddFriends', 'apiRecommendations']),
 
-    // fetchUserInfo() {
-    //   const user = this.getInfo();
-    //   axios.get(`/account/${user}`)
-    //     .then(response => {
-    //       this.userInfo = response.data;
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //     });
-    // },
+    fetchUserInfo() {
+      const requests = this.getInfo.map(id => axios.get(`/account/${id}`));
+      Promise.all(requests)
+        .then(responses => {
+          this.userInfo = responses.map(response => response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
   },
 };
 </script>

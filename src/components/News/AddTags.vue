@@ -3,7 +3,7 @@
     <input
       class="add-tags__input"
       type="text"
-      placeholder="Начните вводить..."
+      :placeholder="placeholder"
       v-model="tag"
       @input="searchTags"
       @keydown.enter="addTag(tag)"
@@ -21,7 +21,7 @@
       <div class="add-tags__search-results fade-in" v-if="searchResults.length > 0 || tag.length === 0">
         <div class="add-tags__search-item" v-for="(result, index) in searchResults" :key="index" @click="addTagFromSearch(result)">
           #{{ result.name }}
-          <progress-tag v-if="index < 3" />
+          <progress-tag v-if="index < 2" />
           <progress-tag v-else :stroke-color="`#D69A02`" />
         </div>
       </div>
@@ -67,6 +67,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    placeholder: {
+      type: String,
+      default: 'Начните вводить...'
+    }
   },
 
   data: () => ({
@@ -122,7 +126,7 @@ export default {
         });
         return;
       }
-      if (this.tagsList.length > 10) {
+      if (this.tagsList.length >= 10) {
         this.$store.dispatch('global/alert/setAlert', {
           status: 'response',
           text: 'Можно добавить максимум 10 тэгов',
@@ -203,10 +207,12 @@ export default {
   overflow-y auto
   box-shadow 0px 4px 4px rgba(0, 0, 0, 0.15)
   transition all .2s ease-in-out
+  z-index 100
 
 .add-tags__search-item
   display flex
   justify-content space-between
+  align-items center
   font-family "Roboto"
   padding 10px
   cursor pointer
