@@ -40,7 +40,7 @@ export default {
         ...s.feeds[postIndex],
         imagePath: payload.imagePath,
         postText: payload.postText,
-        tags: payload.tags.map(tag => ({ name: tag })),
+        tags: payload.tags.map(tag => ({ id: tag.id, name: tag.name })),
         title: payload.title,
         timeChanged: new Date(),
       };
@@ -95,7 +95,7 @@ export default {
         title: payload.title,
         postText: payload.postText,
         publishDate: payload.publishDate,
-        tags: payload.tags.map(tag => ({ name: tag })),
+        tags: payload.tags.map(tag => ({ id: tag.id, name: tag.name })),
         imagePath: payload.imagePath,
         id: payload.postId,
       };

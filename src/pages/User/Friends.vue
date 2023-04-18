@@ -186,7 +186,7 @@ export default {
       'SUBSCRIBED',
       'WATCHING',
     ],
-    activeItem: 'application',
+    activeItem: 'friends',
   }),
 
   computed: {
@@ -196,7 +196,6 @@ export default {
 
   watch: {
     friends() {
-      console.log('watch');
       this.localFriends = this.friends;
     },
   },
@@ -216,7 +215,7 @@ export default {
     },
     setActive (menuItem) {
       this.activeItem = menuItem
-    }
+    },
   },
 };
 </script>

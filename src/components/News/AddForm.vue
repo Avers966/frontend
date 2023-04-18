@@ -4,13 +4,15 @@
       <button class="close_modal bold" @click.prevent="closeAddForm">x</button>
     </div>
 
-    <form class="news-add__main" action="#" @submit.prevent="" ref="form">
+    <form class="news-add__main" action="#">
       <div class="news-add__text">
-        <textarea
+        <input
           class="news-add__text-title"
-          type="textarea"
           placeholder="Дайте тему"
           v-model="title"
+          maxlength="200"
+          v:pattern="200"
+          type="text"
         />
         <div v-if="src">
           <img :src="src" :alt="'photo'" class="post-image" />
@@ -34,17 +36,19 @@
           class="news-add__actions"
           :editor="editor"
           v-slot="{ commands, isActive }"
-          @mouseleave.native="hideLinkMenu"
         >
           <div class="news-add__actions-buttons">
-            <button class="bold" :class="{ 'is-active': isActive.bold() }" @click="commands.bold">
+            <button
+              class="bold"
+              :class="{ 'is-active': isActive.bold() }"
+              @click.prevent="commands.bold">
               ж
             </button>
 
             <button
               class="italic"
               :class="{ 'is-active': isActive.italic() }"
-              @click="commands.italic"
+              @click.prevent="commands.italic"
             >
               к
             </button>
@@ -52,28 +56,10 @@
             <button
               class="underline"
               :class="{ 'is-active': isActive.underline() }"
-              @click="commands.underline"
+              @click.prevent="commands.underline"
             >
               ч
             </button>
-
-            <div class="news-add__actions-link">
-              <div class="news-add__actions-link-hidden" :class="{ 'is-active': isOpenLinkMenu }">
-                <form @submit.prevent="setLinkUrl(commands.link, linkUrl)">
-                  <input
-                    type="text"
-                    v-model="linkUrl"
-                    placeholder="https://"
-                    ref="linkInput"
-                    @keydown.esc="hideLinkMenu"
-                  />
-
-                  <button type="button" @click="setLinkUrl(commands.link, linkUrl)">
-                    <simple-svg :filepath="'/static/img/add.svg'" />
-                  </button>
-                </form>
-              </div>
-            </div>
 
             <div class="news-add__block photo" @click.prevent="loadPhoto">
               <simple-svg :filepath="'/static/img/photo.svg'" />
@@ -140,13 +126,31 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { Editor, EditorContent, EditorMenuBar } from 'tiptap';
-import { Bold, Italic, Underline, Link, Image } from 'tiptap-extensions';
+import { Bold, Italic, Underline, Link } from 'tiptap-extensions';
 import { mapGetters, mapActions, mapMutations } from 'vuex';
 import AddTags from '@/components/News/AddTags';
 import Modal from '@/components/Modal';
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
+
+Vue.directive( 'pattern', {
+  update (el, binding) {
+    const sourceValue = el.value;
+    const maxLength = parseInt(binding.value);
+	  el.maxLength = maxLength;
+
+    const newValue = sourceValue
+    .replace(/[^a-zA-Zа-яА-ЯёЁ_]/g, '') // убираем знаки препиния, кирилица/латиница/
+    .substring(0, maxLength); // ограничиваем колличество вводимых знаков, дублируя ограничение атрибутом.
+
+    if (sourceValue !== newValue) {
+      el.value = newValue;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  },
+})
 
 export default {
   name: 'NewsAddForm',
@@ -246,13 +250,13 @@ export default {
       this.tags = this.info.tags;
       this.editor = new Editor({
         content: `${this.info.postText}`,
-        extensions: [new Bold(), new Italic(), new Underline(), new Link(), new Image(null, null, this.processFile)],
+        extensions: [new Bold(), new Italic(), new Underline(), new Link()],
       });
 
     } else {
       this.editor = new Editor({
         content: '',
-        extensions: [new Bold(), new Italic(), new Underline(), new Link(), new Image(null, null, this.processFile)],
+        extensions: [new Bold(), new Italic(), new Underline(), new Link()],
       });
 
     }
@@ -307,6 +311,7 @@ export default {
         return;
       }
 
+
       if (this.photo) {
         await this.apiStoragePostPhoto(this.photo);
 
@@ -327,9 +332,7 @@ export default {
         id: this.getInfo.id,
         title: this.title,
         postText: this.editor.getHTML(),
-        tags: this.tags.map((tag) => {
-          return tag.name;
-        }),
+        tags: this.tags,
         publishDate:
           this.isPlaning &&
           this.lastDate
@@ -337,23 +340,6 @@ export default {
         this.$emit('submit-complete');
         this.setStoragePostPhoto(null);
       });
-    },
-
-    openLinkMenu(attrs) {
-      this.linkUrl = attrs.href;
-      this.isOpenLinkMenu = true;
-      this.$nextTick(() => {
-        this.$refs.linkInput.focus();
-      });
-    },
-    setLinkUrl(command, url) {
-      command({ href: url });
-      this.isOpenLinkMenu = false;
-      this.editor.focus();
-    },
-    hideLinkMenu() {
-      this.linkUrl = null;
-      this.isOpenLinkMenu = false;
     },
     openModal() {
       this.modalShow = true;
@@ -442,8 +428,7 @@ export default {
 
 .news-add__text-title
   border-bottom: 1px solid #e6e6e6
-  padding-bottom 10px
-
+  padding-bottom 20px
 
 .post-btn-planing
   display block

@@ -1,22 +1,22 @@
 <template>
-  <div class="friends-block" ref="dropdown">
+  <div class="friends-block" ref="dropdown" v-if="userInfo">
     <div class="friends-block__img">
-      <img v-if="info.photo" :src="info.photo" :alt="info.firstName" />
-      <img v-else src="/static/img/avatar.png" :alt="info.firstName" />
+      <img v-if="userInfo.photo" :src="userInfo.photo" :alt="userInfo.firstName" />
+      <img v-else src="/static/img/avatar.png" :alt="userInfo.firstName" />
     </div>
 
     <div class="friends-block__info">
-      <router-link class="friends-block__name" :to="{ name: 'ProfileId', params: { id: info.id } }">
-        {{ info.firstName }}
-        {{ info.lastName }}
+      <router-link class="friends-block__name" :to="{ name: 'ProfileId', params: { id: userInfo.id } }">
+        {{ userInfo.firstName }}
+        {{ userInfo.lastName }}
         <span class="user-status" :class="{ online, offline: !online }">{{ statusText }}</span>
       </router-link>
 
       <span class="friends-block__age-city" v-if="moderator">модератор</span>
 
-      <span class="friends-block__age-city" v-else-if="info.birthDate && info.country">
-        {{ info.birthDate | moment('from', true) }},
-        {{ info.city ? info.city.title : info.country.title }}
+      <span class="friends-block__age-city" v-else-if="userInfo.birthDate && userInfo.country">
+        {{ userInfo.birthDate | moment('from', true) }},
+        {{ userInfo.city ? userInfo.city : (userInfo.country ? userInfo.country : 'не заполнено') }}
       </span>
 
       <span class="friends-block__age-city" v-else>профиль не заполнен</span>
@@ -135,6 +135,7 @@
 import Modal from '@/components/Modal';
 import ActionsShow from '@/Icons/ActionsShow.vue';
 import { mapActions, mapGetters } from 'vuex';
+import axios from 'axios';
 
 export default {
   name: 'FriendsBlock',
@@ -164,23 +165,33 @@ export default {
       }),
     },
   },
+
   data: () => ({
     modalShow: false,
     modalType: 'delete',
-    showDropdown: false
+    showDropdown: false,
+    userInfo: null
   }),
 
   computed: {
     ...mapGetters('profile/dialogs', ['dialogs']),
+
     statusText() {
       return this.info.isOnline ? 'онлайн' : 'не в сети';
     },
+
     online() {
       return this.info.isOnline;
     },
+
+    getInfo() {
+      return this.info.idFrom;
+    },
+
     currentUser() {
       return this.$store.getters.getUser;
     },
+
     targetId() {
       if (this.info.fromAccountId) {
         if (this.info.fromAccountId === this.currentUser) {
@@ -192,38 +203,46 @@ export default {
         return this.info.id;
       }
     },
+
     modalText() {
       let text = '';
       if (this.modalType === 'delete') {
         text = `Вы уверены, что хотите удалить пользователя ${
-          this.info.firstName + ' ' + this.info.lastName
+          this.userInfo.firstName + ' ' + this.userInfo.lastName
         } из друзей?`;
       } else if (this.modalType === 'deleteModerator') {
         text = `Вы уверены, что хотите удалить ${
-          this.info.firstName + ' ' + this.info.lastName
+          this.userInfo.firstName + ' ' + this.userInfo.lastName
         } из списка модераторов?`;
       } else if (this.modalType === 'block') {
         text = `Вы уверены, что хотите заблокировать пользователя ${
-          this.info.firstName + ' ' + this.info.lastName
+          this.userInfo.firstName + ' ' + this.userInfo.lastName
         }?`;
       } else if (this.modalType === 'unblock') {
         text = `Вы уверены, что хотите разблокировать  пользователя ${
-          this.info.firstName + ' ' + this.info.lastName
+          this.userInfo.firstName + ' ' + this.userInfo.lastName
         }?`;
       }
       return text;
     },
+
     messageId() {
-      if (this.info.toAccountId) {
-        return this.info.toAccountId;
-      } else return this.info.id;
+      if (this.userInfo.toAccountId) {
+        return this.userInfo.toAccountId;
+      } else return this.userInfo.id;
     },
   },
 
   mounted() {
     document.addEventListener('click', this.hideDropdown);
-    this.$refs.dropdown.addEventListener('click', this.stopPropagation);
+    const { dropdown } = this.$refs;
+    if (dropdown) {
+      dropdown.addEventListener('click', this.stopPropagation);
+    }
+
+    this.fetchUserInfo();
   },
+
   beforeDestroy() {
     document.removeEventListener('click', this.hideDropdown);
     this.$refs.dropdown.removeEventListener('click', this.stopPropagation);
@@ -310,6 +329,16 @@ export default {
       this.apiSubscribe(id);
     },
 
+    fetchUserInfo() {
+      axios.get(`/account/${this.getInfo}`)
+        .then(response => {
+          this.userInfo = response.data;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+
     closeModal() {
       this.modalShow = false;
     },
@@ -329,11 +358,15 @@ export default {
       } else if (this.modalType === 'deleteModerator') {
         console.log('delete moderator');
       } else if (this.modalType === 'block') {
-        this.blocked = true;
-        this.apiBlockUser(id).then(() => this.closeModal());
+        this.apiBlockUser(id).then(() => {
+          this.blocked = true; // обновляем значение "blocked" внутри компонента
+          this.closeModal();
+        });
       } else if (this.modalType === 'unblock') {
-        this.blocked = false;
-        this.apiUnblockUser(id).then(() => this.closeModal());
+        this.apiUnblockUser(id).then(() => {
+          this.blocked = false; // обновляем значение "blocked" внутри компонента
+          this.closeModal();
+        });
       }
     },
 

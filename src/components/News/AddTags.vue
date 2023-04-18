@@ -1,13 +1,14 @@
 <template>
-  <div class="add-tags">
+  <div class="add-tags" ref="searchBox">
     <input
       class="add-tags__input"
       type="text"
       placeholder="Начните вводить..."
       v-model="tag"
       @input="searchTags"
-      @change="addTag"
+      @keydown.enter="addTag(tag)"
       v-touppercase="10"
+      ref="searchInput"
     />
 
     <div class="add-tags__block">
@@ -20,6 +21,8 @@
       <div class="add-tags__search-results fade-in" v-if="searchResults.length > 0 || tag.length === 0">
         <div class="add-tags__search-item" v-for="(result, index) in searchResults" :key="index" @click="addTagFromSearch(result)">
           #{{ result.name }}
+          <progress-tag v-if="index < 3" />
+          <progress-tag v-else :stroke-color="`#D69A02`" />
         </div>
       </div>
     </transition>
@@ -30,8 +33,9 @@
 import Vue from 'vue';
 import axios from 'axios';
 import { debounce } from 'lodash';
+import ProgressTag from '../../Icons/ProgressTag.vue';
 
-Vue.directive( 'touppercase', {
+Vue.directive('touppercase', {
   update (el, binding) {
     const sourceValue = el.value;
 	  const maxLength = parseInt(binding.value);
@@ -53,6 +57,10 @@ Vue.directive( 'touppercase', {
 export default {
   name: 'AddTags',
 
+  components: {
+    ProgressTag
+  },
+
   props: {
     tags: Array,
   },
@@ -72,7 +80,12 @@ export default {
   mounted() {
     setTimeout(() => {
       this.tagsList = this.tags;
-    }, 200)
+    }, 200);
+    document.addEventListener('click', this.handleClickOutside);
+  },
+
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleClickOutside);
   },
 
   methods: {
@@ -113,10 +126,13 @@ export default {
         console.log('Я сработал в методе addTagFromSearch')
         return;
       }
+      this.tag = ''; // очищаем поле ввода
       this.tagsList.push(tag);
-      this.tag = '';
       this.searchResults = [];
       this.$emit('change-tags', this.tagsList);
+      this.$nextTick(() => {
+        this.$refs.searchInput.focus();
+      });
     },
 
     addTag() {
@@ -127,11 +143,7 @@ export default {
         return;
       }
 
-      const newTag = {
-        name: this.tag,
-      };
-
-      if (this.tagsList.some((tag) => tag.name === newTag.name)) {
+      if (this.tagsList.some((tag) => tag.name === this.tag)) {
         this.$store.dispatch('global/alert/setAlert', {
           status: 'response',
           text: 'Тэг уже добавлен',
@@ -144,13 +156,27 @@ export default {
           status: 'response',
           text: 'Можно добавить максимум 10 тэгов',
         });
-        console.log('Я сработал в методе addTag')
         return;
       }
 
+      const newTag = {
+        name: this.tag,
+      };
+      console.log('Я сработал в методе addTag()')
       this.tagsList.push(newTag);
       this.tag = '';
       this.$emit('change-tags', this.tagsList);
+      this.$nextTick(() => {
+        this.$refs.searchInput.focus();
+      });
+    },
+
+    handleClickOutside(event) {
+      const isChild = this.$refs.searchBox.contains(event.target);
+      if (!isChild) {
+        this.tag = '';
+        this.searchResults = [];
+      }
     },
   },
 };
@@ -174,6 +200,8 @@ export default {
   transition all .2s ease-in-out
 
 .add-tags__search-item
+  display flex
+  justify-content space-between
   font-family "Roboto"
   padding 10px
   cursor pointer

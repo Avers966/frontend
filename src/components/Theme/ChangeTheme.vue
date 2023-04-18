@@ -49,7 +49,6 @@ export default {
   height 25px
   margin-right 10px
 
-
 .theme-switch input[type="checkbox"]
   display none
 
@@ -67,6 +66,7 @@ export default {
   background-position right 5px center
   border-radius 20px
   transition background-color 0.2s ease-in-out
+  cursor pointer
 
 
 .theme-switch label::before

@@ -63,7 +63,7 @@ export default {
 mutations: {
   setNotificationsSettings(state, notifications) {
     state.notifications.forEach((el) => {
-      switch (el.type){
+      switch (el.type) {
         case 'POST': el.enable = notifications.enablePost; break;
         case 'POST_COMMENT': el.enable = notifications.enablePostComment; break;
         case 'COMMENT_COMMENT': el.enable = notifications.enableCommentComment; break;

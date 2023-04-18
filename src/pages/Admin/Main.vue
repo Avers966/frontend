@@ -41,6 +41,43 @@ export default {
 </script>
 
 <style lang="stylus">
+.loading__info
+  font-size 20px
+  padding 40px
+
+.statistics-error
+  display flex
+  flex-direction column
+  justify-content center
+  align-items center
+  padding 40px
+  background #fff
+  border-radius 10px
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08)
+  &__title
+    margin 0
+    font-size 40px
+    font-weight 900
+  &__image
+    background-size cover
+    width 688px
+    height 308px
+    background-image url('https://mveselovv.github.io/moire-app/img/not-found.744da957.gif')
+    background-repeat no-repeat
+    background-position top -60px center
+    margin-bottom 35px
+  &__button
+    background transparent
+    border 1px solid #21a45d
+    padding 10px
+    transition all .2s ease-in-out
+    border-radius 10px
+    @media (any-hover: hover)
+      &:hover
+        background #21a45d
+        border-color #21a45d
+        color #fff
+
 .panel
   box-shadow 0px 2px 8px rgba(0, 0, 0, 0.08)
   border-radius 10px
@@ -61,6 +98,9 @@ export default {
   font-size 20px
   line-height 30px
   color #575757
+
+.panel-dynamics__title.circle__title
+  margin-bottom 20px
 
 .panel-publications__top
   display flex

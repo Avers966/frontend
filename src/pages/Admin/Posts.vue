@@ -1,28 +1,39 @@
 <!-- eslint-disable max-len -->
 <template>
-  <div class="panel">
-    <div class="panel-publications__top">
-      <img src="../../../public/static/img/admin/admin_3.png" alt="Публикации">
-      <div class="panel-publications__info">
-        <span>Публикаций за все время:</span>
-        <span>115 000 002</span>
+  <div>
+    <div v-if="statsDataPosts" class="admin__pages-posts panel">
+      <div class="panel-publications__top">
+        <img src="../../../public/static/img/admin/admin_3.png" alt="Публикации">
+        <div class="panel-publications__info">
+          <span>Публикаций за все время:</span>
+          <span>{{ statsDataPosts?.count }}</span>
+        </div>
       </div>
-    </div>
-    <div class="panel__graphics first__graph">
-      <div class="panel__graphics-left">
-        <span class="panel-dynamics__title">Динамика прироста</span>
-        <div class="panel-dynamics__graph">
-          <v-chart class="chart" :option="dynamics" autoresize />
+      <div class="panel__graphics first__graph">
+        <div class="panel__graphics-left">
+          <span class="panel-dynamics__title">Динамика прироста (год)</span>
+          <div class="panel-dynamics__graph">
+            <v-chart class="chart" :option="dynamics" autoresize />
+          </div>
+        </div>
+      </div>
+      <div class="panel__graphics">
+        <div class="panel__graphics-left">
+          <span class="panel-dynamics__title">Время публикации (суточная диаграмма)</span>
+          <div class="panel-dynamics__graph">
+            <v-chart class="chart" :option="dynamicsPosts" autoresize />
+          </div>
         </div>
       </div>
     </div>
-    <div class="panel__graphics">
-      <div class="panel__graphics-left">
-        <span class="panel-dynamics__title">Время публикации (суточная диаграмма)</span>
-        <div class="panel-dynamics__graph">
-          <v-chart class="chart" :option="timePublications" autoresize />
-        </div>
-      </div>
+    <div v-else-if="statisticsError" class="statistics-error">
+      <h3 class="statistics-error__title">404. Данные не найдены.</h3>
+      <p class="statistics-error__status">В данный момент сервер не может получить данные.</p>
+      <div class="statistics-error__image"></div>
+      <button class="statistics-error__button" @click.prevent="loadData">Попробовать снова</button>
+    </div>
+    <div v-else-if="!statsDataPosts" class="admin__pages-users panel loading__info">
+      Загружаем данные статистики...
     </div>
   </div>
 </template>
@@ -39,6 +50,8 @@ import {
 } from 'echarts/components';
 import VChart, { THEME_KEY } from 'vue-echarts';
 import { defineComponent } from 'vue';
+import axios from 'axios';
+import moment from 'moment'
 
 use([
   CanvasRenderer,
@@ -56,201 +69,102 @@ export default defineComponent({
   components: {
     VChart,
   },
+  data() {
+    return {
+      statsDataPosts: null,
+      statisticsError: false,
+      statisticsLoading: false,
+    }
+  },
+
   provide: {
     [THEME_KEY]: 'default',
   },
-  setup() {
-    const dataInfoNumber = [
-      {
-        time: 1,
-        value: 23
-      },
-      {
-        time: 2,
-        value: 12
-      },
-      {
-        time: 3,
-        value: 37
-      },
-      {
-        time: 4,
-        value: 78
-      },
-      {
-        time: 5,
-        value: 153
-      },
-      {
-        time: 6,
-        value: 231
-      },
-      {
-        time: 7,
-        value: 543
-      },
-      {
-        time: 8,
-        value: 234
-      },
-      {
-        time: 9,
-        value: 132
-      },
-      {
-        time: 10,
-        value: 223
-      },
-      {
-        time: 11,
-        value: 754
-      },
-      {
-        time: 12,
-        value: 265
-      },
-      {
-        time: 13,
-        value: 675
-      },
-      {
-        time: 14,
-        value: 498
-      },
-      {
-        time: 15,
-        value: 1203
-      },
-      {
-        time: 16,
-        value: 1932
-      },
-      {
-        time: 17,
-        value: 2578
-      },
-      {
-        time: 18,
-        value: 3689
-      },
-      {
-        time: 19,
-        value: 4231
-      },
-      {
-        time: 20,
-        value: 3456
-      },
-      {
-        time: 21,
-        value: 3245
-      },
-      {
-        time: 22,
-        value: 2567
-      },
-      {
-        time: 23,
-        value: 1456
-      },
-      {
-        time: 0,
-        value: 602
-      },
-    ]
-    const timePublications = {
-      tooltip: {
-        trigger: 'axis',
-      },
-      xAxis: {
-        data: dataInfoNumber.map(item => item.time)
-      },
-      yAxis: {},
-      series: [
-        {
-          type: 'bar',
-          data: dataInfoNumber.map(item => item.value),
-          barWidth: '13px',
-          color: '#21A45D'
-        }
-      ],
-    };
-    const dataInfo = [
-      {
-        month: 'Сен.',
-        value: '2123'
-      },
-      {
-        month: 'Окт.',
-        value: '5234'
-      },
-      {
-        month: 'Нояб.',
-        value: '9654'
-      },
-      {
-        month: 'Дек.',
-        value: '13453'
-      },
-      {
-        month: 'Янв.',
-        value: '4213'
-      },
-      {
-        month: 'Фев.',
-        value: '7542'
-      },
-      {
-        month: 'Март.',
-        value: '15324'
-      },
-      {
-        month: 'Апр.',
-        value: '18932'
-      },
-      {
-        month: 'Май.',
-        value: '21345'
-      },
-      {
-        month: 'Июнь.',
-        value: '14532'
-      },
-      {
-        month: 'Июль.',
-        value: '11345'
-      },
-      {
-        month: 'Авг.',
-        value: '5789'
-      },
-    ];
-    const dynamics = {
-      tooltip: {
-        trigger: 'axis',
-      },
-      xAxis: {
-        data: dataInfo.map(item => item.month),
-        splitLine: {
-          show: true
+
+  computed: {
+    dynamics() {
+      const months = ['Янв.', 'Фев.', 'Март', 'Апр.', 'Май', 'Июнь', 'Июль', 'Авг.', 'Сент.', 'Окт.', 'Нояб.', 'Дек.'];
+      const xAxisData = this.statsDataPosts?.countPerMonth.map(item => {
+        const date = new Date(item.date);
+        return months[date.getMonth()];
+      });
+      const seriesData = this.statsDataPosts?.countPerMonth.map(item => item.count);
+
+      return {
+        tooltip: {
+          trigger: 'axis',
         },
-      },
-      yAxis: {
-        splitLine: {
-          show: true
-        }
-      },
-      series: [
-        {
-          data: dataInfo.map(item => item.value),
-          type: 'line',
-          smooth: true,
-          color: '#21A45D',
-          position: 'right',
-        }
-      ],
-    };
-    return { timePublications, dynamics };
+        xAxis: {
+          data: xAxisData,
+          splitLine: {
+            show: true
+          },
+        },
+        yAxis: {
+          splitLine: {
+            show: true
+          }
+        },
+        series: [
+          {
+            data: seriesData,
+            type: 'line',
+            smooth: true,
+            color: '#21A45D',
+            position: 'right',
+          }
+        ],
+      };
+    },
+    dynamicsPosts() {
+      return {
+        tooltip: {
+          trigger: 'axis',
+        },
+        xAxis: {
+          type: 'category',
+          data: this.statsDataPosts?.countPerHours.map(({ date }) => date.slice(11, 13)),
+          splitLine: {
+            show: true,
+          },
+        },
+        yAxis: {},
+        series: [
+          {
+            data: this.statsDataPosts?.countPerHours.map(({ count }) => count),
+            type: 'bar',
+            smooth: true,
+            barWidth: '13px',
+            color: '#21A45D'
+          }
+        ],
+      };
+    },
+  },
+
+  methods: {
+    loadData() {
+      const today = moment();
+      const formattedToday = today.format('YYYY-MM-DD');
+      const lastDayOfYear = today.endOf('year').format('YYYY-MM-DD');
+      const firstMonthOfYear = today.startOf('year').format('YYYY-MM-DD');
+
+      setTimeout(() => {
+        axios.get(`/admin-console/statistic/post?date=${formattedToday}T00:00:00.735Z&firstMonth=${firstMonthOfYear}T00:00:00.735Z&lastMonth=${lastDayOfYear}T00:00:00.735Z`)
+        .then(response => this.statsDataPosts = response.data)
+        .catch(() => {
+          this.statisticsError = true;
+          this.statisticsLoading = false;
+        })
+        .then(() => {
+          this.statisticsLoading = false;
+        })
+      }, 1000)
+    }
+  },
+
+  mounted() {
+    this.loadData();
   },
 });
 </script>
