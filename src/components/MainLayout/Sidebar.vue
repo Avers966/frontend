@@ -5,6 +5,10 @@
       <div class="main-layout__admin-logo" v-if="isAdminPage">
         <simple-svg :filepath="'/static/img/logo-admin.svg'" />
       </div>
+      <div class="main-layout__logotype" v-else>
+        <p>Code Lounge</p>
+        <main-logotype :width="35" :height="35"/>
+      </div>
     </div>
 
     <nav class="main-layout__nav">
@@ -17,14 +21,14 @@
         :to="item.link"
         :class="{
           'main-layout__link--im':
-            item.link.name === 'Im' || (item.link.name === 'Friends' && requestsCount),
+            item.link.name === 'Im' || (item.link.name === 'Friends' && requestsCount.count),
           big: unreadedMessages >= 100,
         }"
         :data-push="
           item.link.name === 'Im'
             ? unreadedMessages
             : item.link.name === 'Friends'
-            ? requestsCount
+            ? requestsCount.count
             : false
         "
       >
@@ -59,9 +63,11 @@
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex';
 import SidebarIcons from '../../Icons/sidebar/SidebarIcons.vue';
+import MainLogotype from '../../Icons/MainLogotype.vue';
+
 export default {
   name: 'MainLayoutSidebar',
-  components: { SidebarIcons },
+  components: { SidebarIcons, MainLogotype },
   computed: {
     ...mapGetters('global/menu', ['getSidebarById']),
     ...mapGetters('profile/dialogs', ['unreadedMessages']),
@@ -95,6 +101,41 @@ export default {
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 
+.form-layout__main
+  margin auto 0
+
+.main-layout__logotype
+  z-index 1000
+  display inline-flex
+  align-items center
+  white-space nowrap
+  padding 10px
+  border-radius 10px
+  background #ffffff21
+  user-select none
+  pointer-events none
+  gap 10px
+  width 100%
+  max-width unset
+  p
+    font-size 25px
+    font-weight 300
+    text-transform uppercase
+  svg path:nth-child(3)
+    animation gradient 1s linear infinite
+
+@keyframes gradient {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 .main-layout__sidebar
   position fixed
   left 0
@@ -112,7 +153,6 @@ export default {
     width sidebar-width-xl
 
 .main-layout__logo
-  max-width 85px
   margin-bottom 100px
   display flex
   align-items center

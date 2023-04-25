@@ -9,25 +9,26 @@
       </div>
 
       <div class="profile__news">
-        <div class="profile__tabs profile__tab" @click="changeTab('')">Мои публикации</div>
+        <div class="profile__tabs__title">Мои публикации</div>
 
         <div class="profile__tabs">
-          <span
+          <a
+            href="#"
             class="profile__tab"
-            @click="changeTab('POSTED')"
-            :class="{ active: activeTab === 'POSTED' }"
+            @click.prevent="setActive('publications')"
+            :class="{ 'friends__tabs__link active': isActive('publications') }"
           >
-            Опубликованные ({{ getWallPagination.totalElements }})
-          </span>
+            Опубликованные ({{ filteredWall.posted.length || 0 }})
+          </a>
 
-          <span
+          <a
+            href="#"
             class="profile__tab"
-            @click="changeTab('QUEUED')"
-            :class="{ active: activeTab === 'QUEUED' }"
-            v-if="getWallQueuedLength > 0"
+            @click.prevent="setActive('queuedPublications')"
+            :class="{ 'friends__tabs__link active': isActive('queuedPublications') }"
           >
-            Отложенные ({{ getWallQueuedLength }})
-          </span>
+            Запланированные ({{ getWallQueuedLength }})
+          </a>
         </div>
 
         <div class="profile__add">
@@ -37,14 +38,39 @@
         <div class="profile__news-list">
           <error-block v-if="!loading && error" :message="errorMessage" />
 
-          <news-block
-            edit="edit"
-            deleted="deleted"
-            :deffered="activeTab === 'QUEUED'"
-            v-for="news in getWall"
-            :key="news.id"
-            :info="news"
-          />
+          <div
+            class="profile__news-list"
+            :class="{ 'active': isActive('publications') }"
+            v-if="activeItem === 'publications'"
+          >
+            <news-block
+              edit="edit"
+              deleted="deleted"
+              :queued="false"
+              v-for="news in filteredWall.posted"
+              :key="news.id"
+              :info="news"
+            />
+          </div>
+
+          <div
+            class="profile__news-list"
+            :class="{ 'active': isActive('queuedPublications') }"
+            v-if="activeItem === 'queuedPublications'"
+          >
+            <news-block
+              edit="edit"
+              deleted="deleted"
+              :queued="true"
+              v-for="news in filteredWall.queued"
+              :key="news.id"
+              :info="news"
+            />
+          </div>
+
+        </div>
+
+        <div class="profile__news-list">
 
           <div class="spinner-wrapper" v-if="loading">
             <spinner />
@@ -77,13 +103,20 @@ export default {
   components: { ProfileInfo, NewsAdd, NewsBlock, Spinner, ErrorBlock, AutoPaginator, WeatherBlock },
 
   data: () => ({
-    activeTab: 'POSTED',
+    activeItem: 'publications',
   }),
 
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
     ...mapGetters('users/info', ['getWall', 'getWallQueuedLength', 'getWallPagination']),
     ...mapState('global/status', ['loading', 'error', 'errorMessage']),
+
+    filteredWall() {
+      const wall = this.getWall;
+      const posted = wall.filter(item => item.type === 'POSTED');
+      const queued = wall.filter(item => item.type === 'QUEUED');
+      return { posted, queued };
+    }
   },
 
   async created() {
@@ -112,8 +145,11 @@ export default {
       });
     },
 
-    changeTab(tab) {
-      this.activeTab = tab;
+    isActive (menuItem) {
+      return this.activeItem === menuItem
+    },
+    setActive (menuItem) {
+      this.activeItem = menuItem
     },
   },
 };
@@ -124,9 +160,19 @@ export default {
   .inner-page__main
     max-width 100%
     margin-right 0
+  &__title
+    font-family 'Exo', Arial, sans-serif
+    font-weight 200
+    font-size 30px
+    color #1d1d2b
 
 .profile__info-top
   display grid
   grid-template-columns 1100px 1fr
   gap 50px
+
+.profile__news-list
+  display flex
+  flex-direction column
+  gap 20px
 </style>

@@ -9,9 +9,10 @@
         <template v-if="feeds">
           <div class="news__list" v-if="getInfo">
             <news-block
-              v-for="feed in feeds"
+              v-for="feed in filteredWall.posted"
               :key="feed.id"
               :info="feed"
+              :queued="false"
               :edit="getInfo.id === feed.author.id"
               :deleted="getInfo.id === feed.author.id"
             />
@@ -60,6 +61,13 @@ export default {
     ...mapState('global/status', ['loading', 'error', 'errorMessage']),
     ...mapGetters('profile/info', ['getInfo']),
     ...mapState('profile/feeds', ['feeds', 'feedsPagination']),
+
+    filteredWall() {
+      const wall = this.feeds;
+      const posted = wall.filter(item => item.type === 'POSTED');
+      const queued = wall.filter(item => item.type === 'QUEUED');
+      return { posted, queued };
+    }
   },
 
   methods: {
@@ -89,6 +97,9 @@ export default {
   border-radius 10px
 
 .news__list
+  display flex
+  flex-direction column
+  gap 20px
   margin-bottom 30px
 </style>
 

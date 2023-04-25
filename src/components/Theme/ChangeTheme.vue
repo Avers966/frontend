@@ -139,6 +139,18 @@ export default {
     background #1d1d1d
     color #d7d7d7
 
+  .news-block__deffered-text
+    color #fafafa
+    padding 5px 10px
+    background #191919
+    border-radius 5px
+
+  .news-block__changed-time
+    color #fafafa
+    padding 5px 10px
+    background #191919
+    border-radius 5px
+
   .error
     &__title
       color #fff

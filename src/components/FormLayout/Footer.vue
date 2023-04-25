@@ -7,7 +7,7 @@
       <span class="active" @click="toggleLanguageBlock">{{ getActiveLanguage }}</span>
     </div>
 
-    <span class="form-layout__footer-copyright"> © Copyright {{ year }} ZERONE </span>
+    <span class="form-layout__footer-copyright"> © Copyright {{ year }} Code Lounge. </span>
   </div>
 </template>
 

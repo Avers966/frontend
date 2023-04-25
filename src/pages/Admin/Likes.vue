@@ -149,7 +149,7 @@ export default defineComponent({
       const firstMonthOfYear = today.startOf('year').format('YYYY-MM-DD');
 
       setTimeout(() => {
-        axios.get(`/admin-console/statistic/like?date=${formattedToday}T00:00:00.735Z&firstMonth=${firstMonthOfYear}T00:00:00.735Z&lastMonth=${lastDayOfYear}T00:00:00.735Z`)
+        axios.get(`/admin-console/statistic/likes?date=${formattedToday}T00:00:00.735Z&firstMonth=${firstMonthOfYear}T00:00:00.735Z&lastMonth=${lastDayOfYear}T00:00:00.735Z`)
         .then(response => this.statsDataLikes = response.data)
         .catch(() => {
           this.statisticsError = true;

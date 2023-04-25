@@ -66,6 +66,10 @@ export default {
   },
 
   actions: {
+    async updateFriends({ dispatch }, payload) {
+      await dispatch('apiFriends', payload);
+    },
+
     async apiFriends({ commit }, payload = '') {
       const query = createQuery(payload);
       const { data } = await friends.get(query);
@@ -79,7 +83,10 @@ export default {
     async apiDeleteFriends({ dispatch }, id) {
       await friends.delete(id);
       dispatchSetAlert(dispatch, 'Пользователь удален из друзей');
-      dispatch('apiFriends');
+      dispatch('apiFriends', null, { root: true });
+      dispatch('global/search/searchUsers', 'global/search/getLastSearchUsersRequest', {
+        root: true,
+      });
     },
 
     async apiAddFriends({ dispatch, getters, rootGetters }, { id, isApprove = false }) {

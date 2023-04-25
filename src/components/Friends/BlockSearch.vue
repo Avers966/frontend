@@ -61,7 +61,15 @@
         </template>
         <template v-else>
           <div
-            v-if="subscribeButton"
+            v-if="info.statusCode === 'WATCHING' && info.statusCode !== 'FRIEND'"
+            class="friends-block__actions-block message subscribe__icon"
+            @click="openModal('deleteSubscribe')"
+          >
+            <span>Отписаться</span>
+            <simple-svg :filepath="'/static/img/delete.svg'" />
+          </div>
+          <div
+            v-else-if="info.statusCode !== 'FRIEND' && info.statusCode !== 'REQUEST_TO' && info.statusCode !== 'BLOCKED' && info.statusCode !== 'REQUEST_FROM'"
             class="friends-block__actions-block message subscribe__icon"
             @click="subscribe(info.id)"
           >
@@ -69,7 +77,7 @@
             <simple-svg :filepath="'/static/img/sidebar/admin/comments.svg'" />
           </div>
           <div
-            v-if="acceptButton"
+            v-if="info.statusCode === 'REQUEST_FROM'"
             class="friends-block__actions-block message"
             @click="acceptFriendRequest(info.id)"
           >
@@ -79,6 +87,7 @@
           <div
             class="friends-block__actions-block message"
             @click="sendMessage(messageId)"
+            v-if="info.statusCode !== 'BLOCKED'"
           >
             <span>Cообщение</span>
             <simple-svg :filepath="'/static/img/sidebar/im.svg'" />
@@ -86,15 +95,23 @@
           <div
             class="friends-block__actions-block delete"
             @click="openModal('delete')"
-            v-if="friend"
+            v-if="info.statusCode === 'FRIEND'"
           >
-            <span>Удалить</span>
+            <span>Удалить из друзей</span>
+            <simple-svg :filepath="'/static/img/delete.svg'" />
+          </div>
+          <div
+            class="friends-block__actions-block delete"
+            @click="openModal('cancelFriend')"
+            v-else-if="info.statusCode === 'REQUEST_TO'"
+          >
+            <span>Отменить заявку</span>
             <simple-svg :filepath="'/static/img/delete.svg'" />
           </div>
           <div
             class="friends-block__actions-block add"
             @click="addToFriend(info.id)"
-            v-else
+            v-else-if="info.statusCode !== 'WATCHING' && info.statusCode !== 'REQUEST_TO' && info.statusCode !== 'BLOCKED' && info.statusCode !== 'REQUEST_FROM'"
           >
             <span>Добавить в друзья</span>
             <simple-svg :filepath="'/static/img/friend-add.svg'" />
@@ -178,6 +195,10 @@ export default {
       return this.info.isOnline ? 'онлайн' : 'не в сети';
     },
 
+    friends() {
+      return this.$store.state.friends
+    },
+
     online() {
       return this.info.isOnline;
     },
@@ -208,6 +229,14 @@ export default {
         text = `Вы уверены, что хотите удалить пользователя ${
           this.info.firstName + ' ' + this.info.lastName
         } из друзей?`;
+      } else if (this.modalType === 'deleteSubscribe') {
+        text = `Вы уверены, что хотите отписаться от пользователя ${
+          this.info.firstName + ' ' + this.info.lastName
+        }?`;
+      } else if (this.modalType === 'cancelFriend') {
+        text = `Вы уверены, что хотите отменить запрос в дружбу с ${
+          this.info.firstName + ' ' + this.info.lastName
+        }?`;
       } else if (this.modalType === 'deleteModerator') {
         text = `Вы уверены, что хотите удалить ${
           this.info.firstName + ' ' + this.info.lastName
@@ -250,80 +279,21 @@ export default {
     ...mapActions('users/actions', ['apiBlockUser', 'apiUnblockUser']),
 
     acceptFriendRequest(id) {
-      if (this.info.statusCode === 'FRIEND') {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'action',
-          text: 'Этот пользователь уже является вашим другом!',
-        });
-        return;
-      }
       this.apiAddFriends({ id, isApprove: true });
+      this.$nextTick();
+      this.$forceUpdate();
     },
 
     addToFriend(id) {
-      if (this.info.statusCode === 'REQUEST_TO') {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'action',
-          text: 'Вы уже отправляли запрос на добавления в друзья этому пользователю!',
-        });
-        return;
-      }
-      if (this.info.statusCode === 'FRIEND') {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'action',
-          text: 'Этот пользователь уже является вашим другом!',
-        });
-        return;
-      }
-      if (this.info.statusCode === 'BLOCKED') {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'action',
-          text: 'Вы заблокировали этого пользователя!',
-        });
-        return;
-      }
-      if (this.info.statusCode === 'SUBSCRIBED') {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'action',
-          text: 'Этот пользователь среди ваших подписчиков, для добавления в друзья необходимо удалить его из списка подписчиков!',
-        });
-        return;
-      }
-      if (
-        this.info.statusCode !== 'NONE' &&
-        this.info.statusCode !== null &&
-        this.info.statusCode == 'WATCHING'
-      ) {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'action',
-          text: 'У вас уже есть отношения с этим пользователем, чтобы подписаться необходимо остановить другие отношения!',
-        });
-        return;
-      }
       this.apiAddFriends({ id });
-
+      this.$nextTick();
+      this.$forceUpdate();
     },
 
     subscribe(id) {
-      if (this.info.statusCode === 'WATCHING') {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'action',
-          text: 'Вы уже подписаны на этого пользователя!',
-        });
-        return;
-      }
-      if (
-        this.info.statusCode !== 'NONE' &&
-        this.info.statusCode !== null &&
-        this.info.statusCode !== 'WATCHING'
-      ) {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'action',
-          text: 'У вас уже есть отношения с этим пользователем, чтобы подписаться необходимо остановить другие отношения!',
-        });
-        return;
-      }
       this.apiSubscribe(id);
+      this.$nextTick();
+      this.$forceUpdate();
     },
 
     closeModal() {
@@ -340,21 +310,56 @@ export default {
     },
 
     async onConfrim(id) {
-      if (this.modalType === 'delete') {
-        this.apiDeleteFriends(id).then(() => this.closeModal());
-      } else if (this.modalType === 'deleteModerator') {
-        console.log('delete moderator');
-      } else if (this.modalType === 'block') {
-        this.apiBlockUser(id).then(() => {
-          this.blocked = true; // обновляем значение "blocked" внутри компонента
-          this.closeModal();
-        });
-      } else if (this.modalType === 'unblock') {
-        this.apiUnblockUser(id).then(() => {
-          this.blocked = false; // обновляем значение "blocked" внутри компонента
-          this.closeModal();
-        });
-      }
+
+    if (this.modalType === 'delete') {
+      this.apiDeleteFriends(id).then(() => {
+        this.closeModal();
+        this.$nextTick();
+        this.$forceUpdate();
+      });
+    }
+
+    if (this.modalType === 'deleteSubscribe') {
+      this.apiDeleteFriends(id).then(() => {
+        this.closeModal();
+        this.$nextTick();
+        this.$forceUpdate();
+      });
+    }
+
+    if (this.modalType === 'cancelFriend') {
+      this.apiDeleteFriends(id).then(() => {
+        this.closeModal();
+        this.$nextTick();
+        this.$forceUpdate();
+      });
+    }
+
+    if (this.modalType === 'deleteModerator') {
+      this.closeModal();
+      this.$nextTick()
+      this.$forceUpdate();
+    }
+
+    if (this.modalType === 'block') {
+      this.apiBlockUser(id).then(() => {
+        this.blocked = true;
+        this.closeModal();
+        this.$nextTick();
+        this.$forceUpdate();
+      });
+    }
+
+    if (this.modalType === 'unblock') {
+      this.apiUnblockUser(id).then(() => {
+        this.blocked = false;
+        this.closeModal();
+        this.$nextTick();
+        this.$forceUpdate();
+      });
+    }
+        this.$nextTick();
+        this.$forceUpdate();
     },
 
     toggleDropdown() {

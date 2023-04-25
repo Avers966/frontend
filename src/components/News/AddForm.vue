@@ -6,13 +6,13 @@
 
     <form class="news-add__main" action="#">
       <div class="news-add__text">
-        <input
+        <textarea
           class="news-add__text-title"
           placeholder="Дайте тему"
           v-model="title"
           maxlength="200"
           v:pattern="200"
-          type="text"
+          type="textarea"
         />
         <div v-if="src">
           <img :src="src" :alt="'photo'" class="post-image" />

@@ -1,5 +1,9 @@
 <template>
   <div class="form-layout__main">
+    <div class="form-layout__logo">
+      <p>Code Lounge</p>
+      <main-logotype :width="35" :height="35"/>
+    </div>
     <h1 class="form-layout__title">{{ info.title }}</h1>
     <p class="form-layout__text">{{ info.text }}</p>
     <p class="form-layout__descr" v-if="info.descr">{{ info.descr }}</p>
@@ -26,9 +30,12 @@
 </template>
 
 <script>
+import MainLogotype from '../../Icons/MainLogotype.vue';
 import { mapGetters } from 'vuex';
+
 export default {
   name: 'FormLayoutInfo',
+  components: { MainLogotype },
   data: () => ({
     language: '',
     isOpenLanguageBlock: false,
@@ -47,6 +54,38 @@ export default {
 
 .form-layout__main
   margin auto 0
+
+.form-layout__logo
+  position absolute
+  top 75px
+  left 150px
+  z-index 1000
+  display inline-flex
+  padding 10px
+  border-radius 10px
+  background #ffffff21
+  user-select none
+  pointer-events none
+  gap 10px
+  max-width unset
+  p
+    font-size 25px
+    font-weight 300
+    text-transform uppercase
+  svg path:nth-child(3)
+    animation gradient 1s linear infinite
+
+@keyframes gradient {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 
 .form-layout__title
   font-family font-exo

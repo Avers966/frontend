@@ -280,13 +280,31 @@ export default {
           status: 'error',
           text: 'Поле "Имя" является обязательным',
         });
-        return
+        return;
       } else if (!this.$refs.lastName.validate()) {
         this.$store.dispatch('global/alert/setAlert', {
           status: 'error',
           text: 'Поле "Фамилия" является обязательным',
         });
-        return
+        return;
+      } else if (this.lastName.length < 3 && this.firstName.length < 3) {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'error',
+          text: 'Имя и Фамилия не могут быть короче 3-ёх символов',
+        });
+        return;
+      } else if (this.firstName.length < 3) {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'error',
+          text: 'Имя не может быть короче 3-ёх символов',
+        });
+        return;
+      } else if (this.lastName.length < 3) {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'error',
+          text: 'Фамилия не может быть короче 3-ёх символов',
+        });
+        return;
       }
 
       if (this.photoPath) {

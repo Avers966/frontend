@@ -72,9 +72,6 @@ export default {
   flex none
   height 100%
 
-.form-layout__logo
-  max-width 85px
-
 .form-layout__form
   width 100%
   color #fff
@@ -83,6 +80,27 @@ export default {
   overflow-y auto
   height 100vh
 
-  @media (max-width breakpoint-xxl)
-    padding 50px 2.3%
+@media (min-width: 320px) and (max-width: 768px)
+  .form-layout
+    display flex
+    flex-direction column
+    height unset
+    overflow hidden
+    &__info
+      max-width unset
+    &__container
+      padding 40px 20px 40px 20px
+    &__btn
+      margin-left 0
+    &__language
+      display none
+    &__footer
+      padding-top 20px
+      &-language
+        display none
+    &__form
+      height unset
+    .login__link
+      margin-left 10px
+
 </style>

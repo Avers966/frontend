@@ -197,6 +197,8 @@ export default {
   watch: {
     friends() {
       this.localFriends = this.friends;
+      this.$nextTick();
+      this.$forceUpdate();
     },
   },
 
@@ -209,6 +211,11 @@ export default {
 
   methods: {
     ...mapActions('profile/friends', ['apiFriends']),
+
+    async refreshData() {
+      const newPayload = { statusCode: null, pageSize: 10 }; // новое значение payload
+      await this.$store.dispatch('updateFriends', newPayload);
+    },
 
     isActive (menuItem) {
       return this.activeItem === menuItem

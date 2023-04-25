@@ -1,158 +1,227 @@
 <!-- eslint-disable vue/html-indent -->
 <template>
-  <div class="news-block" :class="{ deffered, 'news-block--admin': admin }">
-    <add-form
-      v-if="isEditNews"
-      :info="info"
-      edit="edit"
-      :deffered="deffered"
-      @submit-complete="toggleEditNews"
-      @close-form="toggleEditNews"
-    />
-
-    <template v-else>
-      <template v-if="!admin">
-        <div class="edit">
-          <div class="edit__icon" v-if="deleted" @click="deleteNews">
-            <delete-news-icon />
-          </div>
-
-          <div class="edit__icon" v-if="edit" @click="toggleEditNews">
-            <edit-icon />
-          </div>
-        </div>
-      </template>
-
+  <div>
+    <div v-if="queued" class="news-block queued-news__block">
+      <add-form
+        v-if="isEditNews"
+        :info="info"
+        edit="edit"
+        :deffered="deffered"
+        @submit-complete="toggleEditNews"
+        @close-form="toggleEditNews"
+      />
       <template v-else>
-        <div class="edit" v-tooltip.bottom="'Разблокировать'" v-if="blocked">
-          <simple-svg :filepath="'/static/img/unblocked.svg'" />
-        </div>
-
-        <div class="edit" v-tooltip.bottom="'Заблокировать'" v-else>
-          <simple-svg :filepath="'/static/img/blocked.svg'" />
-        </div>
-      </template>
-
-      <div class="news-block__deffered" v-if="deffered">
-        <span class="news-block__deffered-text">
-          Дата и время публикации:
-          {{ info.time | moment('LLLL') }} (будет опубликован {{ info.publishDate | moment('LLLL') }})
-        </span>
-      </div>
-
-      <div class="news-block__author" v-if="!deffered">
-        <router-link class="news-block__author-pic" :to="routerLink(info.author.id)">
-          <div class="main-layout__user-pic">
-            <img
-              v-if="info.author.photo"
-              :src="info.author.photo"
-              :alt="info.author.firstName[0] + ' ' + info.author.lastName[0]"
-            />
-
-            <div v-else>
-              {{ info.author.firstName[0] + ' ' + info.author.lastName[0] }}
+        <template v-if="!admin">
+          <div class="edit">
+            <div class="edit__icon" v-if="deleted" @click="deleteNews">
+              <delete-news-icon />
+            </div>
+            <div class="edit__icon" v-if="edit" @click="toggleEditNews">
+              <edit-icon />
             </div>
           </div>
-        </router-link>
-
-        <div class="news-block__author-info">
-          <router-link class="news-block__author-name" :to="routerLink(info.author.id)">
-            {{ info.author.firstName + ' ' + info.author.lastName }}
-          </router-link>
-
-          <span class="news-block__author-time">
-            Опубликован {{ info.time | moment('from') }}
-          </span>
-
-          <span class="news-block__changed-time" v-if="info.timeChanged">
-            Изменен {{ info.timeChanged | moment('from') }}
-          </span>
-        </div>
-      </div>
-
-      <div class="news-block__content">
-        <div class="news-block__content-main">
-          <h3 class="news-block__content-title">{{ info.title }}</h3>
-
-          <div v-if="info.imagePath">
-            <img class="post-image" :src="info.imagePath" :alt="'photo'" />
+        </template>
+        <template v-else>
+          <div class="edit" v-tooltip.bottom="'Разблокировать'" v-if="blocked">
+            <simple-svg :filepath="'/static/img/unblocked.svg'" />
           </div>
-
-          <p
-            class="news-block__content-text"
-            ref="text"
-            :class="{ lotText: isLotText, open: openText }"
-            v-html="info.postText"
-          />
-
-          <a class="news-block__content-more" href="#" v-if="isLotText" @click.prevent="toggleText">
-            <template v-if="openText">Скрыть</template>
-            <template v-else>Читать весь пост</template>
-          </a>
+          <div class="edit" v-tooltip.bottom="'Заблокировать'" v-else>
+            <simple-svg :filepath="'/static/img/blocked.svg'" />
+          </div>
+        </template>
+        <div class="news-block__deffered" v-if="queued">
+          <span class="news-block__deffered-text">
+            Дата и время публикации:
+            {{ info.time | moment('LLLL') }} (будет опубликован {{ info.publishDate | moment('LLLL') }})
+          </span>
         </div>
-
-        <ul class="news-block__content-tags" v-if="info.tags && info.tags.length > 0">
-          <li class="news-block__content-tag" v-for="(tag, index) in info.tags" :key="index">
-            <router-link :to="{ name: 'Search', query: { tab: 'news', tags: tag.name } }">
-              {{ '#' + tag.name }}
+        <div class="news-block__author">
+          <router-link class="news-block__author-pic" :to="routerLink(info.author.id)">
+            <div class="main-layout__user-pic">
+              <img
+                v-if="info.author.photo"
+                :src="info.author.photo"
+                :alt="info.author.firstName[0] + ' ' + info.author.lastName[0]"
+              />
+              <div v-else>
+                {{ info.author.firstName[0] + ' ' + info.author.lastName[0] }}
+              </div>
+            </div>
+          </router-link>
+          <div class="news-block__author-info">
+            <router-link class="news-block__author-name" :to="routerLink(info.author.id)">
+              {{ info.author.firstName + ' ' + info.author.lastName }}
             </router-link>
-          </li>
-        </ul>
-      </div>
-
-      <div class="news-block__actions" v-if="!deffered && !admin">
-        <div class="news-block__actions-block">
-          <like-comment
-            :quantity="info.likeAmount"
-            width="16px"
-            height="16px"
-            font-size="15px"
-            @liked="likeAction"
-            :active="info.myLike"
+            <span class="news-block__author-time">
+              Опубликован {{ info.time | moment('from') }}
+            </span>
+            <span class="news-block__changed-time" v-if="info.timeChanged">
+              Изменен {{ info.timeChanged | moment('from') }}
+            </span>
+          </div>
+        </div>
+        <div class="news-block__content">
+          <div class="news-block__content-main">
+            <h3 class="news-block__content-title">{{ info.title }}</h3>
+            <div v-if="info.imagePath">
+              <img class="post-image" :src="info.imagePath" :alt="'photo'" />
+            </div>
+            <p
+              class="news-block__content-text"
+              ref="text"
+              :class="{ lotText: isLotText, open: openText }"
+              v-html="info.postText"
+            />
+            <a class="news-block__content-more" href="#" v-if="isLotText" @click.prevent="toggleText">
+              <template v-if="openText">Скрыть</template>
+              <template v-else>Читать весь пост</template>
+            </a>
+          </div>
+          <ul class="news-block__content-tags" v-if="info.tags && info.tags.length > 0">
+            <li class="news-block__content-tag" v-for="(tag, index) in info.tags" :key="index">
+              <router-link :to="{ name: 'Search', query: { tab: 'news', tags: tag.name } }">
+                {{ '#' + tag.name }}
+              </router-link>
+            </li>
+          </ul>
+        </div>
+      </template>
+    </div>
+    <div v-if="!queued" class="news-block" :class="{ deffered, 'news-block--admin': admin }">
+      <add-form
+        v-if="isEditNews"
+        :info="info"
+        edit="edit"
+        :deffered="deffered"
+        @submit-complete="toggleEditNews"
+        @close-form="toggleEditNews"
+      />
+      <template v-else>
+        <template v-if="!admin">
+          <div class="edit">
+            <div class="edit__icon" v-if="deleted" @click="deleteNews">
+              <delete-news-icon />
+            </div>
+            <div class="edit__icon" v-if="edit" @click="toggleEditNews">
+              <edit-icon />
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <div class="edit" v-tooltip.bottom="'Разблокировать'" v-if="blocked">
+            <simple-svg :filepath="'/static/img/unblocked.svg'" />
+          </div>
+          <div class="edit" v-tooltip.bottom="'Заблокировать'" v-else>
+            <simple-svg :filepath="'/static/img/blocked.svg'" />
+          </div>
+        </template>
+        <div class="news-block__deffered" v-if="queued">
+          <span class="news-block__deffered-text">
+            Дата и время публикации:
+            {{ info.time | moment('LLLL') }} (будет опубликован {{ info.publishDate | moment('LLLL') }})
+          </span>
+        </div>
+        <div class="news-block__author">
+          <router-link class="news-block__author-pic" :to="routerLink(info.author.id)">
+            <div class="main-layout__user-pic">
+              <img
+                v-if="info.author.photo"
+                :src="info.author.photo"
+                :alt="info.author.firstName[0] + ' ' + info.author.lastName[0]"
+              />
+              <div v-else>
+                {{ info.author.firstName[0] + ' ' + info.author.lastName[0] }}
+              </div>
+            </div>
+          </router-link>
+          <div class="news-block__author-info">
+            <router-link class="news-block__author-name" :to="routerLink(info.author.id)">
+              {{ info.author.firstName + ' ' + info.author.lastName }}
+            </router-link>
+            <span class="news-block__author-time">
+              Опубликован {{ info.time | moment('from') }}
+            </span>
+            <span class="news-block__changed-time" v-if="info.timeChanged">
+              Изменен {{ info.timeChanged | moment('from') }}
+            </span>
+          </div>
+        </div>
+        <div class="news-block__content">
+          <div class="news-block__content-main">
+            <h3 class="news-block__content-title">{{ info.title }}</h3>
+            <div v-if="info.imagePath">
+              <img class="post-image" :src="info.imagePath" :alt="'photo'" />
+            </div>
+            <p
+              class="news-block__content-text"
+              ref="text"
+              :class="{ lotText: isLotText, open: openText }"
+              v-html="info.postText"
+            />
+            <a class="news-block__content-more" href="#" v-if="isLotText" @click.prevent="toggleText">
+              <template v-if="openText">Скрыть</template>
+              <template v-else>Читать весь пост</template>
+            </a>
+          </div>
+          <ul class="news-block__content-tags" v-if="info.tags && info.tags.length > 0">
+            <li class="news-block__content-tag" v-for="(tag, index) in info.tags" :key="index">
+              <router-link :to="{ name: 'Search', query: { tab: 'news', tags: tag.name } }">
+                {{ '#' + tag.name }}
+              </router-link>
+            </li>
+          </ul>
+        </div>
+        <div class="news-block__actions" v-if="!queued && !admin">
+          <div class="news-block__actions-block">
+            <like-comment
+              :quantity="info.likeAmount"
+              width="16px"
+              height="16px"
+              font-size="15px"
+              @liked="likeAction"
+              :active="info.myLike"
+              :id="info.id"
+            />
+          </div>
+          <div
+            class="news-block__actions-block news-block__comments-btn"
+            @click="toggleComments"
+            :title="!openCommnets ? 'Посмотреть комментарии' : 'Скрыть комментарии'"
+          >
+            <like-comment
+              :quantity="info.commentsCount"
+              width="16px"
+              height="16px"
+              font-size="15px"
+              color="#21a45d"
+              comment="comment"
+            />
+          </div>
+        </div>
+        <div class="news-block__comments" v-if="!queued && openCommnets">
+          <comments
+            :admin="admin"
+            :info="currentComments"
             :id="info.id"
+            :edit="edit"
+            :deleted="deleted"
           />
+          <button-hover
+            variant="fill"
+            bordered="bordered"
+            v-if="
+              currentComments &&
+              currentComments.totalPages !== 0 &&
+              currentComments.page + 1 !== currentComments.totalPages
+            "
+            class="comments__more"
+            @click.native="showMore"
+          >
+            Ещё комментарии
+          </button-hover>
         </div>
-
-        <div
-          class="news-block__actions-block news-block__comments-btn"
-          @click="toggleComments"
-          :title="!openCommnets ? 'Посмотреть комментарии' : 'Скрыть комментарии'"
-        >
-          <like-comment
-            :quantity="info.commentsCount"
-            width="16px"
-            height="16px"
-            font-size="15px"
-            color="#21a45d"
-            comment="comment"
-          />
-        </div>
-      </div>
-
-      <div class="news-block__comments" v-if="!deffered && openCommnets">
-        <comments
-          :admin="admin"
-          :info="currentComments"
-          :id="info.id"
-          :edit="edit"
-          :deleted="deleted"
-        />
-
-        <button-hover
-          variant="fill"
-          bordered="bordered"
-          v-if="
-            currentComments &&
-            currentComments.totalPages !== 0 &&
-            currentComments.page + 1 !== currentComments.totalPages
-          "
-          class="comments__more"
-          @click.native="showMore"
-        >
-          Ещё комментарии
-        </button-hover>
-      </div>
-    </template>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -194,6 +263,10 @@ export default {
     admin: Boolean,
     blocked: Boolean,
     deleted: Boolean,
+    queued: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data: () => ({
@@ -270,6 +343,16 @@ export default {
 .post-image
   width 400px
 
+.queued-news__block .news-block__content-main
+  border-bottom none !important
+
+.queued-news__block .news-block__author
+  padding-top 30px
+
+.queued-news__block .edit
+  top 65px
+
+
 .news-block
   background #FFFFFF
   box-shadow standart-boxshadow
@@ -297,14 +380,16 @@ export default {
       transform scale(1.2)
 
 .news-block__deffered
-  position relative
-  height 45px
+  position absolute
+  top 15px
+  left 20px
   margin-bottom 20px
   display flex
 
 .news-block__deffered-text
   color #5F5E7A
   font-size 16px
+
 
 .news-block__author
   margin-bottom 20px
