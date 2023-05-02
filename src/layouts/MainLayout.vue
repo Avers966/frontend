@@ -40,9 +40,6 @@ export default {
   margin-left sidebar-width
   height 100%
 
-  @media (max-width breakpoint-xxl)
-    margin-left sidebar-width-xl
-
 .main-layout__page
   padding-top header-height
   background-color white-lilac
@@ -50,7 +47,39 @@ export default {
   position relative
   z-index 1
 
-@media (max-width 1024px)
-  .main-layout__main
-    margin-left 120px
+@media (min-width: 320px) and (max-width: 768px)
+  .main-layout
+    flex-direction column
+    &__main
+      margin-left 0
+    &__sidebar
+      display flex
+      align-items center
+      flex-direction row
+      justify-content space-between
+      position unset
+      width 100%
+      overflow unset
+      padding 15px
+    &__logo
+      margin-bottom 0
+    &__logotype
+      flex-direction row-reverse
+      background transparent
+      padding 0
+      z-index unset
+      p
+        font-size 15px
+    &__link
+      margin-left 0
+      margin-right 0
+    &__header
+      position unset
+      left 0
+    &__page
+      padding  30px 15px
+      .inner-page
+        padding 0
+    .recommend-block
+      display none
 </style>

@@ -1,27 +1,22 @@
+<!-- eslint-disable max-len -->
 <template>
   <div class="friends-block" ref="dropdown" v-if="userInfo">
     <div class="friends-block__img">
       <img v-if="userInfo.photo" :src="userInfo.photo" :alt="userInfo.firstName" />
       <img v-else src="/static/img/avatar.png" :alt="userInfo.firstName" />
     </div>
-
     <div class="friends-block__info">
       <router-link class="friends-block__name" :to="{ name: 'ProfileId', params: { id: userInfo.id } }">
         {{ userInfo.firstName }}
         {{ userInfo.lastName }}
-        <span class="user-status" :class="{ online, offline: !online }">{{ statusText }}</span>
       </router-link>
-
       <span class="friends-block__age-city" v-if="moderator">модератор</span>
-
       <span class="friends-block__age-city" v-else-if="userInfo.birthDate && userInfo.country">
         {{ userInfo.birthDate | moment('from', true) }},
         {{ userInfo.city ? userInfo.city : (userInfo.country ? userInfo.country : 'не заполнено') }}
       </span>
-
       <span class="friends-block__age-city" v-else>профиль не заполнен</span>
     </div>
-
     <div>
       <button
         :class="{ 'friends-block__showmore': true, 'active': showDropdown }"
@@ -69,7 +64,7 @@
             <simple-svg :filepath="'/static/img/delete.svg'" />
           </div>
           <div
-            v-else-if="info.statusCode !== 'FRIEND' && info.statusCode !== 'REQUEST_TO' && info.statusCode !== 'BLOCKED' && info.statusCode !== 'REQUEST_FROM'"
+            v-else-if="info.statusCode !== 'FRIEND' && info.statusCode !== 'REQUEST_TO' && info.statusCode !== 'BLOCKED' && info.statusCode !== 'REQUEST_FROM' && info.statusCode !== 'SUBSCRIBED'"
             class="friends-block__actions-block message subscribe__icon"
             @click="subscribe(info.id)"
           >
@@ -92,6 +87,7 @@
             <span>Cообщение</span>
             <simple-svg :filepath="'/static/img/sidebar/im.svg'" />
           </div>
+          <!-- Добавление в друзья/отмена -->
           <div
             class="friends-block__actions-block delete"
             @click="openModal('delete')"
@@ -111,11 +107,12 @@
           <div
             class="friends-block__actions-block add"
             @click="addToFriend(info.id)"
-            v-else-if="info.statusCode !== 'WATCHING' && info.statusCode !== 'REQUEST_TO' && info.statusCode !== 'BLOCKED' && info.statusCode !== 'REQUEST_FROM'"
+            v-else-if="info.statusCode !== 'WATCHING' && info.statusCode !== 'REQUEST_TO' && info.statusCode !== 'BLOCKED' && info.statusCode !== 'REQUEST_FROM' && info.statusCode !== 'SUBSCRIBED'"
           >
             <span>Добавить в друзья</span>
             <simple-svg :filepath="'/static/img/friend-add.svg'" />
           </div>
+          <!-- Блокировка/разблокировка -->
           <div
             class="friends-block__actions-block"
             v-if="blocked || info.isBlocked || info.statusCode === 'BLOCKED'"
@@ -135,7 +132,6 @@
         </template>
       </div>
     </div>
-
     <modal v-model="modalShow">
       <p v-if="modalText">{{ modalText }}</p>
       <template slot="actions">
@@ -207,10 +203,6 @@ export default {
 
     getInfo() {
       return this.info.idFrom;
-    },
-
-    getInfoStatusCode() {
-      return this.info.statusCode;
     },
 
     currentUser() {
@@ -389,56 +381,47 @@ export default {
 
     async onConfrim(id) {
 
-    if (this.modalType === 'delete') {
-      this.apiDeleteFriends(id).then(() => {
-        this.closeModal();
-        this.$nextTick();
-        this.$forceUpdate();
-      });
-    }
+      if (this.modalType === 'delete') {
+        this.apiDeleteFriends(id).then(() => {
+          this.closeModal();
+        });
+      }
 
-    if (this.modalType === 'deleteSubscribe') {
-      this.apiDeleteFriends(id).then(() => {
-        this.closeModal();
-        this.$nextTick();
-        this.$forceUpdate();
-      });
-    }
+      if (this.modalType === 'deleteSubscribe') {
+        this.apiDeleteFriends(id).then(() => {
+          this.closeModal();
+        });
+      }
 
-    if (this.modalType === 'cancelFriend') {
-      this.apiDeleteFriends(id).then(() => {
-        this.closeModal();
-        this.$nextTick();
-        this.$forceUpdate();
-      });
-    }
+      if (this.modalType === 'cancelFriend') {
+        this.apiDeleteFriends(id).then(() => {
+          this.closeModal();
+        });
+      }
 
-    if (this.modalType === 'deleteModerator') {
-      this.closeModal();
-      this.$nextTick()
-      this.$forceUpdate();
-    }
-
-    if (this.modalType === 'block') {
-      this.apiBlockUser(id).then(() => {
-        this.blocked = true;
+      if (this.modalType === 'deleteModerator') {
         this.closeModal();
-        this.$nextTick();
-        this.$forceUpdate();
-      });
-    }
+      }
 
-    if (this.modalType === 'unblock') {
-      this.apiUnblockUser(id).then(() => {
-        this.blocked = false;
-        this.closeModal();
-        this.$nextTick();
-        this.$forceUpdate();
-      });
-    }
-        this.$nextTick();
-        this.$forceUpdate();
+      if (this.modalType === 'block') {
+        this.apiBlockUser(id).then(() => {
+          this.blocked = true;
+          this.closeModal();
+        });
+      }
+
+      if (this.modalType === 'unblock') {
+        this.apiUnblockUser(id).then(() => {
+          this.blocked = false;
+          this.closeModal();
+        });
+      }
+
+      setTimeout(() => {
+        location.reload()
+      }, 100)
     },
+
 
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
@@ -459,6 +442,14 @@ export default {
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+.v-enter-active,
+.v-leave-active
+  transition opacity .3s ease-in-out
+
+.v-enter-from
+.v-leave-to
+  opacity 0
 
 .accept path
   fill sea-green

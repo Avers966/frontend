@@ -55,6 +55,17 @@ export default {
 };
 </script>
 
+<style lang="stylus">
+@media (min-width: 320px) and (max-width: 768px)
+  .news-add
+    &__mask
+      padding 10px 20px
+      height unset
+    &__text-title
+      font-size 18px
+      padding-bottom 10px
+</style>
+
 <style lang="stylus" scoped>
 .avatar
   display flex

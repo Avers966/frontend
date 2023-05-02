@@ -72,7 +72,7 @@ export default {
 
         socket.onclose = (e) => {
           // Сервер недоступен
-          console.log('connecttion closed!!', { e });
+          console.log(`[close] Соединение закрыто чисто, код = ${e.code} причина = ${e.reason}`, { e });
           return;
         };
       },

@@ -11549,7 +11549,7 @@
     "loader-utils" "^1.1.0"
     "neo-async" "^2.6.0"
 
-"through@^2.3.6":
+"through@^2.3.6", "through@~2.3.4":
   "integrity" "sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg=="
   "resolved" "https://registry.npmjs.org/through/-/through-2.3.8.tgz"
   "version" "2.3.8"
@@ -12154,6 +12154,13 @@
     "assert-plus" "^1.0.0"
     "core-util-is" "1.0.2"
     "extsprintf" "^1.2.0"
+
+"vibrant@^0.0.1":
+  "integrity" "sha512-qs5u7xmnRdgEJcfPIk/T2FYwkuSZrv3GH4mjxOcEbZWWHtYYlIhF6NeRNcknUQ6q0fFueK9LY0M3xsWXd7M+eQ=="
+  "resolved" "https://registry.npmjs.org/vibrant/-/vibrant-0.0.1.tgz"
+  "version" "0.0.1"
+  dependencies:
+    "through" "~2.3.4"
 
 "vm-browserify@^1.0.1":
   "integrity" "sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ=="

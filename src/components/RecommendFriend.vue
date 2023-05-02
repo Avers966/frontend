@@ -1,10 +1,11 @@
 <template>
   <div class="recommend-block">
     <h3 class="recommend-block__title">Возможно вы их знаете</h3>
-    <ul v-if="userInfo.length > 0" class="recommend-block__list">
+    <ul v-if="userInfo?.length > 0" class="recommend-block__list">
       <li class="recommend-block__item" v-for="user in userInfo" :key="user?.id">
         <div>
-          <img class="recommend-block__img" :src="user?.photo" :alt="user?.firstName">
+          <img v-if="user.photo" class="recommend-block__img" :src="user?.photo" :alt="user?.firstName">
+          <img v-else class="recommend-block__img" src="/static/img/avatar.png" :alt="user?.firstName" />
 
           <router-link
             class="recommend-block__name"

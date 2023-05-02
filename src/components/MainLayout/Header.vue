@@ -55,6 +55,7 @@ export default {
 
   data: () => ({
     isOpenPush: false,
+    isOpenSearch: false,
   }),
 
   computed: {
@@ -149,6 +150,9 @@ export default {
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+.vt-notification-container
+  display none
 
 .main-layout__header
   background eucalypt
@@ -275,7 +279,36 @@ export default {
 .main-layout__user-post
   margin-left 5px
 
-@media (max-width 1024px)
-  .main-layout__header
-    left 120px
+@media (min-width: 320px) and (max-width: 768px)
+  .main-layout
+    &__header
+      display: grid
+      grid-template-areas "search push theme avatar"
+      grid-template-columns 30px 20px 1fr 120px
+      padding: 15px
+    &__search
+      width unset
+      max-width unset
+      margin-right unset
+      grid-area search
+    &__search-input
+      display none
+    &__push
+      display inline-block
+      margin-right unset
+      height unset
+      grid-area push
+    &__user
+      grid-area avatar
+      gap 10px
+    &__user-pic
+      margin-right 0
+    &__user-name
+      font-size 14px
+      font-weight 400
+    .theme-switch
+      grid-area theme
+      margin-right 10px
+      width 46px
+      margin-left auto
 </style>

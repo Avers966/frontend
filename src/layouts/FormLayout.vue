@@ -99,8 +99,18 @@ export default {
       &-language
         display none
     &__form
-      height unset
+      height 50vh
     .login__link
       margin-left 10px
+    &__logo
+      position unset
+      top unset
+      margin-bottom 30px
+      p
+        font-size 18px
+      svg
+        width 20px
+        height 20px
+
 
 </style>

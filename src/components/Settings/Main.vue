@@ -164,7 +164,7 @@ export default {
       { val: 10, text: 'Ноября' },
       { val: 11, text: 'Декабря' },
     ],
-    photoPath: '',
+    fileName: '',
     src: '',
     country: '',
     city: '',
@@ -307,10 +307,10 @@ export default {
         return;
       }
 
-      if (this.photoPath) {
-        await this.apiStorage(this.photoPath).then((response) => {
+      if (this.fileName) {
+        await this.apiStorage(this.fileName).then((response) => {
           this.photoName = response.data.photoName;
-          this.photoPath = response.data.fileName;
+          this.fileName = response.data.fileName;
         });
       }
 
@@ -323,19 +323,19 @@ export default {
         country: this.country,
         city: this.city,
         photoName: this.photoName,
-        photo: this.photoPath,
+        photo: this.fileName,
       }).then(() =>
       this.setStorage(null))
       this.$router.push('/profile');;
     },
 
     processFile(event) {
-      [this.photoPath] = event.target.files;
+      [this.fileName] = event.target.files;
       const reader = new window.FileReader();
       reader.onload = (e) => {
         this.src = e.target.result;
       };
-      reader.readAsDataURL(this.photoPath);
+      reader.readAsDataURL(this.fileName);
     },
 
     loadPhoto() {
@@ -343,7 +343,7 @@ export default {
     },
 
     deletePhoto() {
-      this.photoPath = '';
+      this.fileName = '';
       this.photoName = '';
       this.src = '';
       this.setStorage('');
@@ -389,9 +389,6 @@ export default {
 
   .user-info-form__label_stylus
     white-space pre-wrap
-
-  @media (max-width breakpoint-xl)
-    padding 40px 20px
 
 .settings-main__back
   margin-left 20px
@@ -516,4 +513,77 @@ export default {
   svg
     height 10px
     display block
+@media (min-width: 320px) and (max-width: 768px)
+  .settings
+    .aside-filter
+      background-color transparent !important
+      &__title
+        display block
+    .aside-filter
+      border-radius 0
+      background none
+      margin-bottom 20px
+      &__list
+        flex-direction column
+      &__item
+        padding 10px 0 10px 0
+        font-size 13px
+    &-main
+      width 100%
+      padding 15px
+    &-push
+      width 100% !important
+      padding 15px !important
+      &__name
+        font-size 10px !important
+      &__item
+        padding 10px 0 !important
+      &__icon
+        width 14px !important
+    .user-info-form__input_stylus
+      padding 10px
+      font-size 12px
+    .vs__selected-options
+      padding 10px
+      font-size 12px
+    .user-info-form__select
+      padding 10px
+      font-size 12px
+    .settings-push__check-label:after
+      width 30px
+    .settings-push__check-label:before
+      width 17px
+      height 17px
+      top -8px
+    .settings-push__check-input:checked + .settings-push__check-label:before
+      left 32%
+    .settings-security__block
+      width 100%
+      padding 15px
+    .settings-delete__title
+      font-size 14px
+      line-height 130%
+      max-width unset
+    .settings-delete__confirm-label
+      font-size 11px
+    .settings-delete__confirm-label:before
+      width 18px
+      height 15px
+      margin-right 15px
+    .settings-delete__confirm-label:after
+      width 0
+      height 8px
+      top 9px
+      left 6px
+    .settings-delete__confirm
+      margin-bottom 15px
+    .settings-delete__actions
+      .btn.btn--disable
+        margin 0
+      .btn.btn--warning
+        margin 0
+    .settings-delete__actions-link
+      font-size 12px
+    .settings-security__title
+      font-size 20px
 </style>

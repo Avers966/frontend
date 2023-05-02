@@ -101,6 +101,12 @@ export default {
   flex-direction column
   gap 20px
   margin-bottom 30px
+
+@media (min-width: 320px) and (max-width: 768px)
+  .inner-page
+    &__main__container
+      margin-right 0 !important
+
 </style>
 
 <style lang="stylus" scoped>

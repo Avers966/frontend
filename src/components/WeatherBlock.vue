@@ -86,18 +86,15 @@ export default {
 <style lang="stylus">
 .weather
   display flex
-  align-items flex-start
+  align-items center
   flex-direction column
   justify-content center
-  background #fff
-  padding 20px
-  max-height 162px
-  border-radius 10px
-  box-shadow 0px 2px 8px rgba(0,0,0,0.08)
   color #333
   &__city
+    font-size 20px
     text-transform uppercase
     font-weight 900
+    margin-bottom 10px
   &__title
     color #333
   &__top
@@ -126,4 +123,8 @@ export default {
     span
       display block
       color #a4a4a4
+
+@media (min-width: 320px) and (max-width: 768px)
+  .weather
+    display none
 </style>

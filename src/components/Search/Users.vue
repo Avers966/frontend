@@ -30,8 +30,8 @@ export default {
   data() {
     return {
       page: 1,
-      size: 5,
-      total: 20,
+      size: 10,
+      total: 5,
     };
   },
 

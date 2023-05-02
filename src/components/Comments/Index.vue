@@ -125,4 +125,6 @@ export default {
 .comments__list
   width 100%
   max-width 550px
+
+
 </style>

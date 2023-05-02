@@ -5,12 +5,9 @@
         <div class="profile__info">
           <profile-info me="me" online="online" :info="getInfo" />
         </div>
-        <weather-block />
       </div>
 
-      <div class="profile__news">
-        <div class="profile__tabs__title">Мои публикации</div>
-
+      <div class="profile__news" id="mypublications">
         <div class="profile__tabs">
           <a
             href="#"
@@ -95,12 +92,11 @@ import NewsBlock from '@/components/News/Block';
 import Spinner from '@/components/Spinner.vue';
 import ErrorBlock from '@/components/ErrorBlock.vue';
 import AutoPaginator from '@/components/AutoPaginator.vue';
-import WeatherBlock from '@/components/WeatherBlock.vue';
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex';
 
 export default {
   name: 'Profile',
-  components: { ProfileInfo, NewsAdd, NewsBlock, Spinner, ErrorBlock, AutoPaginator, WeatherBlock },
+  components: { ProfileInfo, NewsAdd, NewsBlock, Spinner, ErrorBlock, AutoPaginator },
 
   data: () => ({
     activeItem: 'publications',
@@ -165,14 +161,66 @@ export default {
     font-weight 200
     font-size 30px
     color #1d1d2b
+  &__tabs__title
+    cursor pointer
+    font-family 'Exo', Arial, sans-serif
+    font-weight 600
+    font-size 30px
+    margin-bottom 20px
+    color #000000
 
 .profile__info-top
   display grid
-  grid-template-columns 1100px 1fr
   gap 50px
+  margin-bottom 30px
 
 .profile__news-list
   display flex
   flex-direction column
   gap 20px
+
+@media (min-width: 320px) and (max-width: 768px)
+  .profile
+    &-info
+      padding 15px
+      flex-direction column
+      &__pic
+        margin-right 0
+        padding-left 0
+        padding-right 0
+        border-right 0
+      &__main
+        padding-top 10px
+      &__img
+        width 100px
+        height 100px
+      &__name
+        margin-bottom 0
+        font-size 23px
+      &__header
+        padding-bottom 10px
+        justify-content center
+        border-bottom 1px solid #e6e6e6
+        margin-bottom 15px
+      &__block
+        font-size 13px
+      &__title
+        max-width 125px
+      &__block:last-child
+        margin-top 20px
+    &__info
+      margin-bottom 0
+      &-top
+        grid-template-columns unset
+        gap 25px
+        margin-bottom 0
+    &__news
+      margin-top 20px
+    &__tabs
+      &__title
+        font-size 14px
+        margin-bottom 15px
+    &__tab
+      font-size 13px
+
 </style>

@@ -87,7 +87,7 @@
         </div>
       </template>
     </div>
-    <div v-if="!queued" class="news-block" :class="{ deffered, 'news-block--admin': admin }">
+    <div v-if="!queued" class="news-block" :class="{ deffered, 'news-block--admin': admin, 'news-block--edited': isEditNews }">
       <add-form
         v-if="isEditNews"
         :info="info"
@@ -516,4 +516,75 @@ export default {
 .news-block__actions-block
   & + &
     margin-left 30px
+
+@media (min-width: 320px) and (max-width: 768px)
+  .news-block
+    padding 25px 15px 15px 15px
+    .post-image
+      margin-bottom 15px
+    &__changed-time
+      left 10px
+      top 10px
+      padding 3px !important
+      font-size 9px
+    &__deffered
+      max-width 230px
+      top 5px
+      left 5px
+      &-text
+        font-size 9px
+
+    &--edited
+      padding 0
+    &__author-pic
+      width 40px
+      height 40px
+      .main-layout__user-pic
+        width 40px
+        height 40px
+    &__author-name
+      margin-bottom 0
+      font-size 13px
+    &__author-time
+      font-size 11px
+    &__author-info
+      font-size 13px
+    &__content-title
+      font-size 16px
+    &__content-text
+      font-size 13px
+    &__content-main
+      padding-bottom 10px
+    &__content
+      display flex
+      flex-direction column
+      &-tags
+        padding 15px 0 0 0
+        margin-left 0
+      &-tag a
+        font-size 11px
+        padding 5px
+    .comment-main
+      &__time
+        font-size 9px
+      &__author
+        margin-bottom 0
+        font-size 12px
+      &__text
+        margin-bottom 0
+      &__review
+        font-size 10px
+        margin-right auto
+      &__reviews
+        max-width calc(100% - 25px)
+        margin-top 0
+
+    &__actions
+      margin 15px 0
+    .edit
+      top 10px !important
+    .edit__icon
+      width 10px
+      svg
+        width 15px
 </style>

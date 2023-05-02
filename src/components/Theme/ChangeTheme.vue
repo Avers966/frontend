@@ -115,8 +115,25 @@ export default {
   *
     transition all .2s ease-in-out
 
+  .friend__search-title
+    color #fff
+
+  .friend__search-clear
+    background radial-gradient(248.22% 257.37% at 9.27% 93.95%, rgba(161,128,255,0.1) 0%, rgba(74,157,255,0.1) 50%, rgba(117,247,255,0.1) 100%)
+    background-color #3a3a48
+    border-color #383843
+    @media (any-hover: hover)
+      &:hover
+        background-color #292935
+
+  .friends_group_title.no-data
+    color #9e9e9e
+
   .news-block__content-text a
     color #8bc49e
+
+  .profile__tabs__title
+    color #8a8a8a
 
   .theme-switcher__button
     svg
@@ -130,6 +147,10 @@ export default {
     color #fff
   .vs__search::placeholder
     color #fff
+  .vs__selected-options input
+    color #fff
+  .vs__selected-options input::placeholder
+      color #fff
   .vs__clear
     fill #868686
   .vs__open-indicator
@@ -140,15 +161,13 @@ export default {
     color #d7d7d7
 
   .news-block__deffered-text
-    color #fafafa
+    color #7d7d7d
     padding 5px 10px
-    background #191919
     border-radius 5px
 
   .news-block__changed-time
-    color #fafafa
+    color #7d7d7d
     padding 5px 10px
-    background #191919
     border-radius 5px
 
   .error
@@ -201,6 +220,15 @@ export default {
     &__name
       color #fff
 
+  .settings-security__btn
+    background radial-gradient(248.22% 257.37% at 9.27% 93.95%, rgba(161,128,255,0.1) 0%, rgba(74,157,255,0.1) 50%, rgba(117,247,255,0.1) 100%)
+    background-color #464646
+    border none
+    color #ffffff
+    @media (any-hover: hover)
+      &:hover
+        background-color #545454
+
   .search-news__nonews
     color #fff
 
@@ -217,16 +245,6 @@ export default {
 
   .settings-security__value
     background-color transparent
-
-  .settings-security__btn
-    color #000
-    border-color #e2e2e2
-    @media (any-hover: hover)
-      &:hover
-        background #21a45d
-        border-color #21a45d
-        color #fff
-
 
   .aside-filter
     background-color #313135
@@ -402,14 +420,14 @@ export default {
       &__pic
         border-color #7d7d7d
 
-      &__name
-        color #fff
-
       &__title
         color #a4a4a4
 
       &__val
         color #fff
+
+      &__header
+        border-color #656565
 
   .weather
     background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
@@ -464,6 +482,7 @@ export default {
             background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
             background-color #313135
             border-color #313135
+            color #9e9e9e
           &:disabled
             background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
             background-color #313135

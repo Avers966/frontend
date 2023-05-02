@@ -45,19 +45,32 @@
 export default {
   model: {
     prop: 'page',
-    event: 'paginate',
+    event: 'paginate'
   },
   props: ['page', 'count', 'perPage'],
+
   computed: {
-    pages() {
-      return Math.ceil(this.count / this.perPage);
+    pages () {
+      return Math.ceil(this.count / this.perPage)
     },
+    prevPage () {
+      if (this.page === 1) {
+        return this.page
+      }
+      return this.page - 1
+    },
+    nextPage () {
+      if (this.page >= this.pages) {
+        return this.page
+      }
+      return this.page + 1
+    }
   },
   methods: {
-    paginate(page, letEmit) {
-      if (letEmit) this.$emit('paginate', page);
-    },
-  },
+    paginate (page) {
+      this.$emit('paginate', page)
+    }
+  }
 };
 </script>
 

@@ -3,8 +3,8 @@
     <div class="inner-page__main">
       <div class="friends__header">
         <div class="friends__header-left">
-          <h2 class="friends__title">Мои друзья</h2>
-          <div class="friends__search">
+          <h2 class="friends__title" :style="friends.length === 0 || activeTab === 'no-data' || activeTab === 'no-data-users' ? 'margin-bottom: 0' : ''">Мои друзья</h2>
+          <div class="friends__search" v-if="friends.length !== 0 && activeTab !== 'no-data' && activeTab !== 'no-data-users'">
             <div class="friends__search-icon">
               <search-icon />
             </div>
@@ -13,65 +13,63 @@
               class="friends__search-input"
               placeholder="Начните вводить имя друга..."
               v-model="firstName"
+              @keydown.enter="searchFriends"
             />
           </div>
         </div>
         <ul class="friends__tabs">
           <li class="friends__tabs__item" v-if="localFriends.REQUEST_FROM">
             <button
-              :class="{ 'friends__tabs__link active': isActive('application') }"
-              @click.prevent="setActive('application')"
+              :class="{ 'friends__tabs__link active': activeTab === 'REQUEST_FROM' }"
+              @click.prevent="setActive('REQUEST_FROM')"
             >
-              {{ 'Запросы в друзья' + ' ' + `(${localFriends.REQUEST_FROM?.length || 0})` }}
+              {{ 'Запросы в друзья' + ' ' + `(${paginations.REQUEST_FROM.totalElements || 0})` }}
             </button>
           </li>
+
           <li class="friends__tabs__item" v-if="localFriends.REQUEST_TO">
             <button
-              :class="{ 'friends__tabs__link active': isActive('outgoing') }"
-              @click.prevent="setActive('outgoing')"
+              :class="{ 'friends__tabs__link active': activeTab === 'REQUEST_TO' }"
+              @click.prevent="setActive('REQUEST_TO')"
             >
 
-              {{ 'Исходящие запросы' + ' ' + `(${localFriends.REQUEST_TO?.length || 0})` }}
+              {{ 'Исходящие запросы' + ' ' + `(${paginations.REQUEST_TO.totalElements || 0})` }}
             </button>
           </li>
+
           <li class="friends__tabs__item" v-if="localFriends.FRIEND">
             <button
-              :class="{ 'friends__tabs__link active': isActive('friends') }"
-              @click.prevent="setActive('friends')"
+              :class="{ 'friends__tabs__link active': activeTab === 'FRIEND' }"
+              @click.prevent="setActive('FRIEND')"
             >
-              {{ 'Друзья' + ' ' + `(${localFriends.FRIEND?.length || 0})` }}
+              {{ 'Друзья' + ' ' + `(${paginations.FRIEND.totalElements || 0})` }}
             </button>
           </li>
+
           <li class="friends__tabs__item" v-if="localFriends.SUBSCRIBED">
             <button
-              :class="{ 'friends__tabs__link active': isActive('subscribers') }"
-              @click.prevent="setActive('subscribers')"
+              :class="{ 'friends__tabs__link active': activeTab === 'SUBSCRIBED' }"
+              @click.prevent="setActive('SUBSCRIBED')"
             >
-              {{ 'Подписчики' + ' ' + `(${localFriends.SUBSCRIBED?.length || 0})` }}
+              {{ 'Подписчики' + ' ' + `(${paginations.SUBSCRIBED.totalElements || 0})` }}
             </button>
           </li>
+
           <li class="friends__tabs__item" v-if="localFriends.BLOCKED">
             <button
-              :class="{ 'friends__tabs__link active': isActive('blocked') }"
-              @click.prevent="setActive('blocked')"
+              :class="{ 'friends__tabs__link active': activeTab === 'BLOCKED' }"
+              @click.prevent="setActive('BLOCKED')"
             >
-              {{ 'Заблокированные' + ' ' + `(${localFriends.BLOCKED?.length || 0})` }}
+              {{ 'Заблокированные' + ' ' + `(${paginations.BLOCKED.totalElements || 0})` }}
             </button>
           </li>
-          <li class="friends__tabs__item" v-if="localFriends.REJECTING">
-            <button
-              :class="{ 'friends__tabs__link active': isActive('rejected') }"
-              @click.prevent="setActive('rejected')"
-            >
-              {{ 'Отклоненные запросы' + ' ' + `(${localFriends.REJECTING?.length || 0})` }}
-            </button>
-          </li>
+
           <li class="friends__tabs__item" v-if="localFriends.WATCHING">
             <button
-              :class="{ 'friends__tabs__link active': isActive('signed') }"
-              @click.prevent="setActive('signed')"
+              :class="{ 'friends__tabs__link active': activeTab === 'WATCHING' }"
+              @click.prevent="setActive('WATCHING')"
             >
-              {{ 'Подписан(а)' + ' ' + `(${localFriends.WATCHING?.length || 0})` }}
+              {{ 'Подписан(а)' + ' ' + `(${paginations.WATCHING.totalElements || 0})` }}
             </button>
           </li>
         </ul>
@@ -79,80 +77,261 @@
 
       <div class="friends__content">
         <div class="friends__list">
-          <div v-if="localFriends.REQUEST_FROM" class="friends_group" :class="{ 'active': isActive('application') }">
-            <h3 class="friends_group_title friends__title">Запросы в друзья</h3>
+          <!-- Запросы в друзья / поиск реализован -->
+          <div v-if="activeTab === 'REQUEST_FROM'" class="friends_group active">
+            <h3
+              class="friends_group_title friends__title"
+            >
+              Запросы в друзья
+            </h3>
 
-            <friends-block
-              friend="friend"
-              v-for="friend in localFriends.REQUEST_FROM"
-              :key="friend.id"
-              :info="friend"
-              accept-button
-            />
+            <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
+              <div class="friend__search__resultats">
+                <p class="friend__search-title">
+                  Результаты поиска по запросу "{{ localFirstName }}":
+                </p>
+                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+              </div>
+
+              <search-block
+                v-for="user in friendSearch.content"
+                :key="user.id"
+                :info="user"
+              />
+            </div>
+
+            <div v-if="friendSearch === null || friendSearch.content.length === 0">
+              <friends-block
+                friend="friend"
+                v-for="friend in localFriends?.REQUEST_FROM"
+                :key="friend.id"
+                :info="friend"
+                accept-button
+              />
+              <button
+                class="friends-btn__more"
+                @click.prevent="loadMoreFriends('REQUEST_FROM')"
+                v-if="localFriends?.REQUEST_FROM.length !== paginations.REQUEST_FROM.totalElements || paginations.REQUEST_FROM.totalElements === 0"
+              >
+                Загрузить ещё...
+              </button>
+            </div>
           </div>
-          <div v-if="localFriends.REQUEST_TO" class="friends_group" :class="{ 'active': isActive('outgoing') }">
-            <h3 class="friends_group_title friends__title">Исходящие запросы</h3>
+          <!-- Исходящие запросы / поиск реализован -->
+          <div v-if="activeTab === 'REQUEST_TO'" class="friends_group active">
+            <h3
+              class="friends_group_title friends__title"
+            >
+              Исходящие запросы
+            </h3>
 
-            <friends-block
-              friend="friend"
-              v-for="friend in localFriends.REQUEST_TO"
-              :key="friend.id"
-              :info="friend"
-            />
+            <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
+              <div class="friend__search__resultats">
+                <p class="friend__search-title">
+                  Результаты поиска по запросу "{{ localFirstName }}":
+                </p>
+                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+              </div>
+
+              <search-block
+                v-for="user in friendSearch.content"
+                :key="user.id"
+                :info="user"
+              />
+            </div>
+
+            <div v-if="friendSearch === null || friendSearch.content.length === 0">
+              <friends-block
+                friend="friend"
+                v-for="friend in localFriends?.REQUEST_TO"
+                :key="friend.id"
+                :info="friend"
+              />
+              <button
+                class="friends-btn__more"
+                @click.prevent="loadMoreFriends('REQUEST_TO')"
+                v-if="localFriends?.REQUEST_TO.length !== paginations.REQUEST_TO.totalElements || paginations.REQUEST_TO.totalElements === 0"
+              >
+                Загрузить ещё...
+              </button>
+            </div>
           </div>
+          <!-- Друзья / поиск реализован -->
+          <div v-if="activeTab === 'FRIEND'" class="friends_group active">
+            <h3
+              class="friends_group_title friends__title"
+            >
+              Друзья
+            </h3>
 
-          <div v-if="localFriends.FRIEND" class="friends_group" :class="{ 'active': isActive('friends') }">
-            <h3 class="friends_group_title friends__title">Друзья</h3>
+            <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
+              <div class="friend__search__resultats">
+                <p class="friend__search-title">
+                  Результаты поиска по запросу "{{ localFirstName }}":
+                </p>
+                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+              </div>
 
-            <friends-block
-              friend="friend"
-              v-for="friend in localFriends.FRIEND"
-              :key="friend.id"
-              :info="friend"
-            />
+              <search-block
+                v-for="user in friendSearch.content"
+                :key="user.id"
+                :info="user"
+              />
+            </div>
+
+            <div v-if="friendSearch === null || friendSearch.content.length === 0">
+              <friends-block
+                friend="friend"
+                v-for="friend in localFriends?.FRIEND"
+                :key="friend.id"
+                :info="friend"
+              />
+              <button
+                class="friends-btn__more"
+                @click.prevent="loadMoreFriends('FRIEND')"
+                v-if="localFriends?.FRIEND.length !== paginations.FRIEND.totalElements || paginations.FRIEND.totalElements === 0"
+              >
+                Загрузить ещё...
+              </button>
+            </div>
           </div>
+          <!-- Подписчики / поиск реализован -->
+          <div v-if="activeTab === 'SUBSCRIBED'" class="friends_group active">
+            <h3
+              class="friends_group_title friends__title"
+            >
+              Подписчики
+            </h3>
 
-          <div v-if="localFriends.SUBSCRIBED" class="friends_group" :class="{ 'active': isActive('subscribers') }">
-            <h3 class="friends_group_title friends__title">Подписчики</h3>
+            <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
+              <div class="friend__search__resultats">
+                <p class="friend__search-title">
+                  Результаты поиска по запросу "{{ localFirstName }}":
+                </p>
+                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+              </div>
 
-            <friends-block
-              friend="friend"
-              v-for="friend in localFriends.SUBSCRIBED"
-              :key="friend.id"
-              :info="friend"
-            />
+              <search-block
+                v-for="user in friendSearch.content"
+                :key="user.id"
+                :info="user"
+              />
+            </div>
+
+            <div v-if="friendSearch === null || friendSearch.content.length === 0">
+              <friends-block
+                friend="friend"
+                v-for="friend in localFriends?.SUBSCRIBED"
+                :key="friend.id"
+                :info="friend"
+              />
+              <button
+                class="friends-btn__more"
+                @click.prevent="loadMoreFriends('SUBSCRIBED')"
+                v-if="localFriends?.SUBSCRIBED.length !== paginations.SUBSCRIBED.totalElements || paginations.SUBSCRIBED.totalElements === 0"
+              >
+                Загрузить ещё...
+              </button>
+            </div>
           </div>
+          <!-- Заблокированные пользователи / поиск реализован -->
+          <div v-if="activeTab === 'BLOCKED'" class="friends_group active">
+            <h3
+              class="friends_group_title friends__title"
+            >
+              Заблокированные пользователи
+            </h3>
 
-          <div v-if="localFriends.BLOCKED" class="friends_group" :class="{ 'active': isActive('blocked') }">
-            <h3 class="friends_group_title friends__title">Заблокированные пользователи</h3>
+            <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
+              <div class="friend__search__resultats">
+                <p class="friend__search-title">
+                  Результаты поиска по запросу "{{ localFirstName }}":
+                </p>
+                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+              </div>
 
-            <friends-block
-              friend="friend"
-              v-for="friend in localFriends.BLOCKED"
-              :key="friend.id"
-              :info="friend"
-              :blocked="true"
-            />
+              <search-block
+                v-for="user in friendSearch.content"
+                :key="user.id"
+                :info="user"
+              />
+            </div>
+
+            <div v-if="friendSearch === null || friendSearch.content.length === 0">
+              <friends-block
+                friend="friend"
+                v-for="friend in localFriends?.BLOCKED"
+                :key="friend.id"
+                :info="friend"
+                :blocked="true"
+              />
+              <button
+                class="friends-btn__more"
+                @click.prevent="loadMoreFriends('BLOCKED')"
+                v-if="localFriends?.BLOCKED.length !== paginations.BLOCKED.totalElements || paginations.BLOCKED.totalElements === 0"
+              >
+                Загрузить ещё...
+              </button>
+            </div>
           </div>
+          <!-- Подписан(а) / поиск реализован -->
+          <div v-if="activeTab === 'WATCHING'" class="friends_group active">
+            <h3
+              class="friends_group_title friends__title"
+            >
+              Подписан(а)
+            </h3>
 
-          <div v-if="localFriends.REJECTING" class="friends_group" :class="{ 'active': isActive('rejected') }">
-            <h3 class="friends_group_title friends__title">Отклоненные запросы</h3>
-            <friends-block
-              friend="friend"
-              v-for="friend in localFriends.REJECTING"
-              :key="friend.id"
-              :info="friend"
-            />
+            <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
+              <div class="friend__search__resultats">
+                <p class="friend__search-title">
+                  Результаты поиска по запросу "{{ localFirstName }}":
+                </p>
+                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+              </div>
+
+              <search-block
+                v-for="user in friendSearch.content"
+                :key="user.id"
+                :info="user"
+              />
+            </div>
+
+            <div v-if="friendSearch === null || friendSearch.content.length === 0">
+              <friends-block
+                friend="friend"
+                v-for="friend in localFriends?.WATCHING"
+                :key="friend.id"
+                :info="friend"
+              />
+              <button
+                class="friends-btn__more"
+                @click.prevent="loadMoreFriends('WATCHING')"
+                v-if="localFriends?.WATCHING.length !== paginations.WATCHING.totalElements || paginations.WATCHING.totalElements === 0"
+              >
+                Загрузить ещё...
+              </button>
+            </div>
           </div>
-
-          <div v-if="friends.WATCHING" class="friends_group" :class="{ 'active': isActive('signed') }">
-            <h3 class="friends_group_title friends__title">Подписан(а)</h3>
-            <friends-block
-              friend="friend"
-              v-for="friend in friends.WATCHING"
-              :key="friend.id"
-              :info="friend"
-            />
+          <!-- Нет информации -->
+          <div v-if="activeTab === 'no-data-users'" class="friends_group-nodata active">
+            <h3
+              class="friends_group_title no-data"
+            >
+              Вы никому не отправляли заявку в друзья,<br>
+              самое время начать общаться.
+            </h3>
+            <router-link class="friends_group__search" href="#" :to="{ name: 'FriendsFind' }">
+              Искать друзей
+            </router-link>
+          </div>
+          <!-- Нет информации -->
+          <div v-if="activeTab === 'no-data'" class="friends_group-nodata active">
+            <h3
+              class="friends_group_title no-data"
+            >
+              Выберите одну из доступных вкладок c друзьями.
+            </h3>
           </div>
         </div>
 
@@ -165,40 +344,59 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import RecommendFriend from '@/components/RecommendFriend.vue';
 import FriendsBlock from '@/components/Friends/Block';
+import SearchBlock from '@/components/Friends/BlockSearch'
 import SearchIcon from '@/Icons/SearchIcon.vue';
 
 export default {
   name: 'Friends',
-  components: { RecommendFriend, FriendsBlock, SearchIcon },
+  components: { RecommendFriend, FriendsBlock, SearchIcon, SearchBlock },
 
   data: () => ({
     firstName: '',
+    localFirstName: '',
     localFriends: [],
+    searchResult: null,
     statusCodes: [
       'REQUEST_FROM',
       'REQUEST_TO',
       'FRIEND',
       'BLOCKED',
-      'REJECTING',
       'SUBSCRIBED',
       'WATCHING',
     ],
-    activeItem: 'friends',
+    activeTab: 'no-data',
   }),
 
   computed: {
-    ...mapGetters('profile/friends', ['getResultById']),
-    ...mapState('profile/friends', ['friends']),
+    ...mapState('profile/friends', ['friends', 'paginations', 'friendSearch']),
+
+    calculateTabSelect() {
+      if (this.localFriends.REQUEST_FROM && this.localFriends.REQUEST_FROM.length > 0) {
+        return 'REQUEST_FROM'
+      } else if (this.localFriends.REQUEST_TO && this.localFriends.REQUEST_TO.length > 0) {
+        return 'REQUEST_TO'
+      } else if (this.localFriends.FRIEND && this.localFriends.FRIEND.length > 0) {
+        return 'FRIEND'
+      } else if (this.localFriends.BLOCKED && this.localFriends.BLOCKED.length > 0) {
+        return 'BLOCKED'
+      } else if (this.localFriends.SUBSCRIBED && this.localFriends.SUBSCRIBED.length > 0) {
+        return 'SUBSCRIBED'
+      } else if (this.localFriends.WATCHING && this.localFriends.WATCHING.length > 0) {
+        return 'WATCHING'
+      } else if (this.localFriends && this.localFriends.length === 0) {
+        return 'no-data'
+      } else {
+        return 'no-data-users'
+      }
+    }
   },
 
   watch: {
     friends() {
       this.localFriends = this.friends;
-      this.$nextTick();
-      this.$forceUpdate();
     },
   },
 
@@ -209,19 +407,47 @@ export default {
     this.localFriends = this.friends;
   },
 
+  created() {
+    this.activeTab = this.calculateTabSelect;
+  },
+
+  beforeRouteUpdate(next) {
+    this.activeTab = this.calculateTabSelect;
+    next();
+  },
+
   methods: {
-    ...mapActions('profile/friends', ['apiFriends']),
+    ...mapActions('profile/friends', ['apiFriends', 'apiFriendSearch']),
 
-    async refreshData() {
-      const newPayload = { statusCode: null, pageSize: 10 }; // новое значение payload
-      await this.$store.dispatch('updateFriends', newPayload);
+    setActive(tabName) {
+      this.activeTab = tabName;
+      this.firstName = '';
+      this.localFirstName = '';
+      this.$store.commit('profile/friends/resetFriendSearch');
     },
 
-    isActive (menuItem) {
-      return this.activeItem === menuItem
+    loadMoreFriends(statusCode) {
+      this.apiFriends({ statusCode, loadMore: true });
     },
-    setActive (menuItem) {
-      this.activeItem = menuItem
+
+    resetFriendSearch() {
+      this.$store.commit('profile/friends/resetFriendSearch');
+      this.localFirstName = '';
+    },
+
+    searchFriends() {
+      this.apiFriendSearch({ firstName: this.firstName, statusCode: this.activeTab })
+      .then(response => {
+        this.searchResult = response.data;
+      })
+      .catch(() => {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'action',
+          text: `По запросу "${this.localFirstName}" ничего не найдено!`,
+        });
+      });
+      this.localFirstName = this.firstName;
+      this.firstName = '';
     },
   },
 };
@@ -277,4 +503,75 @@ export default {
 
   .friends_group:not(:last-child)
     margin-bottom 40px
+</style>
+
+<style lang="stylus">
+.friend__search__resultats
+  display flex
+  gap 10px
+  align-items center
+  margin-top 30px
+  margin-bottom 20px
+
+.friend__search-clear
+  display flex
+  align-items center
+  gap 10px
+  background #21a45d
+  padding 5px
+  color #fff
+  border-radius 5px
+  transition all .2s ease-in-out
+  span
+    font-size 14px
+    line-height 0
+  @media (any-hover: hover)
+    &:hover
+      background #2fba6e
+
+.friend__search-title
+  font-size 20px
+  line-height 0
+
+.friends_group_title.no-data
+  font-size 18px
+  font-weight 300
+  text-align center
+  margin-bottom 20px
+
+.friends_group-nodata
+  display flex
+  flex-direction column
+  align-items center
+  justify-content center
+
+.friends_group__search
+  display flex
+  justify-content center
+  padding 10px 20px
+  font-size 18px
+  border 1px solid #21a45d
+  color #21a45d
+  border-radius 10px
+  transition all .2s ease-in-out
+  @media (any-hover: hover)
+    &:hover
+      background #21a45d
+      color #fff
+
+.friends-btn__more
+  display block
+  background transparent
+  padding 15px
+  font-size 18px
+  user-select none
+  border 3px solid #21a45d
+  color #21a45d
+  border-radius 10px
+  margin 0 auto
+  transition all .2s ease-in-out
+  @media (any-hover: hover)
+    &:hover
+      background #21a45d
+      color #fff
 </style>

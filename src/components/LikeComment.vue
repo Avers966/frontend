@@ -47,7 +47,7 @@ export default {
       default: '#aeaebd',
     },
     comment: Boolean,
-    id: Number,
+    id: String,
   },
 
   data: () => ({

@@ -100,11 +100,8 @@ export default {
     },
 
     async apiUnreadedMessages({ commit }) {
-      const response = await dialogsApi.unreadedMessages();
-      let {totalElement} = response.data;
-      console.log(totalElement)
-      const { count } = totalElement;
-      commit('setUnreadedMessages', count);
+      const { data } = await dialogsApi.unreadedMessages();
+      commit('setUnreadedMessages', data);
     },
 
     async markReadedMessages(_, id) {

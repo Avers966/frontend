@@ -295,9 +295,7 @@ export default {
     processFile(event) {
       [this.photo] = event.target.files;
       const reader = new window.FileReader();
-      reader.onload = (e) => {
-        this.editor.commands.setImage({ src: e.target.result });
-      };
+      reader.onload = (e) => (this.src = e.target.result);
       reader.readAsDataURL(this.photo);
     },
 
@@ -372,6 +370,37 @@ export default {
   },
 };
 </script>
+<style lang="stylus">
+@media (min-width: 320px) and (max-width: 768px)
+  .news-add
+    &__main
+      flex-direction column
+      padding 0 15px 15px 15px
+    &__text
+      margin-right 0
+      padding-right 0
+      border-right 0
+      &__title
+        padding-bottom 0
+        font-size 18px
+    &__actions-buttons
+      padding 10px 15px 0 15px
+      justify-content flex-end
+      .close_modal
+        position unset
+    &__settings
+      max-width unset
+      &-title
+        font-size 18px
+    .modal__wrapper
+      padding 15px
+      max-width 300px
+  .news-add__actions
+    justify-content unset
+    padding 15px 0 20px 0
+
+
+</style>
 <style lang="stylus" media="screen">
 .close_modal
   position relative
