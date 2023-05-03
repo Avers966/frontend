@@ -37,8 +37,12 @@ export default {
     throw new TypeError('Недопустимое значение запроса');
   },
 
-  changeBlockUser(id) {
+  blockedUser(id) {
     return axios.put(`friends/block/${id}`);
+  },
+
+  unblockUser(id) {
+    return axios.put(`friends/unblock/${id}`);
   },
 
   friendRequestsCount() {

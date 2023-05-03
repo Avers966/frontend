@@ -24,7 +24,7 @@
       >
         <actions-show />
       </button>
-      <div class="friends-block__actions" v-show="showDropdown">
+      <div class="friends-block__actions" v-if="showDropdown" v-click-outside="closePopup">
         <template v-if="moderator">
           <div
             class="friends-block__actions-block"
@@ -149,9 +149,13 @@ import Modal from '@/components/Modal';
 import ActionsShow from '@/Icons/ActionsShow.vue';
 import { mapActions, mapGetters } from 'vuex';
 import axios from 'axios';
+import vClickOutside from 'v-click-outside';
 
 export default {
   name: 'FriendsBlock',
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   components: { Modal, ActionsShow },
   props: {
     friend: Boolean,
@@ -202,7 +206,7 @@ export default {
     },
 
     getInfo() {
-      return this.info.idFrom;
+      return this.info.idFriend;
     },
 
     currentUser() {
@@ -259,24 +263,13 @@ export default {
   },
 
   mounted() {
-    document.addEventListener('click', this.hideDropdown);
-    const { dropdown } = this.$refs;
-    if (dropdown) {
-      dropdown.addEventListener('click', this.stopPropagation);
-    }
-
     this.fetchUserInfo();
-  },
-
-  beforeDestroy() {
-    document.removeEventListener('click', this.hideDropdown);
-    this.$refs.dropdown.removeEventListener('click', this.stopPropagation);
   },
 
   methods: {
     ...mapActions('profile/friends', ['apiAddFriends', 'apiDeleteFriends', 'apiSubscribe']),
     ...mapActions('profile/dialogs', ['openDialog']),
-    ...mapActions('users/actions', ['apiBlockUser', 'apiUnblockUser']),
+    ...mapActions('users/actions', ['apiBlockedUser', 'apiUnblockUser']),
 
     acceptFriendRequest(id) {
       if (this.info.statusCode === 'FRIEND') {
@@ -404,7 +397,7 @@ export default {
       }
 
       if (this.modalType === 'block') {
-        this.apiBlockUser(id).then(() => {
+        this.apiBlockedUser(id).then(() => {
           this.blocked = true;
           this.closeModal();
         });
@@ -419,22 +412,15 @@ export default {
 
       setTimeout(() => {
         location.reload()
-      }, 100)
+      }, 500)
     },
 
+    closePopup() {
+      this.showDropdown = false
+    },
 
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
-    },
-
-    hideDropdown(event) {
-      if (this.showDropdown && !this.$refs.dropdown.contains(event.target)) {
-        this.showDropdown = false
-      }
-    },
-
-    stopPropagation(event) {
-      event.stopPropagation()
     },
   },
 };

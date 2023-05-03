@@ -9,7 +9,6 @@
       <router-link class="friends-block__name" :to="{ name: 'ProfileId', params: { id: info.id } }">
         {{ info.firstName }}
         {{ info.lastName }}
-        <span class="user-status" :class="{ online, offline: !online }">{{ statusText }}</span>
       </router-link>
 
       <span class="friends-block__age-city" v-if="moderator">модератор</span>
@@ -29,7 +28,7 @@
       >
         <actions-show />
       </button>
-      <div class="friends-block__actions" v-show="showDropdown">
+      <div class="friends-block__actions" v-if="showDropdown" v-click-outside="closePopup">
         <template v-if="moderator">
           <div
             class="friends-block__actions-block"
@@ -152,9 +151,13 @@
 import Modal from '@/components/Modal';
 import ActionsShow from '@/Icons/ActionsShow.vue';
 import { mapActions, mapGetters } from 'vuex';
+import vClickOutside from 'v-click-outside';
 
 export default {
   name: 'FriendsBlock',
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   components: { Modal, ActionsShow },
   props: {
     friend: Boolean,
@@ -260,23 +263,11 @@ export default {
     },
   },
 
-  mounted() {
-    document.addEventListener('click', this.hideDropdown);
-    const { dropdown } = this.$refs;
-    if (dropdown) {
-      dropdown.addEventListener('click', this.stopPropagation);
-    }
-  },
-
-  beforeDestroy() {
-    document.removeEventListener('click', this.hideDropdown);
-    this.$refs.dropdown.removeEventListener('click', this.stopPropagation);
-  },
 
   methods: {
     ...mapActions('profile/friends', ['apiAddFriends', 'apiDeleteFriends', 'apiSubscribe']),
     ...mapActions('profile/dialogs', ['openDialog']),
-    ...mapActions('users/actions', ['apiBlockUser', 'apiUnblockUser']),
+    ...mapActions('users/actions', ['apiBlockedUser', 'apiUnblockUser']),
 
     acceptFriendRequest(id) {
       this.apiAddFriends({ id, isApprove: true });
@@ -342,7 +333,7 @@ export default {
     }
 
     if (this.modalType === 'block') {
-      this.apiBlockUser(id).then(() => {
+      this.apiBlockedUser(id).then(() => {
         this.blocked = true;
         this.closeModal();
         this.$nextTick();
@@ -362,18 +353,12 @@ export default {
         this.$forceUpdate();
     },
 
+    closePopup() {
+      this.showDropdown = false
+    },
+
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
-    },
-
-    hideDropdown(event) {
-      if (this.showDropdown && !this.$refs.dropdown.contains(event.target)) {
-        this.showDropdown = false
-      }
-    },
-
-    stopPropagation(event) {
-      event.stopPropagation()
     },
   },
 };

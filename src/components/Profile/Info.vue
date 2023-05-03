@@ -1,115 +1,24 @@
-<!-- <template>
-  <div class="profile-info" v-if="info">
-    <div class="profile-info__pic">
-      <div class="profile-info__img" :class="{ offline: !online && !me }">
-        <img
-          v-if="info.photo"
-          :src="info.photo"
-          :alt="info.firstName[0] + ' ' + info.lastName[0]"
-        />
-
-        <img v-else src="/static/img/avatar.png" alt="avatar placeholder" />
-      </div>
-
-      <div class="profile-info__actions" v-if="!me">
-        <button-hover :disable="blocked" @click.native="onSentMessage">
-          Написать сообщение
-        </button-hover>
-
-        <button-hover
-          class="profile-info__add"
-          :variant="btnVariantInfo.variant"
-          bordered="bordered"
-          @click.native="profileAction"
-        >
-          {{ btnVariantInfo.text }}
-        </button-hover>
-      </div>
-    </div>
-
-    <div class="profile-info__main">
-      <router-link class="edit" v-if="me" :to="{ name: 'Settings' }">
-        <edit-icon />
-      </router-link>
-
-      <span class="profile-info__blocked" :class="{ blocked }" v-else @click="blockedUser">
-        {{ blockedText }}
-      </span>
-
-      <div class="profile-info__header">
-        <h1 class="profile-info__name">{{ info.firstName + ' ' + info.lastName }}</h1>
-
-        <span v-if="!online" class="user-status">
-          Был(а) в сети {{ info.lastOnlineTime | moment('from') }}
-        </span>
-
-        <span v-else class="user-status" :class="{ online, offline: !online }">
-          {{ statusText }}
-        </span>
-      </div>
-
-      <div class="profile-info__block">
-        <span class="profile-info__title">Дата рождения:</span>
-
-        <span class="profile-info__val" v-if="info.birthDate">
-          {{
-            new Date(info.birthDate).toLocaleString('ru', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })
-          }}
-        </span>
-
-        <span class="profile-info__val" v-else>не заполнено</span>
-      </div>
-
-      <div class="profile-info__block">
-        <span class="profile-info__title">Телефон:</span>
-
-        <a class="profile-info__val" v-if="info.phone" :href="`tel: +7${info.phone}`">
-          {{ info.phone | phone }}
-        </a>
-
-        <a class="profile-info__val" v-else>не заполнено</a>
-      </div>
-
-      <div class="profile-info__block">
-        <span class="profile-info__title">Страна, город:</span>
-
-        <span class="profile-info__val" v-if="residenceText">
-          {{ residenceText }}
-        </span>
-
-        <span class="profile-info__val" v-else>не заполнено</span>
-      </div>
-
-      <div class="profile-info__block">
-        <span class="profile-info__title">О себе:</span>
-
-        <span class="profile-info__val info-about__text" v-if="info.about"> {{ info.about }}</span>
-
-        <span class="profile-info__val" v-else>не заполнено</span>
-      </div>
-    </div>
-
-    <modal v-model="modalShow">
-      <p v-if="modalText">{{ modalText }}</p>
-
-      <template slot="actions">
-        <button-hover @click.native.prevent="onConfirm">Да</button-hover>
-
-        <button-hover variant="red" bordered="bordered" @click.native="closeModal">
-          Отмена
-        </button-hover>
-      </template>
-    </modal>
-  </div>
-</template> -->
-
 <template>
   <div class="profile-info" v-if="info">
     <div class="profile-info__background" :style="{ 'background-image': `url(${info.photo})` }">
+      <div class="qr">
+        <button @click="togglePopup" class="profile-info__shared-btn">
+          <shared-account />
+        </button>
+        <transition name="fade">
+          <div v-if="showPopup" class="profile-info__share-popup" v-click-outside="closePopup">
+            Поделиться:
+            <div class="qr-code" v-html="qrCode"></div>
+            <div class="profile-info__share-link">
+              <input class="profile-info__link-profile" ref="text" @click="copyText" :value="currentUrl"/>
+              <button class="profile-info__link-btn" @click="copyToClipboard">
+                <span v-if="!copied"><copied-icon /></span>
+                <span v-else-if="copied"><done-copied /></span>
+              </button>
+            </div>
+          </div>
+        </transition>
+      </div>
     </div>
     <div class="profile-info__bottom">
       <div class="profile-info__left">
@@ -168,59 +77,55 @@
       </div>
     </div>
     <div class="showmore-info">
-      <transition>
-        <div class="profile-info__show">
-          <div class="profile-info__value">
-            <span class="profile-info__title">
-              <gift-icon />
-              Дата рождения:
-            </span>
-            <span class="profile-info__val" v-if="info.birthDate">
-              {{
-                new Date(info.birthDate).toLocaleString('ru', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })
-              }}
-            </span>
-            <span class="profile-info__val" v-else>не заполнено</span>
-          </div>
-          <div class="profile-info__value">
-            <span class="profile-info__title">
-              <phone-icon />
-              Телефон:
-            </span>
-            <a class="profile-info__val" v-if="info.phone" :href="`tel: +7${info.phone}`">
-              {{ info.phone | phone }}
-            </a>
-            <a class="profile-info__val" v-else>не заполнено</a>
-          </div>
-          <div class="profile-info__value">
-            <span class="profile-info__title">
-              <home-icon />
-              Страна, город:
-            </span>
-            <span class="profile-info__val" v-if="residenceText">
-              {{ residenceText }}
-            </span>
-            <span class="profile-info__val" v-else>не заполнено</span>
-          </div>
-          <div class="profile-info__value">
-            <span class="profile-info__title">
-              <about-icon />
-              О себе:
-            </span>
-            <span class="profile-info__val info-about__text" v-if="info.about"> {{ info.about }}</span>
-            <span class="profile-info__val" v-else>не заполнено</span>
-          </div>
+      <div class="profile-info__show">
+        <div class="profile-info__value">
+          <span class="profile-info__title">
+            <gift-icon />
+            Дата рождения:
+          </span>
+          <span class="profile-info__val" v-if="info.birthDate">
+            {{
+              new Date(info.birthDate).toLocaleString('ru', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })
+            }}
+          </span>
+          <span class="profile-info__val" v-else>не заполнено</span>
         </div>
-      </transition>
-      <transition>
-        <div class="profile-info__weather" v-if="me">
-          <weather-block />
+        <div class="profile-info__value">
+          <span class="profile-info__title">
+            <phone-icon />
+            Телефон:
+          </span>
+          <a class="profile-info__val" v-if="info.phone" :href="`tel: +7${info.phone}`">
+            {{ info.phone | phone }}
+          </a>
+          <a class="profile-info__val" v-else>не заполнено</a>
         </div>
-      </transition>
+        <div class="profile-info__value">
+          <span class="profile-info__title">
+            <home-icon />
+            Страна, город:
+          </span>
+          <span class="profile-info__val" v-if="residenceText">
+            {{ residenceText }}
+          </span>
+          <span class="profile-info__val" v-else>не заполнено</span>
+        </div>
+        <div class="profile-info__value">
+          <span class="profile-info__title">
+            <about-icon />
+            О себе:
+          </span>
+          <span class="profile-info__val info-about__text" v-if="info.about"> {{ info.about }}</span>
+          <span class="profile-info__val" v-else>не заполнено</span>
+        </div>
+      </div>
+      <div class="profile-info__weather" v-if="me">
+        <weather-block />
+      </div>
     </div>
     <modal v-model="modalShow">
       <p v-if="modalText">{{ modalText }}</p>
@@ -242,18 +147,29 @@ import AboutIcon from '../../Icons/AboutIcon.vue';
 import GiftIcon from '../../Icons/GiftIcon.vue';
 import HomeIcon from '../../Icons/HomeIcon.vue';
 import PhoneIcon from '../../Icons/PhoneIcon.vue';
+import SharedAccount from '../../Icons/SharedAccount.vue';
+import CopiedIcon from '../../Icons/CopiedIcon.vue';
+import DoneCopied from '../../Icons/DoneCopied.vue';
 import WeatherBlock from '@/components/WeatherBlock.vue';
 import Modal from '@/components/Modal';
+import QRCode from 'qrcode-generator';
+import vClickOutside from 'v-click-outside';
+
+
 
 export default {
   name: 'ProfileInfo',
-  components: { GiftIcon, PhoneIcon, HomeIcon, AboutIcon, Modal, WeatherBlock },
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
+  components: { GiftIcon, PhoneIcon, HomeIcon, AboutIcon, SharedAccount, CopiedIcon, DoneCopied, Modal, WeatherBlock },
   props: {
     me: Boolean,
     online: Boolean,
     blocked: Boolean,
     friend: Boolean,
     info: Object,
+    text: String,
   },
 
   data: () => ({
@@ -262,6 +178,9 @@ export default {
     modalType: 'deleteFriend',
     showInfo: false,
     showInfoWeather: false,
+    showPopup: false,
+    qrCode: '',
+    copied: false
   }),
 
   computed: {
@@ -274,6 +193,10 @@ export default {
         return null;
       }
       return `${country + ', ' || ''} ${city || ''}`;
+    },
+
+    currentUrl() {
+      return window.location.href;
     },
 
     statusText() {
@@ -303,6 +226,41 @@ export default {
       const ages = ['год', 'года', 'лет'];
       const n = parseInt(age, 10);
       return ages[n % 100 > 4 && n % 100 < 20 ? 2 : [2, 0, 1, 1, 1, 2][n % 10 < 5 ? n % 10 : 5]];
+    },
+
+    copyText() {
+      const range = document.createRange();
+      range.selectNode(this.$refs.text);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    },
+
+    copyToClipboard() {
+      const range = document.createRange();
+      range.selectNode(this.$refs.text);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      this.copied = true;
+    },
+
+    togglePopup() {
+      const url = this.currentUrl;
+      this.qrCode = this.generateQRCode(url);
+      this.showPopup = !this.showPopup;
+    },
+
+    closePopup() {
+      window.getSelection().removeAllRanges();
+      this.copied = false;
+      this.showPopup = false;
+    },
+
+    generateQRCode(url) {
+      const qr = QRCode(0, 'M');
+      qr.addData(url);
+      qr.make();
+      return qr.createImgTag();
     },
 
     scrollToPosts() {
@@ -383,7 +341,9 @@ export default {
 
   .showmore-info
     display grid
-    grid-template-columns 1fr 500px
+    align-items center
+    grid-template-columns repeat(2, 50%)
+    background #fff
     gap 70px
     &.not-me
       justify-content flex-start
@@ -393,6 +353,7 @@ export default {
     border-radius 10px
     box-shadow 0px 2px 8px rgba(0,0,0,0.08)
     overflow hidden
+    max-width 1000px
     &__background
       position relative
       height 250px
@@ -497,5 +458,57 @@ export default {
         background-color #505057
       &.btn-send__message
         margin-right 10px
+    &__shared-btn
+      position absolute
+      top 10px
+      right 10px
+      z-index 100
+      background #333
+      padding 5px
+      border-radius 5px
+      box-shadow 0px 2px 8px rgba(0,0,0,0.08)
+    &__share-popup
+      display flex
+      flex-direction column
+      align-items center
+      justify-content center
+      position absolute
+      top 50px
+      right 10px
+      padding 15px
+      background-color #fff
+      z-index 100
+      border-radius 10px 0 10px 10px
+      box-shadow 0px 2px 8px rgba(0,0,0,0.08)
+
+      &.fade-enter-active,
+      &.fade-leave-active
+        transition all .2s ease-in
+
+      &.fade-enter,
+      &.fade-leave-to
+        opacity 0
+
+    &__share-link
+      display flex
+    &__link-profile
+      display block
+      overflow hidden
+      border-left 1px solid #d2d2d2
+      border-top 1px solid #d2d2d2
+      border-bottom 1px solid #d2d2d2
+      border-radius 5px 0 0 5px
+      padding 10px
+    &__link-btn
+      display inline-block
+      background #21a45d
+      padding 0 10px
+      border-radius 0 5px 5px 0
+      color #fff
+      font-weight bold
+    .qr-code
+      img
+        width 130px
+        height 130px
 
 </style>

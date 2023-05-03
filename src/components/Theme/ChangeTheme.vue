@@ -423,9 +423,6 @@ export default {
       &__title
         color #a4a4a4
 
-      &__val
-        color #fff
-
       &__header
         border-color #656565
 
