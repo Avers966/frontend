@@ -47,11 +47,9 @@ export default {
   display inline-block
   width 45px
   height 25px
-  margin-right 10px
 
 .theme-switch input[type="checkbox"]
   display none
-
 
 .theme-switch label
   position absolute
@@ -99,8 +97,6 @@ export default {
 //========================================
 
 [data-theme="light"]
-  *
-    transition all .2s ease-in-out
 
   .theme-switcher__button
     svg
@@ -112,16 +108,33 @@ export default {
 //========================================
 
 [data-theme="dark"]
-  *
-    transition all .2s ease-in-out
 
   .friend__search-title
     color #fff
 
+  body
+    background #141414
+
+  .im__dialogs
+    background-color #222
+    border 1px solid #424242
+
+  .im-dialog
+    background #303030
+    border 1px solid #424244
+    .main-layout__user-pic
+      background #222
+    &__name
+      color #fff
+    .user-status
+      background-color #222
+      border 1px solid #424242
+    &:hover
+      background #393838
+
   .friend__search-clear
-    background radial-gradient(248.22% 257.37% at 9.27% 93.95%, rgba(161,128,255,0.1) 0%, rgba(74,157,255,0.1) 50%, rgba(117,247,255,0.1) 100%)
-    background-color #3a3a48
-    border-color #383843
+    background-color #222
+    border 1px solid #424242
     @media (any-hover: hover)
       &:hover
         background-color #292935
@@ -186,16 +199,23 @@ export default {
 
   .search
     &__tabs
-      background #313135
+      background #222
     &__label
       color #fff
     &-tabs
       &__item
         background transparent
         border-color #5c5c5c
+        &:hover
+          background #1d1d1d
+          border-color #1d1d1d
+          color #fff
         &.active
-          background #212122
-          border-color #212122
+          background #5d5d5d
+          border-color #8b8b8b
+          &:hover
+            background #5d5d5d
+            border-color #8b8b8b
     &__input
       background transparent
       border-color #828282
@@ -214,7 +234,8 @@ export default {
         color #fff
 
   .settings-push
-    background #313135
+    background-color #222
+    border 1px solid #424242
     &__item+.settings-push__item
       border-color #555
     &__name
@@ -233,21 +254,26 @@ export default {
     color #fff
 
   .settings-delete
-    background #313135
+    background-color #222
+    border 1px solid #424242
     &__title
       color #fff
 
   .settings-security__block
-    background #313135
+    background-color #222
+    border 1px solid #424242
 
   .settings-security__title
     color #fff
 
   .settings-security__value
-    background-color transparent
+    background transparent
+    color #b2b2b2
+    border-color #555
 
   .aside-filter
-    background-color #313135
+    background-color #222
+    border 1px solid #424242
     &__title
       color #fff
     &__item
@@ -258,7 +284,8 @@ export default {
 
   .settings
     &-main
-      background-color #313135
+      background-color #222
+      border 1px solid #424242
 
     &__title
       color #fff
@@ -284,9 +311,19 @@ export default {
     option
       color #000
 
+  .showmore-info
+    background #222
+
+  .profile-info__bottom
+    background #1d1d1d
+    border-color #424242
+
+  .profile-info__val
+    color #fff
+
   .recommend-block
-    background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
-    background-color #313135
+    background-color #222
+    border 1px solid #424242
 
     &__not
       color #fff
@@ -303,26 +340,50 @@ export default {
     &__name
       color #fff
 
+    &__search
+      background #424242
+      border unset
+      color #fff
+      &:hover
+        background #333333
+
   .main-layout
     &__header
-      background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
-      background-color #313135
+      background-color #222
+      border-bottom 1px solid #424242
 
     &__sidebar
-      background-color #191920
+      background-color #2f2f2f
+      border-color #424242
 
     &__page
-      background #1f1f24
+      background #141414
+
+    &__link
+      &:hover
+        color #fff
+
+      &.router-link-active
+        &:hover
+          color #21a45d
 
     &__search-input
-      background #242424
+      background #424242
+      color #E1E3E6
+      &::placeholder
+        color #E1E3E6
 
       &:focus
         border-bottom-color #555555
 
+  .weather
+    color #fff
+    &__minmax
+      color #fff
+
   .news-add
-    background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
-    background-color #313135
+    background-color #222
+    border 1px solid #424242
 
     &__text-title
       color #fff
@@ -349,9 +410,16 @@ export default {
       background #000
       color #fff
 
+  .profile-info__showmore
+    background-color #222
+    border 1px solid #424242
+    @media (any-hover: hover)
+      &:hover
+        background-color #1d1b1b
+
   .news-block
-    background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
-    background-color #313135
+    background-color #222222
+    border 1px solid #424242
 
     &__author-name
       color #fff
@@ -372,6 +440,47 @@ export default {
     svg path
       fill #7d7d7d
 
+  .post-block__text-content
+    color #dfdfdf
+
+  .post-block__showmore
+    background-color #333
+    &:hover
+      background-color #1d1d1d
+
+  .post-block__tags-item
+    background-color #000
+    &:hover
+      background-color #1d1d1d
+    a
+      color #dfdfdf
+
+  .post-block__timer
+    color #dfdfdf
+    svg path
+      fill #dfdfdf
+
+  .post-block__title
+    color #fff
+
+  .post-block__info
+    a:nth-child(1)
+      color #dfdfdf
+    span:nth-child(2)
+      color #939393
+
+  .like-comment
+    background-color #333
+    color #b2b2b2
+
+  .open-comment
+    border-color #3d3d3d
+
+  .comment-icon span
+    color #b2b2b2 !important
+
+  .comment-main .like-comment
+    background-color unset !important
 
   .news-block__content-tag a
     background #7d7d7d
@@ -383,10 +492,11 @@ export default {
 
   .comment-add__input
     background transparent
-    color #7d7d7d
+    color #b2b2b2
+    border-color #555555
 
-  .comment-add
-    border-bottom 1px solid #7d7d7d
+  .comment-main__time
+    color #939393
 
   .comments__title span
     color #7d7d7d
@@ -395,14 +505,8 @@ export default {
     color #fff
 
   .comment-main__text
-    color #7d7d7d
+    color #dfdfdf
 
-  .comment-block__reviews-list
-      .comment-main + .comment-main
-        border-top 1px solid #7d7d7d
-
-  .comment-block.show-comments .comment-block__reviews
-    border-top 1px solid #7d7d7d
 
   .profile
 
@@ -412,10 +516,20 @@ export default {
         color #fafaff
 
     &-info
-      background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
-      background-color #313135
+      background #222
+      border 1px solid #424242
+
       &__img
         border-color #747474
+
+
+      &__link
+        color #fff
+        &:hover
+          color #bfbfbf
+
+      &__names
+        color #fff
 
       &__pic
         border-color #7d7d7d
@@ -426,20 +540,13 @@ export default {
       &__header
         border-color #656565
 
-  .weather
-    background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
-    background-color #313135
-    color #fff
-    &__minmax
-      color #fff
-
   .friends
     &__title
       color #fff !important
 
     &-possible
-      background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
-      background-color #313135
+      background-color #222
+      border 1px solid #424242
       &__title
         color #fff
       .friends-search
@@ -459,8 +566,8 @@ export default {
       border-color #474747
 
     &-block
-      background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
-      background-color #313135
+      background-color #222
+      border 1px solid #424242
 
       &__name
         color #fafaff
@@ -476,19 +583,16 @@ export default {
         background transparent
         @media (any-hover: hover)
           &:hover
-            background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
-            background-color #313135
-            border-color #313135
+            background-color #222
+            border 1px solid #424242
             color #9e9e9e
           &:disabled
-            background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
-            background-color #313135
-            border-color #313135
+            background-color #222
+            border 1px solid #424242
             opacity 35%
         &.active
-            background radial-gradient(248.22% 257.37% at 9.27% 93.95%,rgba(161,128,255,.1) 0%,rgba(74,157,255,.1) 50%,rgba(117,247,255,.1) 100%)
-            background-color #292935
-            border-color #313135
+          background-color #333
+          border 1px solid #4f4f4f
 
     &__search
       color #838383

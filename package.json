@@ -31,6 +31,7 @@
     "vibrant": "^0.0.1",
     "vue": "^2.6.11",
     "vue-echarts": "^6.5.4",
+    "vue-emoji-picker": "^1.0.3",
     "vue-moment": "^4.1.0",
     "vue-native-websocket": "^2.0.15",
     "vue-router": "^3.2.0",

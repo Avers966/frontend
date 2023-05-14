@@ -66,7 +66,10 @@ export default {
     display none
 
 .settings__wrap
-  display flex
+  display grid
+  gap 20px
+  grid-template-columns 1fr 430px
+
 
   @media (max-width breakpoint-xl)
     flex-direction column-reverse

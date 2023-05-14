@@ -11,79 +11,69 @@
         @close-form="toggleEditNews"
       />
       <template v-else>
-        <template v-if="!admin">
-          <div class="edit">
-            <div class="edit__icon" v-if="deleted" @click="deleteNews">
-              <delete-news-icon />
-            </div>
-            <div class="edit__icon" v-if="edit" @click="toggleEditNews">
-              <edit-icon />
-            </div>
-          </div>
-        </template>
-        <template v-else>
-          <div class="edit" v-tooltip.bottom="'Разблокировать'" v-if="blocked">
-            <simple-svg :filepath="'/static/img/unblocked.svg'" />
-          </div>
-          <div class="edit" v-tooltip.bottom="'Заблокировать'" v-else>
-            <simple-svg :filepath="'/static/img/blocked.svg'" />
-          </div>
-        </template>
-        <div class="news-block__deffered" v-if="queued">
-          <span class="news-block__deffered-text">
-            Дата и время публикации:
-            {{ info.time | moment('LLLL') }} (будет опубликован {{ info.publishDate | moment('LLLL') }})
-          </span>
-        </div>
-        <div class="news-block__author">
-          <router-link class="news-block__author-pic" :to="routerLink(info.author.id)">
-            <div class="main-layout__user-pic">
+        <div class="post-block__top">
+          <div class="post-block__top-author">
+            <div class="post-block__top-avatar">
               <img
                 v-if="info.author.photo"
                 :src="info.author.photo"
                 :alt="info.author.firstName[0] + ' ' + info.author.lastName[0]"
               />
               <div v-else>
-                {{ info.author.firstName[0] + ' ' + info.author.lastName[0] }}
+                <unknow-user />
               </div>
             </div>
-          </router-link>
-          <div class="news-block__author-info">
-            <router-link class="news-block__author-name" :to="routerLink(info.author.id)">
-              {{ info.author.firstName + ' ' + info.author.lastName }}
-            </router-link>
-            <span class="news-block__author-time">
-              Опубликован {{ info.time | moment('from') }}
-            </span>
-            <span class="news-block__changed-time" v-if="info.timeChanged">
-              Изменен {{ info.timeChanged | moment('from') }}
-            </span>
+            <div class="post-block__info">
+              <router-link :to="routerLink(info.author.id)">{{ info.author.firstName + ' ' + info.author.lastName }}</router-link>
+              <span v-if="!info.timeChanged">опубликован {{ info.time | moment('from') }}</span>
+              <span v-if="info.timeChanged">
+                Изменен {{ info.timeChanged | moment('from') }}
+              </span>
+            </div>
+          </div>
+          <div v-if="!admin && edit || deleted" class="post-block__top-actions">
+            <div class="button-top__actions" @click="actionsShow">
+              <show-more />
+            </div>
+            <transition name="fade">
+              <div v-if="showActions" class="post-block__showmore-actions" v-click-outside="closeActions">
+                <button class="post-block__btn-edit" v-if="edit" @click="toggleEditNews">
+                  Редактировать
+                </button>
+                <button class="post-block__btn-edit" v-if="deleted" @click="deleteNews">
+                  Удалить
+                </button>
+                <button class="post-block__btn-edit" v-if="blocked">
+                  Разблокировать
+                </button>
+                <button class="post-block__btn-edit" v-if="blocked">
+                  Заблокировать
+                </button>
+            </div>
+          </transition>
           </div>
         </div>
-        <div class="news-block__content">
-          <div class="news-block__content-main">
-            <h3 class="news-block__content-title">{{ info.title }}</h3>
-            <div v-if="info.imagePath">
-              <img class="post-image" :src="info.imagePath" :alt="'photo'" />
-            </div>
-            <p
-              class="news-block__content-text"
-              ref="text"
-              :class="{ lotText: isLotText, open: openText }"
-              v-html="info.postText"
-            />
-            <a class="news-block__content-more" href="#" v-if="isLotText" @click.prevent="toggleText">
-              <template v-if="openText">Скрыть</template>
-              <template v-else>Читать весь пост</template>
-            </a>
+        <div class="news-block__deffered" v-if="queued">
+          <span class="news-block__deffered-text">
+            Дата и время публикации:
+            {{ info.time | moment('LLLL') }} (будет опубликован {{ info.publishDate | moment('LLLL') }})
+          </span>
+        </div>
+        <div class="post-block__text">
+          <div v-if="info.imagePath">
+            <img class="post-image" :src="info.imagePath" :alt="'photo'" />
           </div>
-          <ul class="news-block__content-tags" v-if="info.tags && info.tags.length > 0">
-            <li class="news-block__content-tag" v-for="(tag, index) in info.tags" :key="index">
-              <router-link :to="{ name: 'Search', query: { tab: 'news', tags: tag.name } }">
-                {{ '#' + tag.name }}
-              </router-link>
-            </li>
-          </ul>
+          <p
+            class="post-block__text-content"
+            ref="text"
+            v-html="displayedText"
+          />
+          <div v-if="currentPostText > 65 && !openText" @click.prevent="toggleText">
+            <button class="post-block__showmore">Читать далее</button>
+          </div>
+          <div v-if="openText" @click.prevent="toggleText">
+            <button class="post-block__showmore">Скрыть</button>
+          </div>
         </div>
       </template>
     </div>
@@ -97,81 +87,82 @@
         @close-form="toggleEditNews"
       />
       <template v-else>
-        <template v-if="!admin">
-          <div class="edit">
-            <div class="edit__icon" v-if="deleted" @click="deleteNews">
-              <delete-news-icon />
-            </div>
-            <div class="edit__icon" v-if="edit" @click="toggleEditNews">
-              <edit-icon />
-            </div>
-          </div>
-        </template>
-        <template v-else>
-          <div class="edit" v-tooltip.bottom="'Разблокировать'" v-if="blocked">
-            <simple-svg :filepath="'/static/img/unblocked.svg'" />
-          </div>
-          <div class="edit" v-tooltip.bottom="'Заблокировать'" v-else>
-            <simple-svg :filepath="'/static/img/blocked.svg'" />
-          </div>
-        </template>
-        <div class="news-block__deffered" v-if="queued">
-          <span class="news-block__deffered-text">
-            Дата и время публикации:
-            {{ info.time | moment('LLLL') }} (будет опубликован {{ info.publishDate | moment('LLLL') }})
-          </span>
-        </div>
-        <div class="news-block__author">
-          <router-link class="news-block__author-pic" :to="routerLink(info.author.id)">
-            <div class="main-layout__user-pic">
+        <div class="post-block__top">
+          <div class="post-block__top-author">
+            <div class="post-block__top-avatar">
               <img
                 v-if="info.author.photo"
                 :src="info.author.photo"
                 :alt="info.author.firstName[0] + ' ' + info.author.lastName[0]"
               />
               <div v-else>
-                {{ info.author.firstName[0] + ' ' + info.author.lastName[0] }}
+                <unknow-user />
               </div>
             </div>
-          </router-link>
-          <div class="news-block__author-info">
-            <router-link class="news-block__author-name" :to="routerLink(info.author.id)">
-              {{ info.author.firstName + ' ' + info.author.lastName }}
-            </router-link>
-            <span class="news-block__author-time">
-              Опубликован {{ info.time | moment('from') }}
-            </span>
-            <span class="news-block__changed-time" v-if="info.timeChanged">
-              Изменен {{ info.timeChanged | moment('from') }}
-            </span>
+            <div class="post-block__info">
+              <router-link :to="routerLink(info.author.id)">{{ info.author.firstName + ' ' + info.author.lastName }}</router-link>
+              <span v-if="!info.timeChanged">опубликован {{ info.time | moment('from') }}</span>
+              <span v-if="info.timeChanged">
+                Изменен {{ info.timeChanged | moment('from') }}
+              </span>
+            </div>
+          </div>
+          <div v-if="!admin && edit || deleted" class="post-block__top-actions">
+            <div class="button-top__actions" @click="actionsShow">
+              <show-more />
+            </div>
+            <transition name="fade">
+              <div v-if="showActions" class="post-block__showmore-actions" v-click-outside="closeActions">
+                <button class="post-block__btn-edit" v-if="edit" @click="toggleEditNews">
+                  Редактировать
+                </button>
+                <button class="post-block__btn-edit" v-if="deleted" @click="deleteNews">
+                  Удалить
+                </button>
+                <button class="post-block__btn-edit" v-if="blocked">
+                  Разблокировать
+                </button>
+                <button class="post-block__btn-edit" v-if="blocked">
+                  Заблокировать
+                </button>
+            </div>
+          </transition>
           </div>
         </div>
-        <div class="news-block__content">
-          <div class="news-block__content-main">
-            <h3 class="news-block__content-title">{{ info.title }}</h3>
-            <div v-if="info.imagePath">
-              <img class="post-image" :src="info.imagePath" :alt="'photo'" />
-            </div>
-            <p
-              class="news-block__content-text"
-              ref="text"
-              :class="{ lotText: isLotText, open: openText }"
-              v-html="info.postText"
-            />
-            <a class="news-block__content-more" href="#" v-if="isLotText" @click.prevent="toggleText">
-              <template v-if="openText">Скрыть</template>
-              <template v-else>Читать весь пост</template>
-            </a>
-          </div>
-          <ul class="news-block__content-tags" v-if="info.tags && info.tags.length > 0">
-            <li class="news-block__content-tag" v-for="(tag, index) in info.tags" :key="index">
+        <h3 class="post-block__title">{{ info.title }}</h3>
+        <div class="post-block__timer">
+          <post-timer />
+          <span @mouseover="showInfoTimer = true" @mouseout="showInfoTimer = false">{{ timeToRead }} мин</span>
+          <transition name="fade">
+            <div v-if="showInfoTimer" class="post-block__timer-more">Примерно столько времени вы потратите на прочтение этой статьи</div>
+          </transition>
+        </div>
+        <ul class="post-block__tags" v-if="info.tags && info.tags.length > 0">
+            <li class="post-block__tags-item" v-for="(tag, index) in info.tags" :key="index">
               <router-link :to="{ name: 'Search', query: { tab: 'news', tags: tag.name } }">
                 {{ '#' + tag.name }}
               </router-link>
             </li>
-          </ul>
+        </ul>
+
+        <div class="post-block__text">
+          <div v-if="info.imagePath">
+            <img class="post-image" :src="info.imagePath" :alt="'photo'" />
+          </div>
+          <p
+            class="post-block__text-content"
+            ref="text"
+            v-html="displayedText"
+          />
+          <div v-if="currentPostText > 65 && !openText" @click.prevent="toggleText">
+            <button class="post-block__showmore">Читать далее</button>
+          </div>
+          <div v-if="openText" @click.prevent="toggleText">
+            <button class="post-block__showmore">Скрыть</button>
+          </div>
         </div>
-        <div class="news-block__actions" v-if="!queued && !admin">
+
+        <div class="post-block__actions" v-if="!queued && !admin" :class="{ 'open-comment': openCommnets }">
           <div class="news-block__actions-block">
             <like-comment
               :quantity="info.likeAmount"
@@ -198,28 +189,28 @@
             />
           </div>
         </div>
-        <div class="news-block__comments" v-if="!queued && openCommnets">
-          <comments
-            :admin="admin"
-            :info="currentComments"
-            :id="info.id"
-            :edit="edit"
-            :deleted="deleted"
-          />
-          <button-hover
-            variant="fill"
-            bordered="bordered"
-            v-if="
-              currentComments &&
-              currentComments.totalPages !== 0 &&
-              currentComments.page + 1 !== currentComments.totalPages
-            "
-            class="comments__more"
-            @click.native="showMore"
-          >
-            Ещё комментарии
-          </button-hover>
-        </div>
+        <transition name="fade">
+          <div class="post-block__comments" v-if="!queued && openCommnets">
+            <comments
+              :admin="admin"
+              :info="currentComments"
+              :id="info.id"
+              :edit="edit"
+              :deleted="deleted"
+            />
+            <button
+              v-if="
+                currentComments &&
+                currentComments.totalPages !== 0 &&
+                currentComments.page + 1 !== currentComments.totalPages
+              "
+              class="post-block__comment-more"
+              @click.prevent="showMore"
+            >
+              Ещё комментарии..
+            </button>
+          </div>
+        </transition>
       </template>
     </div>
   </div>
@@ -227,15 +218,20 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
-import DeleteNewsIcon from '../../Icons/DeleteNewsIcon.vue';
-import EditIcon from '../../Icons/EditIcon.vue';
+import PostTimer from '../../Icons/PostTimer.vue';
+import ShowMore from '../../Icons/ShowMore.vue';
+import UnknowUser from '../../Icons/UnknowUser.vue';
 import AddForm from '@/components/News/AddForm';
 import LikeComment from '@/components/LikeComment';
 import Comments from '@/components/Comments/Index.vue';
+import vClickOutside from 'v-click-outside';
 
 export default {
   name: 'NewsBlock',
-  components: { Comments, LikeComment, AddForm, DeleteNewsIcon, EditIcon },
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
+  components: { Comments, LikeComment, AddForm, PostTimer, ShowMore, UnknowUser },
   props: {
     info: {
       type: Object,
@@ -266,7 +262,7 @@ export default {
     queued: {
       type: Boolean,
       default: false
-    }
+    },
   },
 
   data: () => ({
@@ -275,6 +271,8 @@ export default {
     openText: false,
     isEditNews: false,
     commnets: '',
+    showInfoTimer: false,
+    showActions: false,
   }),
 
   computed: {
@@ -284,10 +282,31 @@ export default {
     currentComments() {
       return this.comments[this.info.id];
     },
+
+    displayedText() {
+      const words = this.info.postText.split(' ');
+      if (words.length > 100 && !this.openText) {
+        return words.slice(0, 100).join(' ') + '...';
+      }
+      return this.info.postText;
+    },
+
+    currentPostText() {
+      const words = this.info.postText.split(' ').length;
+      return words;
+    },
+
+    timeToRead() {
+      const wordsCount = this.info.postText.split(' ').length;
+      const averageReadingSpeed = 150;
+      const timeInMinutes = Math.ceil(wordsCount / averageReadingSpeed);
+      return timeInMinutes;
+    },
   },
 
   mounted() {
-    this.isLotText = this.$refs.text.offsetHeight > 100;
+    this.isLotText = this.$refs.text.offsetHeight > 150;
+
   },
 
   methods: {
@@ -298,6 +317,15 @@ export default {
 
     toggleText() {
       this.openText = !this.openText;
+    },
+
+
+    actionsShow() {
+      this.showActions = !this.showActions;
+    },
+
+    closeActions() {
+      this.showActions = false;
     },
 
     async toggleComments() {
@@ -338,184 +366,233 @@ export default {
 </script>
 
 <style lang="stylus">
+.open-comment
+  padding-bottom 30px
+  border-bottom 1px solid #BDCDD6
+.button-top__actions
+  cursor pointer
+  svg
+    pointer-events none
+
+.post-block__comment-more
+  background-color transparent
+  margin-top 20px
+  font-size 14px
+  font-weight 500
+  color #21a45d
+
+.post-block
+  max-width 910px
+  padding 30px
+  background-color #FFFFFF
+  border-radius 10px
+  box-shadow 0px 2px 8px rgba(0,0,0,0.08)
+  &__comments
+    &.fade-enter-active,
+    &.fade-leave-active
+      transition all .2s ease-in-out
+    &.fade-enter,
+    &.fade-leave-to
+      opacity 0
+  &__top
+    position relative
+    display flex
+    align-items center
+    justify-content space-between
+    margin-bottom 25px
+    &-author
+      display flex
+      align-items center
+    &-avatar
+      display flex
+      align-items center
+      justify-content center
+      background #BDCDD6
+      width 40px
+      height 40px
+      border-radius 50%
+      overflow hidden
+      margin-right 15px
+      margin-right 10px
+      user-select none
+      pointer-events none
+      img
+        display flex
+        align-items center
+        justify-content center
+        width 100%
+        height 100%
+        object-fit cover
+    &-actions
+      display flex
+      gap 10px
+  &__showmore-actions
+    position absolute
+    display flex
+    flex-direction column
+    top 40px
+    right 0
+    background-color #fff
+    border-radius 10px
+    padding 10px 0
+    min-width 150px
+    max-width 250px
+    box-shadow 0px 15px 40px rgba(0,0,0,10%)
+    z-index 12
+
+    &.fade-enter-active,
+    &.fade-leave-active
+      transition all .2s ease-in-out
+    &.fade-enter,
+    &.fade-leave-to
+      opacity 0
+  &__info
+    a:nth-child(1)
+      font-weight 600
+      font-size 16px
+      line-height 19px
+      color #444444
+      margin-right 10px
+    span:nth-child(2)
+      font-weight 400
+      color #777777
+      font-size 13px
+      line-height 15px
+  &__btn-edit
+    display flex
+    align-items center
+    gap 8px
+    padding 8px 15px
+    background-color transparent
+    font-size 13px
+    line-height 18px
+    color #000
+    transition all .2s ease-in-out
+    &:hover
+      background-color rgba(174, 183, 194, 0.12)
+
+  &__title
+    font-weight 600
+    font-size 20px
+    line-height 23px
+    margin-bottom 10px
+  &__timer
+    position relative
+    display inline-flex
+    align-items center
+    gap 3px
+    font-weight 600
+    font-size 13px
+    line-height 16px
+    color #BDCDD6
+    margin-bottom 15px
+
+    &.fade-enter-active,
+    &.fade-leave-active
+      transition all .2s ease-in-out
+    &.fade-enter,
+    &.fade-leave-to
+      opacity 0
+    &-more
+      position absolute
+      white-space nowrap
+      top -35%
+      font-weight 400
+      left 100% + 15px
+      background #333
+      color #fff
+      border-radius 5px
+      padding 5px 10px
+      z-index 10
+      &::after
+        content " "
+        position absolute
+        top 50%
+        right 100%;
+        margin-top -5px
+        border-width 5px
+        border-style solid
+        border-color transparent #333 transparent transparent
+  &__tags
+    display flex
+    align-items center
+    flex-wrap wrap
+    gap 10px
+    margin-bottom 25px
+    &-item
+      background-color #efefef
+      border-radius 5px
+      padding 5px
+      color #696767
+      font-size 13px
+      transition color, background-color .2s ease-in-out
+      a
+        color #696767
+      &:hover
+        background-color #9eaab0
+        a
+          color #333
+
+  &__text
+    &.fade-enter-active,
+    &.fade-leave-active
+      transition all 5s ease-in-out
+    &.fade-enter,
+    &.fade-leave-to
+      opacity 0
+    &-content
+      font-size 16px
+      line-height 24px
+      color #444
+      margin-bottom 25px
+      p:not(:first-child)
+        margin-bottom 10px
+      p:last-child
+        margin-bottom 0
+
+  &__showmore
+    padding 10px
+    background-color #9eaab0
+    color #fff
+    font-size 14px
+    border-radius 5px
+    margin-bottom 35px
+    transition background-color .2s ease-in-out
+    @media (any-hover: hover)
+      &:hover
+        background-color #6d7579
+
+  &__actions
+    display flex
+    align-items center
+    gap 15px
+
+</style>
+
+<style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 
 .post-image
   width 400px
 
-.queued-news__block .news-block__content-main
-  border-bottom none !important
-
-.queued-news__block .news-block__author
-  padding-top 30px
-
-.queued-news__block .edit
-  top 65px
-
+.queued-news__block .post-block__top
+  margin-bottom 10px
 
 .news-block
   background #FFFFFF
   box-shadow standart-boxshadow
-  padding 30px 40px 30px
+  padding 30px
   position relative
   border-radius 10px
-
-  .edit
-    top 30px
-
-  &.deffered
-    padding-bottom 20px
-
-  &--admin
-    .news-block__comments
-      margin-top 20px
-      margin-bottom 20px
-
-  & + &
-    margin-top 30px
-
-  &__actions-block
-    transition transform 200ms linear
-    &:hover
-      transform scale(1.2)
+  margin-bottom 20px
 
 .news-block__deffered
-  position absolute
-  top 15px
-  left 20px
   margin-bottom 20px
   display flex
 
 .news-block__deffered-text
   color #5F5E7A
   font-size 16px
-
-
-.news-block__author
-  margin-bottom 20px
-  display flex
-  align-items center
-
-.news-block__author-pic
-  width 60px
-  height 60px
-  overflow hidden
-  margin-right 15px
-
-  img
-    width 100%
-    height 100%
-    object-fit cover
-
-.news-block__author-name
-  font-weight 600
-  font-size 15px
-  color #000
-  display block
-  margin-bottom 5px
-
-.news-block__author-time
-  font-size 13px
-  color santas-gray
-
-.news-block__changed-time
-  position absolute
-  top 7px
-  right 20px
-  font-size 13px
-  font-style italic
-  color santas-gray
-
-.news-block__content
-  display flex
-
-.news-block__content-main
-  padding-bottom 20px
-  border-bottom 1px solid #E7E7E7
-  width 100%
-
-.news-block__content-title
-  font-family font-exo
-  font-weight bold
-  font-size 24px
-  color #000
-  margin-bottom 10px
-
-.news-block__content-text
-  font-size 15px
-  line-height 25px
-  color storm-gray
-  overflow hidden
-  text-align justify
-  padding-right 1em
-  position relative
-
-  &:before
-    content '\02026'
-    position absolute
-    right 0
-    bottom 0
-
-  &:after
-    content ''
-    position absolute
-    right 0
-    width 1em
-    height 1em
-    margin-top 0.2em
-    background white
-
-  &.lotText
-    max-height 100px
-
-  &.open
-    max-height 100%
-    padding-right 0
-
-.news-block__content-more
-  display inline-block
-  margin-top 10px
-  font-size 13px
-  color eucalypt
-
-.news-block__content-tags
-  display flex
-  flex-wrap wrap
-  padding 20px
-  max-width 230px
-  flex none
-  align-self flex-start
-  margin-left 40px
-  gap 10px
-
-  @media (max-width breakpoint-xxl)
-    margin-left 20px
-
-.news-block__content-tag
-  color eucalypt
-  font-size 13px
-  line-height 22px
-  display inline-block
-
-  a
-    background-color #F5F7FB
-    border-radius 5px
-    color eucalypt
-    padding 5px
-    transition background-color .2s ease-in-out, color .2s ease-in-out
-
-    &:hover
-      background-color eucalypt
-      color #fff
-
-.news-block__actions
-  display flex
-  align-items center
-  margin 25px 0
-
-.news-block__actions-block
-  & + &
-    margin-left 30px
 
 @media (min-width: 320px) and (max-width: 768px)
   .news-block

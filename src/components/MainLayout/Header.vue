@@ -1,44 +1,48 @@
 <template>
   <header class="main-layout__header" :class="{ admin: isAdminPage }">
-    <template v-if="!isAdminPage">
-      <form class="main-layout__search" action="#" @submit.prevent="onSearch">
-        <button class="main-layout__search-btn">
-          <search-icon />
-        </button>
-
-        <input
-          class="main-layout__search-input"
-          type="text"
-          placeholder="Поиск"
-          :value="searchText"
-          @input="setSearchText($event.target.value)"
-        />
-      </form>
-      <change-theme />
-      <div class="main-layout__push" @click="togglePush">
-        <push-icon :isNotEmpty="getNotificationsLength > 0" />
-
-        <push :isOpen="isOpenPush" @close-push="togglePush" />
-      </div>
-    </template>
-
-    <router-link class="main-layout__user" v-if="getInfo" :to="{ name: 'Profile' }">
-      <div class="main-layout__user-pic" style="background-color: #8bc49e">
-        <img
-          v-if="getInfo.photo"
-          :src="getInfo.photo"
-          :alt="getInfo.firstName[0] + ' ' + getInfo.lastName[0]"
-        />
-
-        <div v-else>
-          {{ getInfo.firstName[0] + ' ' + getInfo.lastName[0] }}
+    <div class="wrapper wrapper__header">
+      <template v-if="!isAdminPage">
+        <div class="main-layout__header-left">
+          <div class="main-layout__logotype">
+            <p>Code Lounge</p>
+            <main-logotype :width="25" :height="25"/>
+          </div>
+          <form class="main-layout__search" action="#" @submit.prevent="onSearch">
+            <button class="main-layout__search-btn">
+              <search-icon />
+            </button>
+            <input
+              class="main-layout__search-input"
+              type="text"
+              placeholder="Поиск"
+              :value="searchText"
+              @input="setSearchText($event.target.value)"
+            />
+          </form>
         </div>
-      </div>
-
-      <span class="main-layout__user-name">{{ getInfo.fullName }}</span>
-
-      <span class="main-layout__user-post" v-if="isAdminPage">- администратор</span>
-    </router-link>
+        <div class="main-layout__header-right">
+          <change-theme />
+          <div class="main-layout__push" @click="togglePush">
+            <push-icon :isNotEmpty="getNotificationsLength > 0" />
+            <push :isOpen="isOpenPush" @close-push="togglePush" />
+          </div>
+          <router-link class="main-layout__user" v-if="getInfo" :to="{ name: 'Profile' }">
+            <div class="main-layout__user-pic" style="background-color: #8bc49e">
+              <img
+                v-if="getInfo.photo"
+                :src="getInfo.photo"
+                :alt="getInfo.firstName[0] + ' ' + getInfo.lastName[0]"
+              />
+              <div v-else>
+                {{ getInfo.firstName[0] + ' ' + getInfo.lastName[0] }}
+              </div>
+            </div>
+            <span class="main-layout__user-name">{{ getInfo.fullName }}</span>
+            <span class="main-layout__user-post" v-if="isAdminPage">- администратор</span>
+          </router-link>
+        </div>
+      </template>
+    </div>
   </header>
 </template>
 
@@ -46,12 +50,13 @@
 import { mapGetters, mapMutations, mapActions, mapState } from 'vuex';
 import SearchIcon from '../../Icons/SearchIcon.vue';
 import PushIcon from '../../Icons/PushIcon.vue';
+import MainLogotype from '../../Icons/MainLogotype.vue';
 import Push from '@/components/MainLayout/Push';
 import ChangeTheme from '../Theme/ChangeTheme.vue';
 
 export default {
   name: 'MainLayoutHeader',
-  components: { Push, SearchIcon, PushIcon, ChangeTheme },
+  components: { Push, SearchIcon, PushIcon, ChangeTheme, MainLogotype },
 
   data: () => ({
     isOpenPush: false,
@@ -151,16 +156,27 @@ export default {
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 
-.vt-notification-container
-  display none
+.wrapper__header
+  display flex
+  align-items center
+  justify-content space-between
+  width 1280px
+  padding 0 15px
+  margin 0 auto
+
+.main-layout__header-left,
+.main-layout__header-right
+  display flex
+  align-items center
+  gap 15px
 
 .main-layout__header
   background eucalypt
   box-shadow standart-boxshadow
   height header-height
-  position fixed
+  position absolute
   top 0
-  left sidebar-width
+  left 0
   right 0
   display flex
   align-items center
@@ -173,17 +189,17 @@ export default {
     color steel-gray
     justify-content flex-end
 
-  @media (max-width breakpoint-xxl)
-    left sidebar-width-xl
-
 .main-layout__search
+  position relative
   display flex
   align-items center
   width 100%
-  max-width 350px
   margin-right auto
 
 .main-layout__search-btn
+  position absolute
+  left 10px
+  top 20%
   margin-right 10px
   background-color transparent
   color: #fff
@@ -198,23 +214,20 @@ export default {
 .main-layout__search-input
   font-size 15px
   width 100%
-  background transparent
-  padding 10px
+  background #edeef026
+  padding 10px 10px 10px 40px
   border-radius 10px
-  border-bottom 2px solid rgba(255, 255, 255, 0.12)
   color #fff
   transition all 0.2s
 
   &::placeholder
-    color rgba(255, 255, 255, 0.3)
+    color #fff
 
   &:focus
-    border-bottom-color #fff
+    background #00000029
+
 
 .main-layout__push
-  margin-right 30px
-  width 60px
-  height 60px
   display flex
   align-items center
   justify-content center

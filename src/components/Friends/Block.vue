@@ -55,6 +55,7 @@
           </div>
         </template>
         <template v-else>
+          <!-- Подписка/отписка/принимаем запрос -->
           <div
             v-if="info.statusCode === 'WATCHING' && info.statusCode !== 'FRIEND'"
             class="friends-block__actions-block message subscribe__icon"
@@ -79,6 +80,7 @@
             <span>Принять запрос</span>
             <simple-svg class="accept" :filepath="'/static/img/add.svg'" />
           </div>
+          <!-- Отправка сообщений -->
           <div
             class="friends-block__actions-block message"
             @click="sendMessage(messageId)"
@@ -280,6 +282,10 @@ export default {
         return;
       }
       this.apiAddFriends({ id, isApprove: true });
+
+      setTimeout(() => {
+        location.reload()
+      }, 500)
     },
 
     addToFriend(id) {

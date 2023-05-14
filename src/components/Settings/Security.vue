@@ -4,14 +4,30 @@
       <div class="settings-security__mail">
         <h3 class="settings-security__title">E-mail:</h3>
 
-        <input class="settings-security__value" v-model="changeEmail" />
+        <input
+          class="settings-security__value"
+          v-model="changeEmail"
+          autocomplete="off"
+        />
 
         <button class="settings-security__btn" @click.prevent="openModal('email')">Изменить</button>
       </div>
 
       <h3 class="settings-security__title">Пароль:</h3>
-      <input class="settings-security__value not-first" type="password" v-model="password" placeholder="Введите текущий пароль" />
-      <input class="settings-security__value" type="password" v-model="passwordTwo" placeholder="Введите новый пароль" />
+      <input
+        class="settings-security__value not-first"
+        type="password"
+        v-model="password"
+        placeholder="Введите текущий пароль"
+        autocomplete="new-password"
+      />
+      <input
+        class="settings-security__value"
+        type="password"
+        v-model="passwordTwo"
+        placeholder="Введите новый пароль"
+        autocomplete="new-password"
+      />
       <button class="settings-security__btn" @click.prevent="openModal('password')">Изменить</button>
     </div>
 
@@ -96,7 +112,7 @@ export default {
   box-shadow standart-boxshadow
   display flex
   flex-direction column
-  width 550px
+  width 100%
   padding 30px
   font-size 15px
   border-radius 20px

@@ -206,10 +206,6 @@ export default {
       return this.info.isOnline;
     },
 
-    getInfo() {
-      return this.info.idFrom;
-    },
-
     currentUser() {
       return this.$store.getters.getUser;
     },

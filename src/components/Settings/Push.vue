@@ -65,7 +65,7 @@ export default {
   box-shadow standart-boxshadow
   padding 30px
   border-radius 20px
-  width 550px
+  width 100%
 
 .settings-push__item
   display flex

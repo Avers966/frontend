@@ -7,10 +7,11 @@
           :blocked="getUsersInfo.isBlocked"
           :friend="getUsersInfo.isFriend"
           :online="getUsersInfo.isOnline"
+          :me="myProfile"
         />
       </div>
 
-      <div class="profile__news">
+      <div class="profile__news" id="mypublications">
         <div class="profile__tabs">
           <span class="profile__tab active">
             Публикации {{ getUsersInfo.firstName }} ({{ getWallPagination.totalElements }})
@@ -53,6 +54,11 @@ export default {
   computed: {
     ...mapGetters('users/info', ['getUsersInfo', 'getWall', 'getWallPagination']),
     ...mapState('global/status', ['loading', 'error', 'errorMessage']),
+    ...mapGetters('profile/info', ['getInfo']),
+
+    myProfile() {
+      return this.getInfo?.id === this.getUsersInfo?.id;
+    }
   },
 
   mounted() {

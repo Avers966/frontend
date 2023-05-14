@@ -68,9 +68,13 @@ export default {
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 
+.search
+  width 100%
+
 .search__tabs
   background #fff
   box-shadow standart-boxshadow
+  border-radius 10px
   padding 20px
 
   @media (max-width breakpoint-xxl)

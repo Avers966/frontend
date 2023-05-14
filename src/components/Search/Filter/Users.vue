@@ -48,7 +48,11 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
+import VSelect from 'vue-select'
+import 'vue-select/dist/vue-select.css'
+Vue.component('VSelect', VSelect)
 
 export default {
   name: 'SearchFilterUsers',
@@ -76,8 +80,7 @@ export default {
       immediate: true,
       handler(value) {
         if (value && value.id) this.currentCities = this.cities[this.country.id];
-        else this.cities = [];
-        this.city = null;
+        else this.city = null;
       },
     },
   },

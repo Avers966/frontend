@@ -47,9 +47,21 @@ export default {
   font-size 14px
   padding 10px
   cursor pointer
+  transition all .2s ease-in-out
+
+  @media (any-hover: hover)
+    &:hover
+      color #222
+      background #c8ecd8
+      border-color #c8ecd8
+
 
   &.active
     color #fff
     background #21a45d
     border-color #21a45d
+    &:hover
+      color #fff
+      background #21a45d
+      border-color #21a45d
 </style>

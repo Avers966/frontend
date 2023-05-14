@@ -40,7 +40,7 @@ export default {
 @import '../../assets/stylus/base/vars.styl'
 
 .search-block
-  max-width 1060px
+  width 100%
 
   &+&
     margin-top 70px

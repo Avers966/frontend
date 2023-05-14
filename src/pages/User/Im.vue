@@ -57,9 +57,7 @@ export default {
           this.messagesLoaded = false;
           await this.fetchMessages(value);
           this.messagesLoaded = true;
-          const newActiveDialog = this.getDialogs().length
-            ? this.getDialogs().filter((d) => +d.id === +value)
-            : 0;
+          const newActiveDialog = this.getDialogs().length ? this.getDialogs().filter((d) => +d.id === +value) : [];
 
           if (newActiveDialog.length > 0) {
             [this.activeDialog] = newActiveDialog;
@@ -149,18 +147,18 @@ export default {
 
 .im
   display flex
+  width 100%
   height 'calc(100vh - %s)' % header-height
 
 .im__dialogs
   width 100%
-  max-width 39.13%
+  max-width 35%
   overflow-y auto
   max-height 100%
+  padding 15px
   height 100%
-  background-color #eaf0fb
-
-  @media (max-width breakpoint-xl)
-    max-width 120px
+  border-radius 10px
+  background-color #d2d4d7
 
 .im__chat
   width 100%

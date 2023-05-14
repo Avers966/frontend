@@ -11,7 +11,7 @@
           />
 
           <div class="avatar" v-else>
-            {{ getInfo.firstName[0] + ' ' + getInfo.lastName[0] }}
+            <unknow-user />
           </div>
         </div>
       </template>
@@ -31,10 +31,11 @@
 import { mapGetters } from 'vuex';
 import AddIcon from '@/Icons/AddIcon.vue';
 import AddForm from '@/components/News/AddForm';
+import UnknowUser from '../../Icons/UnknowUser.vue';
 
 export default {
   name: 'NewsAdd',
-  components: { AddForm, AddIcon },
+  components: { AddForm, AddIcon, UnknowUser },
   props: {
     user: Boolean,
   },

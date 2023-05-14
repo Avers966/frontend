@@ -1,5 +1,5 @@
 import dialogsApi from '@/requests/dialogs';
-import store from "@/store";
+// import store from "@/store";
 
 export default {
   namespaced: true,
@@ -67,29 +67,22 @@ export default {
 
     async fetchDialogs({ commit }) {
       try {
-        const info = store.getters['profile/info/getInfo'];
-
         const response = await dialogsApi.getDialogs();
-        if (response.data?.content?.length === 0) return;
+        if (response.data.content.length === 0) return;
 
         const dialogs = [];
-        response.data.content.forEach((d) => {
-          let partner = "";
-          if(d.conversationPartner1.id === info.id){
-            partner = d.conversationPartner2
-          } else {
-            partner = d.conversationPartner1
-          }
-          const conversationPartnerId = partner.id;
+        const data = response.data.content;
+        data.map((d) => {
+          const conversationPartnerId = d.conversationPartner;
           const newDialog = {
             id: conversationPartnerId,
+            conversationPartner: d.conversationPartner,
             unreadCount: d.unreadCount,
             lastMessage: {
-              time: d.lastMessage[0].time,
-              messageText: d.lastMessage[0].messageText,
-              authorId: d.lastMessage[0].authorId,
+              time: d.lastMessage && d.lastMessage[0]?.time,
+              messageText: d.lastMessage && d.lastMessage[0]?.messageText,
+              authorId: d.lastMessage && d.lastMessage[0]?.authorId,
             },
-            conversationPartner: partner,
           };
           dialogs.push(newDialog);
         });

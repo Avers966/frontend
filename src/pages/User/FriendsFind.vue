@@ -81,6 +81,10 @@ export default {
   border-radius 10px
   .friends-possible__btn
     color
+.friends-find
+  display grid
+  grid-template-columns 1fr 430px
+  gap 20px
 </style>
 
 <style lang="stylus" scoped>

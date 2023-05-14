@@ -1,8 +1,8 @@
 <template>
-  <div class="like-comment" :class="{ active, fill }">
+  <div class="like-comment" :class="{ active, fill, 'comment-icon': comment }">
     <template v-if="comment">
-      <comment-icon v-if="quantity >= 1" :stroke="`#21a45d`" />
-      <comment-icon v-else-if="quantity === 0" />
+      <comment-icon v-if="quantity >= 1" :class="{ 'stroke-active': quantity >= 1 }" />
+      <comment-icon v-else-if="quantity === 0" :class="{ 'stroke-null': quantity === 0 }" />
 
       <span v-if="quantity >= 1" :style="{ 'font-size': fontSize, color: color }">
         {{ quantity }}
@@ -12,7 +12,8 @@
     <div class="like-comment__checkbox" v-else>
       <input type="checkbox" :checked="active" :id="id" @change="onChange" />
 
-      <label :for="id" :style="{ 'font-size': fontSize }">
+      <label :for="id" :class="{ 'like-amount': localQuantity >= 1 }">
+        <like-icon />
         <template v-if="localQuantity >= 1">
           {{ localQuantity }}
         </template>
@@ -23,11 +24,16 @@
 
 <script>
 import CommentIcon from '../Icons/CommentIcon.vue';
+import LikeIcon from '../Icons/LikeIcon.vue';
 export default {
   name: 'Like',
-  components: { CommentIcon },
+  components: { CommentIcon, LikeIcon },
   props: {
-    quantity: Number,
+    quantity: {
+      type: Number,
+      required: true
+    },
+
     active: null,
     fill: Boolean,
     width: {
@@ -83,50 +89,39 @@ export default {
 <style lang="stylus">
 @import '../assets/stylus/base/vars.styl'
 
+.like-amount
+  color #FF3347
+  font-weight 600
+  svg
+    color #FF3347
+
+.stroke-active svg path
+  fill #1C9252
+
+.comment-icon
+  &:hover
+    color #000 !important
+  span
+    color #000 !important
+    font-weight 500
+
+.yes-comment
+  color #000
+
 .like-comment
   display flex
   align-items center
   cursor pointer
-
+  font-size 13px
+  height 32px
+  background-color #F0F2F5
+  padding 4px 20px
+  border-radius 32px
+  transition all .2s ease-in-out
+  gap 5px
   &:hover
-    svg
-      fill eucalypt
-
-      path
-        stroke eucalypt !important
-
-  &.fill
-    &:hover
-      svg
-        fill wild-watermelon
-
-        path
-          stroke wild-watermelon
-
-    svg
-      fill silver-sand
-
-      path
-        stroke eucalypt
-
-  &.active
-    &:hover
-      svg
-        fill transparent
-
-    svg
-      fill wild-watermelon
-
-      path
-        stroke wild-watermelon
-
-    span
-      color wild-watermelon
-
-  span
-    font-weight 600
-    color #AEAEBD
-    margin-left 5px
+    color #ff5573
+    background-color #d2d2d2
 
 .like-comment__checkbox
   input
@@ -139,17 +134,13 @@ export default {
 
     &:checked
       & + label
-        background-image url('/static/img/like-active.svg')
-        color wild-watermelon
+        svg
+          color #ff5573
 
   label
-    width 18px
-    height 16px
-    display block
-    background url('/static/img/like.svg') center no-repeat
-    background-size 18px
-    padding-left 25px
-    font-weight 600
-    color #AEAEBD
+    display flex
+    gap 5px
+    font-size 13px
+    align-items center
     cursor pointer
 </style>

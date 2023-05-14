@@ -95,7 +95,7 @@ export default {
         title: payload.title,
         postText: payload.postText,
         publishDate: payload.publishDate,
-        tags: payload.tags.map(tag => ({ id: tag.id, name: tag.name })),
+        tags: payload.tags == null ? console.log('пусто') : payload.tags.map(tag => ({ id: tag.id, name: tag.name })),
         imagePath: payload.imagePath,
         id: payload.postId,
       };

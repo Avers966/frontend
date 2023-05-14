@@ -221,7 +221,7 @@ export default {
               this.city = '';
               this.country = '';
             }
-          }, 700)
+          }, 500)
         } else {
           this.city = '';
           this.country = '';
@@ -382,7 +382,7 @@ export default {
 
 .settings-main
   background #fff
-  width 550px
+  width 100%
   box-shadow standart-boxshadow
   padding 40px 20px
   border-radius 20px

@@ -1,82 +1,86 @@
 <!-- eslint-disable vue/html-indent -->
 <template>
-  <div class="main-layout__sidebar">
-    <div class="main-layout__logo" :class="{ admin: isAdminPage }">
-      <div class="main-layout__admin-logo" v-if="isAdminPage">
-        <simple-svg :filepath="'/static/img/logo-admin.svg'" />
+  <div class="main-layout__sidebar" :class="{ 'sticky': isSticky }" v-scroll="handleScroll">
+    <div class="wrapper__sidebar">
+      <div class="main-layout__logo" :class="{ admin: isAdminPage }" v-if="isAdminPage">
+        <div class="main-layout__admin-logo">
+          <simple-svg :filepath="'/static/img/logo-admin.svg'" />
+        </div>
       </div>
-      <div class="main-layout__logotype" v-else>
-        <p>Code Lounge</p>
-        <main-logotype :width="35" :height="35"/>
-      </div>
+      <transition>
+        <nav class="main-layout__nav">
+          <router-link
+            :title="item.text"
+            class="main-layout__link"
+            v-for="(item, index) in info"
+            :key="index"
+            :exact="item.exact"
+            :to="item.link"
+            :class="{
+              'main-layout__link--im':
+                item.link.name === 'Im' || (item.link.name === 'Friends' && requestsCount?.count),
+              big: unreadedMessages?.count >= 100,
+            }"
+            :data-push="
+              item.link.name === 'Im'
+                ? unreadedMessages?.count
+                : item.link.name === 'Friends'
+                ? requestsCount?.count
+                : false
+            "
+          >
+            <div class="simple-svg-wrapper">
+              <sidebar-icons :name="item.icon" />
+            </div>
+            <span class="sidebar__text">{{ item.text }}</span>
+          </router-link>
+          <router-link
+            class="main-layout__link"
+            v-if="!isAdminPage"
+            :to="{ name: 'Settings' }"
+            title="Настройки"
+          >
+            <div class="simple-svg-wrapper">
+              <sidebar-icons :name="'settings'" />
+            </div>
+            <span class="sidebar__text">Настройки</span>
+          </router-link>
+          <a class="main-layout__link" @click.prevent="onLogout" href="#" title="Выйти">
+            <div class="simple-svg-wrapper">
+              <sidebar-icons :name="'exit'" />
+            </div>
+            <span class="sidebar__text">Выйти</span>
+          </a>
+        </nav>
+      </transition>
     </div>
-
-    <button class="burger-menu__button" @click="isOpen = !isOpen" :class="{'active': isOpen, overflow: bodyOverflow }">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-
-    <transition>
-      <nav class="main-layout__nav" v-show="isOpen" :class="{'active': isOpen}">
-        <router-link
-          :title="item.text"
-          class="main-layout__link"
-          v-for="(item, index) in info"
-          :key="index"
-          :exact="item.exact"
-          :to="item.link"
-          :class="{
-            'main-layout__link--im':
-              item.link.name === 'Im' || (item.link.name === 'Friends' && requestsCount?.count),
-            big: unreadedMessages?.count >= 100,
-          }"
-          :data-push="
-            item.link.name === 'Im'
-              ? unreadedMessages?.count
-              : item.link.name === 'Friends'
-              ? requestsCount?.count
-              : false
-          "
-        >
-          <div class="simple-svg-wrapper">
-            <sidebar-icons :name="item.icon" />
-          </div>
-          <span class="sidebar__text">{{ item.text }}</span>
-        </router-link>
-        <router-link
-          class="main-layout__link"
-          v-if="!isAdminPage"
-          :to="{ name: 'Settings' }"
-          title="Настройки"
-        >
-          <div class="simple-svg-wrapper">
-            <sidebar-icons :name="'settings'" />
-          </div>
-          <span class="sidebar__text">Настройки</span>
-        </router-link>
-        <a class="main-layout__link" @click.prevent="onLogout" href="#" title="Выйти">
-          <div class="simple-svg-wrapper">
-            <sidebar-icons :name="'exit'" />
-          </div>
-          <span class="sidebar__text">Выйти</span>
-        </a>
-      </nav>
-    </transition>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapState } from 'vuex';
 import SidebarIcons from '../../Icons/sidebar/SidebarIcons.vue';
-import MainLogotype from '../../Icons/MainLogotype.vue';
 
 export default {
   name: 'MainLayoutSidebar',
-  components: { SidebarIcons, MainLogotype },
+  directives: {
+    scroll: {
+      inserted: function (el, binding) {
+        let f = function (evt) {
+          if (binding.value(evt, el)) {
+            window.removeEventListener('scroll', f)
+          }
+        }
+        window.addEventListener('scroll', f)
+      }
+    }
+  },
+  components: { SidebarIcons },
   data() {
     return {
       isOpen: false,
+      isSticky: false,
+      scrollPosition: 0
     }
   },
   computed: {
@@ -109,6 +113,30 @@ export default {
   mounted() {
     this.apiRequestsCount();
     this.apiUnreadedMessages();
+    this.scrollPosition = window.pageYOffset;
+  },
+
+  created() {
+    this.$options.directives.scroll = {
+      inserted: (el, binding) => {
+        const callback = binding.value;
+        let options = {};
+        if (binding.arg) {
+          options = binding.arg;
+        }
+        el._onScroll = () => {
+          callback(el, options);
+        };
+        window.addEventListener('scroll', el._onScroll);
+      },
+      unbind: (el) => {
+        window.removeEventListener('scroll', el._onScroll);
+      }
+    };
+  },
+
+  destroyed() {
+    window.removeEventListener('scroll', this.handleScroll);
   },
 
   methods: {
@@ -120,6 +148,9 @@ export default {
         this.$router.push('/login');
       });
     },
+    handleScroll() {
+      this.isSticky = window.pageYOffset > 85;
+    }
   },
 };
 </script>
@@ -130,14 +161,18 @@ export default {
 .form-layout__main
   margin auto 0
 
+.wrapper__sidebar
+  width 1280px
+  padding 0 15px
+  margin 0 auto
+
+.main-layout__nav
+  display flex
+  gap 30px
+
 .main-layout__logotype
-  z-index 1000
   display inline-flex
   align-items center
-  white-space nowrap
-  padding 10px
-  border-radius 10px
-  background #ffffff21
   user-select none
   pointer-events none
   gap 10px
@@ -163,17 +198,22 @@ export default {
 }
 
 .main-layout__sidebar
-  position fixed
+  position absolute
+  top 85px
   left 0
-  top 0
-  bottom 0
-  width sidebar-width
-  background steel-gray
-  padding 40px
   color #fff
   display flex
-  flex-direction column
-  overflow-y auto
+  width 100%
+  padding 20px 0
+  background #fff
+  border-bottom 1px solid #cbcbcb
+  z-index 10000
+  transition none
+
+  &.sticky
+    position fixed
+    top 0
+    transition none
 
 .main-layout__logo
   margin-bottom 100px
@@ -187,38 +227,37 @@ export default {
   width 100%
   margin-left 10px
 
-.main-layout__nav
-  margin-bottom auto
-  margin-top -25px
-
 .main-layout__link
-  color rgba(255, 255, 255, 0.4)
+  color #6f6f6f
   display flex
-  align-items baseline
-  margin-left -25px
-  margin-right -25px
-  padding 25px
-  transition all 0.2s
+  gap 5px
+  align-items center
+  transition color .2s ease-in-out
   position relative
 
   &:hover
-    color #fff
+    color #000
+
+  &:last-child
+    margin-left auto
+
 
   &--im
     &:after
       content attr(data-push)
-      font-weight 600
-      font-size 13px
-      width 23px
-      height 23px
+      font-weight 400
+      font-size 9px
+      width 15px
+      height 15px
+      color #fff
       background-color #E65151
       border-radius 50%
       display flex
       align-items center
       justify-content center
       position absolute
-      right 10px
-      top 50%
+      right -13px
+      top 10%
       transform translateY(-50%)
 
     &.big
@@ -228,12 +267,11 @@ export default {
         right 5px
 
   &.router-link-active
-    color #fff
+    color #21a45d
 
   .simple-svg-wrapper
     width 16px
     height 16px
-    margin-right 15px
     flex none
 
     & svg
@@ -286,8 +324,6 @@ export default {
 @media (min-width: 768px)
   .burger-menu__button
     display none
-  .main-layout__nav
-    display block !important
 
 @media (max-width: 768px)
   .burger-menu__button

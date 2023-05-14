@@ -69,8 +69,8 @@ mutations: {
         case 'COMMENT_COMMENT': el.enable = notifications.enableCommentComment; break;
         case 'FRIEND_REQUEST': el.enable = notifications.enableFriendRequest; break;
         case 'MESSAGE': el.enable = notifications.enableMessage; break;
-        case 'FRIEND_BIRTHDAY': el.enable = notifications.enableSendEmailMessage; break;
-        case 'SEND_EMAIL_MESSAGE': el.enable = notifications.enableFriendBirthday;
+        case 'FRIEND_BIRTHDAY': el.enable = notifications.enableFriendBirthday; break;
+        case 'SEND_EMAIL_MESSAGE': el.enable = notifications.enableSendEmailMessage;
       }
     });
   },

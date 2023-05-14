@@ -440,12 +440,6 @@ export default {
       .then(response => {
         this.searchResult = response.data;
       })
-      .catch(() => {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'action',
-          text: `По запросу "${this.localFirstName}" ничего не найдено!`,
-        });
-      });
       this.localFirstName = this.firstName;
       this.firstName = '';
     },
@@ -470,7 +464,7 @@ export default {
   position relative
   width 100%
   display grid
-  grid-template-columns 70% 30%
+  grid-template-columns 1fr 430px
   gap 30px
 
   .inner-page__aside
@@ -506,6 +500,8 @@ export default {
 </style>
 
 <style lang="stylus">
+.friends .inner-page__main
+  width 100%
 .friend__search__resultats
   display flex
   gap 10px

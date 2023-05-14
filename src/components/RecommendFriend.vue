@@ -49,7 +49,7 @@ export default {
     },
 
     getInfo() {
-      return this.possibleFriends.map(friend => friend.idFrom);
+      return this.possibleFriends.map(friend => friend.friendId);
     },
   },
 

@@ -1,16 +1,16 @@
 <template>
   <div class="main-layout">
-    <main-layout-sidebar />
-
-    <div class="main-layout__main">
+    <div class="wrapper">
       <main-layout-header />
-
+      <main-layout-sidebar />
       <main class="main-layout__page">
         <router-view />
       </main>
     </div>
-
     <real-time-updater />
+    <a href="#" class="scroll-to-top" v-if="showButton" @click.prevent="scrollToTop">
+      <scroll-button />
+    </a>
   </div>
 </template>
 
@@ -18,22 +18,70 @@
 import MainLayoutHeader from '@/components/MainLayout/Header';
 import MainLayoutSidebar from '@/components/MainLayout/Sidebar';
 import RealTimeUpdater from '@/components/RealTimeUpdater';
+import ScrollButton from '../Icons/ScrollIcon.vue';
 
 export default {
   components: {
     MainLayoutHeader,
     MainLayoutSidebar,
     RealTimeUpdater,
+    ScrollButton
   },
+
+  data() {
+    return {
+      showButton: false
+    }
+  },
+
+  mounted() {
+    window.addEventListener('scroll', this.handleScroll);
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll);
+  },
+
+  methods: {
+    handleScroll() {
+      if (window.pageYOffset > 85) {
+        this.showButton = true;
+      } else {
+        this.showButton = false;
+      }
+    },
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
 };
 </script>
 
 <style lang="stylus">
 @import '../assets/stylus/base/vars.styl'
 
+.scroll-to-top
+  position fixed
+  bottom 20px
+  right 30px
+  background #fff
+  border-radius 50%
+  border 1px solid #424242
+  z-index 100
+
+  svg
+    stroke #000
+
+
 .main-layout
+  position relative
   display flex
   height 100%
+
+.wrapper
+  width 1280px
+  padding 0 15px
+  margin 0 auto
 
 .main-layout__main
   width 100%
@@ -41,8 +89,10 @@ export default {
   height 100%
 
 .main-layout__page
-  padding-top header-height
-  background-color white-lilac
+  display flex
+  gap 15px
+  align-items flex-start
+  padding-top 170px
   min-height 100%
   position relative
   z-index 1

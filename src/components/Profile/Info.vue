@@ -10,7 +10,11 @@
             Поделиться:
             <div class="qr-code" v-html="qrCode"></div>
             <div class="profile-info__share-link">
-              <input class="profile-info__link-profile" ref="text" @click="copyText" :value="currentUrl"/>
+              <input
+                class="profile-info__link-profile"
+                ref="text" @click="copyText"
+                :value="currentUrl"
+              />
               <button class="profile-info__link-btn" @click="copyToClipboard">
                 <span v-if="!copied"><copied-icon /></span>
                 <span v-else-if="copied"><done-copied /></span>
@@ -35,19 +39,37 @@
         </router-link>
 
       </div>
+      <transition name="fade">
+        <div v-if="showAvatar" class="profile-info__avatar-container" @click="showAvatar = false">
+          <div class="profile-info__avatar-background">
+            <img :src="info.photo" class="profile-info__avatar-loupe">
+          </div>
+        </div>
+      </transition>
       <div class="profile-info__image">
-        <div class="profile-info__avatar" :class="{ offline: !online && !me }">
+        <div class="profile-info__status">
+          <span class="user-status" :class="{ online, offline: !online }">
+            {{ statusText }}
+          </span>
+        </div>
+        <div
+          class="profile-info__avatar"
+          :class="{ offline: !online && !me }"
+        >
           <img
             v-if="info.photo"
             :src="info.photo"
             :alt="info.firstName[0] + ' ' + info.lastName[0]"
+            @click="showAvatar = true"
+            @mouseover="showLoupe = true"
+            @mouseleave="showLoupe = false"
           />
           <img v-else src="/static/img/avatar.png" alt="avatar placeholder" />
-          <div class="profile-info__status">
-            <span class="user-status" :class="{ online, offline: !online }">
-              {{ statusText }}
-            </span>
-          </div>
+          <transition name="fade">
+            <div v-if="showLoupe" class="profile-info__avatar-zoom">
+              <plus-icon />
+            </div>
+          </transition>
         </div>
         <div class="profile-info__names">
           <h1 class="profile-info__name">{{ info.firstName + ' ' + info.lastName }}</h1>
@@ -60,20 +82,95 @@
         <router-link class="profile-info__link" v-if="me" :to="{ name: 'Settings' }">
           Редактировать профиль
         </router-link>
-        <div v-if="!me" class="profile-info__actions">
-          <a
-            href="#"
-            class="profile-info__btn btn-send__message"
-            :disable="blocked"
-            @click.prevent="onSentMessage">Написать сообщение</a>
-          <a
-            href="#"
-            class="profile-info__btn btn-send__hole"
-            @click.prevent="profileAction"
-          >
-            {{ btnVariantInfo.text }}
-          </a>
-        </div>
+        <button class="profile-info__showmore" v-if="!me" @click.prevent="actionsShow">
+          Действия <arrow-buttom />
+        </button>
+        <transition name="fade">
+          <div v-if="showActions" class="profile-info__actions" v-click-outside="closeActions">
+            <!-- Подписка/отписка/принимаем запрос -->
+            <a
+              v-if="info.statusCode === 'WATCHING' && info.statusCode !== 'FRIEND'"
+              href="#"
+              class="profile-info__btn btn-send__message"
+              @click.prevent="cancelApiRequests(info.id)">
+              <simple-svg :filepath="'/static/img/delete.svg'" />
+              Отписаться
+            </a>
+            <a
+              v-else-if="info.statusCode !== 'FRIEND' &&
+                info.statusCode !== 'REQUEST_TO' &&
+                info.statusCode !== 'BLOCKED' &&
+                info.statusCode !== 'REQUEST_FROM' &&
+                info.statusCode !== 'SUBSCRIBED'"
+              href="#"
+              class="profile-info__btn subscribe btn-send__message"
+              @click.prevent="subscribe(info.id)">
+              <simple-svg :filepath="'/static/img/sidebar/admin/comments.svg'" />
+              Подписаться
+            </a>
+            <a
+              v-if="info.statusCode === 'REQUEST_FROM'"
+              href="#"
+              class="profile-info__btn btn-send__message"
+              @click.prevent="acceptFriendRequest(info.id)">
+              <simple-svg class="accept" :filepath="'/static/img/add.svg'" />
+              Принять запрос
+            </a>
+            <!-- Сообщение -->
+            <a
+              v-if="info.statusCode !== 'BLOCKED'"
+              href="#"
+              class="profile-info__btn btn-send__message"
+              @click.prevent="onSentMessage">
+              <simple-svg :filepath="'/static/img/sidebar/im.svg'" />
+              Написать сообщение
+            </a>
+            <!-- Блокировка/разблокировка -->
+            <a
+              v-if="blocked || info.isBlocked || info.statusCode === 'BLOCKED'"
+              href="#"
+              class="profile-info__btn btn-send__message"
+              @click.prevent="unBlockedUser(info.id)">
+              <simple-svg class="filter-green" :filepath="'/static/img/security-system-unlock.svg'" />
+              Разблокировать
+            </a>
+            <a
+              v-else
+              href="#"
+              class="profile-info__btn block btn-send__message"
+              @click.prevent="blockedUser(info.id)">
+              <simple-svg :filepath="'/static/img/unblocked.svg'" />
+              Заблокировать
+            </a>
+            <!-- Добавление в друзья/отмена -->
+            <a
+              v-if="info.statusCode === 'FRIEND'"
+              href="#"
+              class="profile-info__btn btn-send__message"
+              @click.prevent="cancelApiRequests(info.id)">
+              Удалить из друзей
+            </a>
+            <a
+              v-if="info.statusCode === 'REQUEST_TO'"
+              href="#"
+              class="profile-info__btn btn-send__message"
+              @click.prevent="cancelApiRequests(info.id)">
+              Отменить заявку
+            </a>
+            <a
+              v-if="info.statusCode !== 'WATCHING' &&
+                info.statusCode !== 'REQUEST_TO' &&
+                info.statusCode !== 'BLOCKED' &&
+                info.statusCode !== 'REQUEST_FROM' &&
+                info.statusCode !== 'SUBSCRIBED'"
+              href="#"
+              class="profile-info__btn btn-send__message"
+              @click.prevent="addToFriend(info.id)">
+              <simple-svg class="accept" :filepath="'/static/img/add.svg'" />
+              Добавить в друзья
+            </a>
+          </div>
+        </transition>
       </div>
     </div>
     <div class="showmore-info">
@@ -148,8 +245,10 @@ import GiftIcon from '../../Icons/GiftIcon.vue';
 import HomeIcon from '../../Icons/HomeIcon.vue';
 import PhoneIcon from '../../Icons/PhoneIcon.vue';
 import SharedAccount from '../../Icons/SharedAccount.vue';
+import ArrowButtom from '../../Icons/ArrowBottom.vue';
 import CopiedIcon from '../../Icons/CopiedIcon.vue';
 import DoneCopied from '../../Icons/DoneCopied.vue';
+import PlusIcon from '../../Icons/PlusIcon.vue';
 import WeatherBlock from '@/components/WeatherBlock.vue';
 import Modal from '@/components/Modal';
 import QRCode from 'qrcode-generator';
@@ -162,7 +261,20 @@ export default {
   directives: {
     clickOutside: vClickOutside.directive
   },
-  components: { GiftIcon, PhoneIcon, HomeIcon, AboutIcon, SharedAccount, CopiedIcon, DoneCopied, Modal, WeatherBlock },
+  components: {
+    GiftIcon,
+    PhoneIcon,
+    HomeIcon,
+    AboutIcon,
+    SharedAccount,
+    CopiedIcon,
+    DoneCopied,
+    ArrowButtom,
+    PlusIcon,
+    Modal,
+    WeatherBlock
+  },
+
   props: {
     me: Boolean,
     online: Boolean,
@@ -180,11 +292,15 @@ export default {
     showInfoWeather: false,
     showPopup: false,
     qrCode: '',
-    copied: false
+    copied: false,
+    showLoupe: false,
+    showAvatar: false,
+    showActions: false,
   }),
 
   computed: {
     ...mapGetters('profile/dialogs', ['dialogs']),
+
 
     residenceText() {
       let country = this.info?.country;
@@ -195,32 +311,29 @@ export default {
       return `${country + ', ' || ''} ${city || ''}`;
     },
 
+    currentUser() {
+      return this.$store.getters.getUser;
+    },
+
     currentUrl() {
-      return window.location.href;
+      if (this.me === true) {
+        return `${window.location.origin}/profile/` + this.currentUser;
+      } else {
+        return window.location.href;
+      }
     },
 
     statusText() {
       return this.online ? 'онлайн' : 'не в сети';
     },
-
-    blockedText() {
-      return this.blocked ? 'Пользователь заблокирован' : 'Заблокировать';
-    },
-
-    btnVariantInfo() {
-      return this.blocked
-        ? { variant: 'red', text: 'Разблокировать' }
-        : this.friend
-        ? { variant: 'red', text: 'Удалить из друзей' }
-        : { variant: 'white', text: 'Добавить в друзья' };
-    },
   },
 
   methods: {
-    ...mapActions('users/actions', ['apiBlockUser', 'apiUnblockUser']),
-    ...mapActions('profile/friends', ['apiAddFriends', 'apiDeleteFriends']),
+    ...mapActions('users/actions', ['apiBlockedUser', 'apiUnblockUser']),
+    ...mapActions('profile/friends', ['apiAddFriends', 'apiDeleteFriends', 'apiSubscribe']),
     ...mapActions('profile/dialogs', ['createDialogWithUser', 'apiLoadAllDialogs']),
     ...mapActions('users/info', ['userInfoId']),
+    ...mapGetters('profile/info', ['getInfo']),
 
     getAgeAsString(age) {
       const ages = ['год', 'года', 'лет'];
@@ -242,6 +355,14 @@ export default {
       window.getSelection().addRange(range);
       document.execCommand('copy');
       this.copied = true;
+    },
+
+    actionsShow() {
+      this.showActions = !this.showActions;
+    },
+
+    closeActions() {
+      this.showActions = false;
     },
 
     togglePopup() {
@@ -277,49 +398,108 @@ export default {
       this.showInfoWeather = !this.showInfoWeather;
     },
 
-    blockedUser() {
-      if (this.blocked) return;
-      this.modalText = `Вы уверены, что хотите заблокировать пользователя ${this.info.fullName}`;
-      this.modalShow = true;
-      this.modalType = 'block';
-    },
-
-    async profileAction() {
-      if (this.blocked) {
-        this.apiUnblockUser(this.$route.params.id).then(() => {
-          this.userInfoId(this.$route.params.id);
+    addToFriend(id) {
+      if (this.info.statusCode === 'REQUEST_TO') {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'action',
+          text: 'Вы уже отправляли запрос на добавления в друзья этому пользователю!',
         });
         return;
       }
-
-      if (this.friend) {
-        this.modalText = `Вы уверены, что хотите удалить пользователя ${this.info.fullName} из друзей?`;
-        this.modalShow = true;
-        this.modalType = 'deleteFriend';
+      if (this.info.statusCode === 'FRIEND') {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'action',
+          text: 'Этот пользователь уже является вашим другом!',
+        });
         return;
       }
+      if (this.info.statusCode === 'BLOCKED') {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'action',
+          text: 'Вы заблокировали этого пользователя!',
+        });
+        return;
+      }
+      if (this.info.statusCode === 'SUBSCRIBED') {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'action',
+          text: 'Этот пользователь среди ваших подписчиков, для добавления в друзья необходимо удалить его из списка подписчиков!',
+        });
+        return;
+      }
+      if (
+        this.info.statusCode !== 'NONE' &&
+        this.info.statusCode !== null &&
+        this.info.statusCode == 'WATCHING'
+      ) {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'action',
+          text: 'У вас уже есть отношения с этим пользователем, чтобы подписаться необходимо остановить другие отношения!',
+        });
+        return;
+      }
+      this.apiAddFriends({ id });
+      this.locationReload();
+    },
 
-      await this.apiAddFriends({ id: this.info.id });
-      this.userInfoId(this.$route.params.id);
+    locationReload() {
+      setTimeout(() => {
+        location.reload()
+      }, 500)
+    },
+
+    cancelApiRequests(id) {
+      this.apiDeleteFriends(id);
+      this.locationReload();
+    },
+
+    acceptFriendRequest(id) {
+      if (this.info.statusCode === 'FRIEND') {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'action',
+          text: 'Этот пользователь уже является вашим другом!',
+        });
+        return;
+      }
+      this.apiAddFriends({ id, isApprove: true });
+      this.locationReload()
+    },
+
+    subscribe(id) {
+      if (this.info.statusCode === 'WATCHING') {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'action',
+          text: 'Вы уже подписаны на этого пользователя!',
+        });
+        return;
+      }
+      if (
+        this.info.statusCode !== 'NONE' &&
+        this.info.statusCode !== null &&
+        this.info.statusCode !== 'WATCHING'
+      ) {
+        this.$store.dispatch('global/alert/setAlert', {
+          status: 'action',
+          text: 'У вас уже есть отношения с этим пользователем, чтобы подписаться необходимо остановить другие отношения!',
+        });
+        return;
+      }
+      this.apiSubscribe(id);
+      this.locationReload();
+    },
+
+    blockedUser(id) {
+      this.apiBlockedUser(id);
+      this.locationReload();
+    },
+
+    unBlockedUser(id) {
+      this.apiUnblockUser(id);
+      this.locationReload();
     },
 
     closeModal() {
       this.modalShow = false;
-    },
-
-    onConfirm() {
-      if (this.modalType === 'block') {
-        this.apiBlockUser(this.$route.params.id).then(() => {
-          this.apiInfo(this.$route.params.id);
-          this.closeModal();
-        });
-        return;
-      }
-
-      this.apiUnblockUser(this.$route.params.id).then(() => {
-        this.apiInfo(this.$route.params.id);
-        this.closeModal();
-      });
     },
 
     onSentMessage() {
@@ -353,7 +533,81 @@ export default {
     border-radius 10px
     box-shadow 0px 2px 8px rgba(0,0,0,0.08)
     overflow hidden
-    max-width 1000px
+    width 1250px
+    min-width 320px
+
+    &__btn
+      display flex
+      align-items center
+      gap 5px
+      color #333
+      white-space nowrap
+      font-size 13px
+      padding 10px
+      border-radius 10px
+      transition all .2s ease-in-out
+      &:hover
+        background-color #f5f6f8
+
+      &.block
+        svg
+          path
+            fill unset
+            stroke #222
+            stroke-width 1px
+            stroke-opacity 1
+          line
+            stroke #222
+
+      &.subscribe
+        svg path
+          fill unset
+          stroke #222
+          stroke-opacity 1
+
+      svg
+        width 13px
+        height 13px
+        path
+          fill #222
+
+        rect
+          fill #222
+
+
+    &__showmore
+      display flex
+      align-items center
+      gap 5px
+      background-color #21a45d
+      border-radius 5px
+      font-size 15px
+      padding 7px
+      color #fff
+      transition background-color .2s ease-in-out
+      @media (any-hover: hover)
+        &:hover
+          background-color #167240
+
+    &__actions
+      display flex
+      flex-direction column
+      position absolute
+      padding 10px
+      top 40px
+      right 0
+      background-color #fff
+      box-shadow 0px 2px 8px rgba(0,0,0,0.08)
+      border-radius 10px
+
+      &.fade-enter-active,
+      &.fade-leave-active
+        transition all .2s ease-in-out
+      &.fade-enter,
+      &.fade-leave-to
+        opacity 0
+
+
     &__background
       position relative
       height 250px
@@ -375,6 +629,8 @@ export default {
       display flex
       align-items center
       justify-content space-between
+    &__right
+      position relative
     &__link
       text-transform uppercase
       font-size 15px
@@ -401,6 +657,7 @@ export default {
       left 50%
       transform: translate(-50%, -35%);
     &__avatar
+      position relative
       width 150px
       height 150px
       border-radius 50%
@@ -414,8 +671,62 @@ export default {
         width 100%
         height 100%
         object-fit cover
+        cursor pointer
       &.offline
         border-color #c2c2c2
+      &-zoom
+        position: absolute
+        top: 50%
+        left: 50%
+        transform: translate(-50%, -50%)
+        width: 100%
+        height: 100%
+        opacity: 0.5
+        color #fff
+        font-size 45px
+        background #000
+        pointer-events none
+        display flex
+        justify-content center
+        align-items center
+
+        &.fade-enter-active,
+        &.fade-leave-active
+          transition all .2s ease-in-out
+        &.fade-enter,
+        &.fade-leave-to
+          opacity 0
+
+      &-background
+        background-color #fff
+        padding 10px
+        border-radius 10px
+
+      &-container
+        position fixed
+        top 0
+        left 0
+        width 100%
+        height 100%
+        background-color rgba(0,0,0,0.8)
+        display flex
+        justify-content center
+        align-items center
+        z-index 1000
+
+        &.fade-enter-active,
+        &.fade-leave-active
+          transition all .2s ease-in-out
+        &.fade-enter,
+        &.fade-leave-to
+          opacity 0
+
+      &-loupe
+        max-width 700px
+        max-height 700px
+        border-radius 10px
+
+
     &__bottom
       position relative
       padding 50px 50px
@@ -423,6 +734,7 @@ export default {
       align-items center
       justify-content space-between
       background #fafafa
+      border-bottom 1px solid #e2e2e2
     &__show
       padding 50px 0 50px 50px
     &__weather
@@ -446,18 +758,7 @@ export default {
       position absolute
       top 0
       right 0
-    &__btn
-      background radial-gradient(248.22% 257.37% at 9.27% 93.95%, rgba(161,128,255,0.1) 0%, rgba(74,157,255,0.1) 50%, rgba(117,247,255,0.1) 100%)
-      background-color #313135
-      color #fff
-      font-size 13px
-      padding 10px
-      border-radius 10px
-      transition all .2s ease-in-out
-      &:hover
-        background-color #505057
-      &.btn-send__message
-        margin-right 10px
+      z-index 100
     &__shared-btn
       position absolute
       top 10px
