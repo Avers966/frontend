@@ -180,7 +180,7 @@ export default {
   max-width unset
   p
     font-size 25px
-    font-weight 300
+    font-weight 500
     text-transform uppercase
   svg path:nth-child(3)
     animation gradient 1s linear infinite

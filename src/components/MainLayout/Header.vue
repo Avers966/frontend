@@ -5,7 +5,6 @@
         <div class="main-layout__header-left">
           <div class="main-layout__logotype">
             <p>Code Lounge</p>
-            <main-logotype :width="25" :height="25"/>
           </div>
           <form class="main-layout__search" action="#" @submit.prevent="onSearch">
             <button class="main-layout__search-btn">
@@ -50,13 +49,12 @@
 import { mapGetters, mapMutations, mapActions, mapState } from 'vuex';
 import SearchIcon from '../../Icons/SearchIcon.vue';
 import PushIcon from '../../Icons/PushIcon.vue';
-import MainLogotype from '../../Icons/MainLogotype.vue';
 import Push from '@/components/MainLayout/Push';
 import ChangeTheme from '../Theme/ChangeTheme.vue';
 
 export default {
   name: 'MainLayoutHeader',
-  components: { Push, SearchIcon, PushIcon, ChangeTheme, MainLogotype },
+  components: { Push, SearchIcon, PushIcon, ChangeTheme },
 
   data: () => ({
     isOpenPush: false,
@@ -155,6 +153,9 @@ export default {
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+.vt-notification-container
+  display none!important
 
 .wrapper__header
   display flex

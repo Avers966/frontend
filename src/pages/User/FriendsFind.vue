@@ -83,7 +83,8 @@ export default {
     color
 .friends-find
   display grid
-  grid-template-columns 1fr 430px
+  width 100%
+  grid-template-columns 1fr
   gap 20px
 </style>
 

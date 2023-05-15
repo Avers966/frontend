@@ -26,10 +26,10 @@
           {{ userInfo.firstName }}
           {{ userInfo.lastName }}
         </a>
-        <span class="user-status" v-if="!online" :class="{ online }">
+        <span class="user-status" v-if="!online">
           Был(а) в сети
           <br />
-          {{ this.userInfo.lastOnlineTime | moment('from') }}
+          <!-- {{ this.userInfo.lastOnlineTime | moment('from') }} -->
         </span>
         <span class="user-status" v-else :class="{ online, offline: !online }"> онлайн </span>
       </div>
@@ -106,6 +106,7 @@ export default {
 
 .im-dialog
   display flex
+  gap 10px
   align-items center
   background #e7e7e7
   border-radius 10px
@@ -156,6 +157,8 @@ export default {
   overflow hidden
   flex none
   .main-layout__user-pic
+    width 60px
+    height 60px
     margin-right 0
 
 .im-dialog__info

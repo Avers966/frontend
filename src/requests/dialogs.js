@@ -6,7 +6,7 @@ export default {
   },
 
   getDialogs() {
-    return axios.get('/dialogs?page=0&size=3&sort=unreadCount,desc');
+    return axios.get('/dialogs?page=0&size=5&sort=unreadCount,desc');
   },
 
   unreadedMessages() {

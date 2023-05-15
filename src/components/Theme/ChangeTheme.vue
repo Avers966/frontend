@@ -132,6 +132,29 @@ export default {
     &:hover
       background #393838
 
+  .im__chat
+    background #5c5c5c
+
+  .im-chat__message-text
+    background-color #3a3a3a
+    box-shadow unset
+    color #fff
+
+  .im-chat__user
+    background #363636
+    border-color #424242
+
+  .im-chat__user-pic
+    .main-layout__user-pic
+      background #222
+
+  .im-chat__user-name
+    color #fff
+
+  .im-chat__user .user-status
+    background-color #222
+    border 1px solid #424242
+
   .friend__search-clear
     background-color #222
     border 1px solid #424242

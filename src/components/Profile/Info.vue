@@ -522,7 +522,7 @@ export default {
   .showmore-info
     display grid
     align-items center
-    grid-template-columns repeat(2, 50%)
+    grid-template-columns repeat(2, 1fr)
     background #fff
     gap 70px
     &.not-me

@@ -1,5 +1,4 @@
 import dialogsApi from '@/requests/dialogs';
-// import store from "@/store";
 
 export default {
   namespaced: true,
@@ -55,8 +54,9 @@ export default {
   actions: {
     async fetchMessages({ commit }, dialogId) {
       const response = await dialogsApi.getMessages(dialogId);
-      if (!Object.keys(response.data).length) return;
-      const { data } = response.data;
+      if (response.data?.content?.length === 0) return;
+      const data = response.data?.content;
+      console.log(data);
       const messages = data.map((message) => ({ ...message, time: message.time * 1000 }));
       commit('clearMessages');
       commit('addMessages', {
@@ -67,17 +67,18 @@ export default {
 
     async fetchDialogs({ commit }) {
       try {
+
         const response = await dialogsApi.getDialogs();
-        if (response.data.content.length === 0) return;
+        if (response.data?.content?.length === 0) return;
 
         const dialogs = [];
         const data = response.data.content;
         data.map((d) => {
-          const conversationPartnerId = d.conversationPartner;
           const newDialog = {
-            id: conversationPartnerId,
-            conversationPartner: d.conversationPartner,
+            id: d.id,
             unreadCount: d.unreadCount,
+            conversationPartner: d.conversationPartner2,
+            conversationPartner1: d.conversationPartner1,
             lastMessage: {
               time: d.lastMessage && d.lastMessage[0]?.time,
               messageText: d.lastMessage && d.lastMessage[0]?.messageText,
@@ -88,7 +89,7 @@ export default {
         });
         commit('setDialogs', dialogs);
       } catch (err) {
-        console.log({ err });
+        console.log(err);
       }
     },
 

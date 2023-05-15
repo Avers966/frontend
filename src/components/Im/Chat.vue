@@ -18,7 +18,7 @@
           />
 
           <div v-else>
-            {{ info.conversationPartner.firstName[0] }}
+            <unknow-user />
           </div>
         </div>
       </router-link>
@@ -30,7 +30,7 @@
           params: { id: info.id },
         }"
       >
-        {{ info.conversationPartner.firstName }}
+        {{ info.conversationPartner.firstName }} {{ info.conversationPartner.lastName }}
       </router-link>
 
       <span class="user-status" :class="{ online }">
@@ -76,6 +76,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 import ChatMessage from '@/components/Im/ChatMessage';
 import VirtualList from 'vue-virtual-scroll-list';
+import UnknowUser from '../../Icons/UnknowUser.vue';
 
 const makeHeader = (msgDate) => {
   return { id: `group-${msgDate}`, stubDate: true, date: msgDate };
@@ -85,6 +86,7 @@ export default {
   name: 'ImChat',
   components: {
     VirtualList,
+    UnknowUser
   },
 
   props: {
@@ -213,13 +215,19 @@ export default {
   height 100%
 
 .im-chat__user
-  border-bottom 1px solid #E3E8EE
   display flex
   align-items center
-  height 60px
+  height 40px
   padding 30px 20px
   font-size 13px
-  background-color #F8FAFD
+  background-color #e7e7e7
+  border-bottom 1px solid #d2d4d7
+
+  .user-status
+    padding 4px
+    background-color #21a45d
+    font-size 10px
+    line-height 100%
 
 .im-chat__user-pic
   width 40px
@@ -227,9 +235,13 @@ export default {
   border-radius 50%
   overflow hidden
   margin-right 10px
+  .main-layout__user-pic
+    width 40px
+    height 40px
 
 .im-chat__user-name
   font-weight 600
+  font-size 15px
   color steel-gray
   margin-right auto
 
@@ -260,10 +272,10 @@ export default {
 
 .im-chat__enter-input
   width 100%
-  background-color #cff2dc
+  background-color #363636
   padding 0 40px
   font-size 15px
-  color steel-gray
+  color #fff
   height 80px
 
   &::placeholder

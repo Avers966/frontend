@@ -149,6 +149,7 @@ export default {
   display flex
   width 100%
   height 'calc(100vh - %s)' % header-height
+  margin-bottom 30px
 
 .im__dialogs
   width 100%
@@ -157,12 +158,14 @@ export default {
   max-height 100%
   padding 15px
   height 100%
-  border-radius 10px
+  border-radius 10px 0 0 10px
   background-color #d2d4d7
 
 .im__chat
   width 100%
   flex auto
   height 100%
-  background-color #F8FAFD
+  background-color #ffffff
+  border-radius 0 10px 10px 0
+  overflow hidden
 </style>
