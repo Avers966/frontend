@@ -151,6 +151,32 @@ export default {
   .im-chat__user-name
     color #fff
 
+  .no__notifications
+    color #fff
+
+  .push__wrap
+    background #292929
+
+  .push__list
+    background #292929
+
+  .push__item
+    &:hover
+      background rgba(255, 255, 255, 0.08)
+  .push__btn
+    border-color #424242
+    color #919191
+    &:hover
+      color #fafafa
+      background rgba(255, 255, 255, 0.08)
+
+  .push__item+.push__item
+    border-top 1px solid #424242
+  .push__content-preview
+    color #fff
+  .push__content-name
+    color #919191
+
   .im-chat__user .user-status
     background-color #222
     border 1px solid #424242

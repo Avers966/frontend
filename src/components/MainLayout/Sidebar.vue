@@ -207,7 +207,7 @@ export default {
   padding 20px 0
   background #fff
   border-bottom 1px solid #cbcbcb
-  z-index 10000
+  z-index 7
   transition none
 
   &.sticky

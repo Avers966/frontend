@@ -22,7 +22,7 @@
         v-model="commentText"
         v-on:keydown.ctrl.enter="onSubmitComment"
       />
-      <emoji-picker @emoji="onEmojiClicked" :search="search">
+      <emoji-picker @emoji="onEmojiClicked" :search="search" source="apple">
         <button
           class="emoji-invoker"
           slot="emoji-invoker"
@@ -36,6 +36,7 @@
             <div class="emoji-picker__search">
               <input type="text" v-model="search" v-focus>
             </div>
+
             <div>
               <div v-for="(emojiGroup, category) in emojis" :key="category">
                 <h5>{{ category }}</h5>
@@ -143,7 +144,7 @@ export default {
   bottom 100%
   left 100%
   z-index 1
-  font-family 'Roboto'
+  font-family -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif
   border 1px solid #ccc
   width 386px
   height 400px

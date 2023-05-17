@@ -77,8 +77,8 @@ export default {
           const newDialog = {
             id: d.id,
             unreadCount: d.unreadCount,
-            conversationPartner: d.conversationPartner2,
             conversationPartner1: d.conversationPartner1,
+            conversationPartner2: d.conversationPartner2,
             lastMessage: {
               time: d.lastMessage && d.lastMessage[0]?.time,
               messageText: d.lastMessage && d.lastMessage[0]?.messageText,

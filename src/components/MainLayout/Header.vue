@@ -21,8 +21,12 @@
         </div>
         <div class="main-layout__header-right">
           <change-theme />
-          <div class="main-layout__push" @click="togglePush">
-            <push-icon :isNotEmpty="getNotificationsLength > 0" />
+          <div class="main-layout__push">
+            <span @click="togglePush">
+              <push-icon
+                :isNotEmpty="getNotificationsLength > 0 && !isOpenPush"
+              />
+            </span>
             <push :isOpen="isOpenPush" @close-push="togglePush" />
           </div>
           <router-link class="main-layout__user" v-if="getInfo" :to="{ name: 'Profile' }">
@@ -171,6 +175,7 @@ export default {
   align-items center
   gap 15px
 
+
 .main-layout__header
   background eucalypt
   box-shadow standart-boxshadow
@@ -182,7 +187,7 @@ export default {
   display flex
   align-items center
   padding 0 40px
-  z-index 10
+  z-index 8
   color #FFFFFF
 
   &.admin

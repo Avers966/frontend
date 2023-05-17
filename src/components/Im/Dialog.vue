@@ -74,7 +74,7 @@ export default {
 
   computed: {
     getInfo() {
-      return this.info.conversationPartner;
+      return this.info.conversationPartner2;
     },
   },
 

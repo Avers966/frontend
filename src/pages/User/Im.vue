@@ -8,7 +8,6 @@
         :push="countPush(dialog.unreadСount)"
         :me="+info?.id === +dialog.lastMessage?.authorId"
         :active="+dialog?.id === +activeDialogId"
-        :online="checkOnlineUser(dialog)"
         @click.native="clickOnDialog(dialog.id)"
       />
     </div>
@@ -118,16 +117,14 @@ export default {
     countPush(unread) {
       return unread > 0 ? unread : null;
     },
-    checkOnlineUser(dialog) {
-      return dialog.conversationPartner.isOnline;
-    },
+
     clickOnDialog(dialogId) {
       if (+dialogId === +this.activeDialogId) {
         return;
       }
       this.$router.push({
         name: 'ImChat',
-        params: { activeDialogId: dialogId.toString() },
+        params: { activeDialogId: dialogId },
       });
     },
   },
