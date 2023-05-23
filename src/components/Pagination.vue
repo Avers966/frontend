@@ -76,11 +76,13 @@ export default {
 
 
 <style lang="stylus">
+@import '../assets/stylus/base/vars.styl'
+
 .catalog__pagination
   margin-top 30px
 
 .pagination__link--arrow
-  border-radius 10px
+  border-radius border-small
 
 .pagination__link
   padding: 10px 3px

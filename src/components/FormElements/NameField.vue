@@ -13,16 +13,17 @@
 
     <label :for="id" class="form__label_stylus">{{ label }}</label>
 
-    <span class="form__error" v-if="v.$dirty && !v.required">Обязательное поле</span>
+    <span class="form__error" v-if="v.$dirty && !v.required">{{ translations.requiredField }}</span>
 
     <span class="form__error" v-else-if="v.$dirty && !v.minLength">
-      Минимальное количество символов {{ v.minLength }}
+      {{ translations.minimumNumberOfCharacters }} {{ v.minLength }}
     </span>
   </div>
 </template>
 
 <script>
 import Vue from 'vue';
+import translations from '@/utils/lang.js';
 
 Vue.directive( 'pattern', {
   update (el) {
@@ -66,6 +67,14 @@ export default {
       set(value) {
         this.$emit('input', value);
       },
+    },
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 };

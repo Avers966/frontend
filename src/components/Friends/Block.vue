@@ -13,9 +13,9 @@
       <span class="friends-block__age-city" v-if="moderator">модератор</span>
       <span class="friends-block__age-city" v-else-if="userInfo.birthDate && userInfo.country">
         {{ userInfo.birthDate | moment('from', true) }},
-        {{ userInfo.city ? userInfo.city : (userInfo.country ? userInfo.country : 'не заполнено') }}
+        {{ userInfo.city ? userInfo.city : (userInfo.country ? userInfo.country : translations.profileNotFilled) }}
       </span>
-      <span class="friends-block__age-city" v-else>профиль не заполнен</span>
+      <span class="friends-block__age-city" v-else>{{ translations.profileNotFilledAll }}</span>
     </div>
     <div>
       <button
@@ -30,14 +30,15 @@
             class="friends-block__actions-block"
             @click="openModal('deleteModerator')"
           >
-            <span>Редактировать</span>
+            <span>{{ translations.friendsBlockEdit }}</span>
             <simple-svg :filepath="'/static/img/edit.svg'" />
           </div>
           <div
             class="friends-block__actions-block"
             @click="openModal('deleteModerator')"
           >
-            <span>Удалить из списка</span>
+
+            <span>{{ translations.friendsBlockDelete }}</span>
             <simple-svg :filepath="'/static/img/delete.svg'" />
           </div>
         </template>
@@ -46,11 +47,11 @@
             class="friends-block__actions-block"
             v-if="blocked || info.isBlocked"
           >
-            <span>Разблокировать</span>
+            <span>{{ translations.profileAccountBlocking }}</span>
             <simple-svg class="filter-green" :filepath="'/static/img/security-system-unlock.svg'" />
           </div>
           <div class="friends-block__actions-block" v-else>
-            <span>Заблокировать</span>
+            <span>{{ translations.profileAccountUnblocking }}</span>
             <simple-svg :filepath="'/static/img/unblocked.svg'" />
           </div>
         </template>
@@ -61,7 +62,7 @@
             class="friends-block__actions-block message subscribe__icon"
             @click="openModal('deleteSubscribe')"
           >
-            <span>Отписаться</span>
+            <span>{{ translations.profileAccountUnsubscribe }}</span>
             <simple-svg :filepath="'/static/img/delete.svg'" />
           </div>
           <div
@@ -69,7 +70,7 @@
             class="friends-block__actions-block message subscribe__icon"
             @click="subscribe(info.id)"
           >
-            <span>Подписаться</span>
+            <span>{{ translations.profileAccountSubscribe }}</span>
             <simple-svg :filepath="'/static/img/sidebar/admin/comments.svg'" />
           </div>
           <div
@@ -77,7 +78,7 @@
             class="friends-block__actions-block message"
             @click="acceptFriendRequest(info.id)"
           >
-            <span>Принять запрос</span>
+            <span>{{ translations.profileAccountAcceptRequests }}</span>
             <simple-svg class="accept" :filepath="'/static/img/add.svg'" />
           </div>
           <!-- Отправка сообщений -->
@@ -86,7 +87,7 @@
             @click="sendMessage(messageId)"
             v-if="info.statusCode !== 'BLOCKED'"
           >
-            <span>Cообщение</span>
+            <span>{{ translations.profileAccountSendMessage }}</span>
             <simple-svg :filepath="'/static/img/sidebar/im.svg'" />
           </div>
           <!-- Добавление в друзья/отмена -->
@@ -95,7 +96,7 @@
             @click="openModal('delete')"
             v-if="info.statusCode === 'FRIEND'"
           >
-            <span>Удалить из друзей</span>
+            <span>{{ translations.profileAccountDeleteFriend }}</span>
             <simple-svg :filepath="'/static/img/delete.svg'" />
           </div>
           <div
@@ -103,7 +104,7 @@
             @click="openModal('cancelFriend')"
             v-else-if="info.statusCode === 'REQUEST_TO'"
           >
-            <span>Отменить заявку</span>
+            <span>{{ translations.profileAccountCancelFriend }}</span>
             <simple-svg :filepath="'/static/img/delete.svg'" />
           </div>
           <div
@@ -111,7 +112,7 @@
             @click="addToFriend(info.id)"
             v-else-if="info.statusCode !== 'WATCHING' && info.statusCode !== 'REQUEST_TO' && info.statusCode !== 'BLOCKED' && info.statusCode !== 'REQUEST_FROM' && info.statusCode !== 'SUBSCRIBED'"
           >
-            <span>Добавить в друзья</span>
+            <span>{{ translations.profileAccountAddFriend }}</span>
             <simple-svg :filepath="'/static/img/friend-add.svg'" />
           </div>
           <!-- Блокировка/разблокировка -->
@@ -120,7 +121,7 @@
             v-if="blocked || info.isBlocked || info.statusCode === 'BLOCKED'"
             @click="openModal('unblock')"
           >
-            <span>Разблокировать</span>
+            <span>{{ translations.profileAccountUnblocking }}</span>
             <simple-svg class="filter-green" :filepath="'/static/img/security-system-unlock.svg'" />
           </div>
           <div
@@ -128,7 +129,7 @@
             class="friends-block__actions-block"
             @click="openModal('block')"
           >
-            <span>Заблокировать</span>
+            <span>{{ translations.profileAccountBlocking }}</span>
             <simple-svg :filepath="'/static/img/unblocked.svg'" />
           </div>
         </template>
@@ -137,9 +138,9 @@
     <modal v-model="modalShow">
       <p v-if="modalText">{{ modalText }}</p>
       <template slot="actions">
-        <button-hover @click.native="onConfrim(targetId)">Да</button-hover>
+        <button-hover @click.native="onConfrim(targetId)">{{ translations.yes }}</button-hover>
         <button-hover variant="red" bordered="bordered" @click.native="closeModal">
-          Отмена
+          {{ translations.cancel }}
         </button-hover>
       </template>
     </modal>
@@ -152,6 +153,7 @@ import ActionsShow from '@/Icons/ActionsShow.vue';
 import { mapActions, mapGetters } from 'vuex';
 import axios from 'axios';
 import vClickOutside from 'v-click-outside';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'FriendsBlock',
@@ -199,8 +201,17 @@ export default {
   computed: {
     ...mapGetters('profile/dialogs', ['dialogs']),
 
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
+
     statusText() {
-      return this.info.isOnline ? 'онлайн' : 'не в сети';
+      return this.info.isOnline ? this.translations.profileInfoStatusOnline : this.translations.profileInfoStatusOffline;
     },
 
     online() {
@@ -230,27 +241,27 @@ export default {
     modalText() {
       let text = '';
       if (this.modalType === 'delete') {
-        text = `Вы уверены, что хотите удалить пользователя ${
+        text = `${this.translations.friendsModalTextDelete} ${
           this.userInfo.firstName + ' ' + this.userInfo.lastName
-        } из друзей?`;
+        } ${this.translations.friendsModalLastText}`;
       } else if (this.modalType === 'deleteSubscribe') {
-        text = `Вы уверены, что хотите отписаться от пользователя ${
+        text = `${this.translations.friendsModalTextDeleteSub} ${
           this.userInfo.firstName + ' ' + this.userInfo.lastName
         }?`;
       } else if (this.modalType === 'cancelFriend') {
-        text = `Вы уверены, что хотите отменить запрос в дружбу с ${
+        text = `${this.translations.friendsModalTextCancelFriend} ${
           this.userInfo.firstName + ' ' + this.userInfo.lastName
         }?`;
       } else if (this.modalType === 'deleteModerator') {
-        text = `Вы уверены, что хотите удалить ${
+        text = `${ this.translations.friendsModalTextDeteleModerator } ${
           this.userInfo.firstName + ' ' + this.userInfo.lastName
-        } из списка модераторов?`;
+        } ${translations.friendsModalLastTextSecond}`;
       } else if (this.modalType === 'block') {
-        text = `Вы уверены, что хотите заблокировать пользователя ${
+        text = `${ this.translations.friendsModalTextBlocked } ${
           this.userInfo.firstName + ' ' + this.userInfo.lastName
         }?`;
       } else if (this.modalType === 'unblock') {
-        text = `Вы уверены, что хотите разблокировать  пользователя ${
+        text = `${ this.translations.friendsModalTextUnlock } ${
           this.userInfo.firstName + ' ' + this.userInfo.lastName
         }?`;
       }
@@ -444,23 +455,23 @@ export default {
   opacity 0
 
 .accept path
-  fill sea-green
+  fill ui-cl-color-sea-green
 
 .subscribe__icon
     path
-      stroke sea-green
+      stroke ui-cl-color-sea-green
       stroke-opacity 1
       stroke-width 2
 
 .friends-block
   position relative
   align-items center
-  background #fff
-  box-shadow standart-boxshadow
+  background ui-cl-color-white-theme
+  box-shadow box-shadow-main
   padding 20px
   width 100%
   display inline-flex
-  border-radius 10px
+  border-radius border-small
   &:not(:last-child)
     margin-bottom 20px
 
@@ -469,24 +480,24 @@ export default {
     padding 0
     svg path:nth-child(1)
       fill none
-      stroke #ababab
+      stroke ui-cl-color-ababab
     svg path:nth-child(2),
     svg path:nth-child(3),
     svg path:nth-child(4)
-      fill #ababab
+      fill ui-cl-color-ababab
     &.active
       svg path:nth-child(1)
         fill none
-        stroke #21a45d
+        stroke ui-cl-color-eucalypt
       svg path:nth-child(2),
       svg path:nth-child(3),
       svg path:nth-child(4)
-        fill #21a45d
+        fill ui-cl-color-eucalypt
 
 .friends-block__img
   width 65px
   height 65px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
   margin-right 30px
   flex none
@@ -503,33 +514,33 @@ export default {
   margin-right auto
 
 .friends-block__name
-  font-weight 600
-  font-size 18px
+  font-weight font-weight-bold
+  font-size font-size-updefault
   line-height 27px
-  color steel-gray
+  color ui-cl-color-steel-gray
   display block
 
   @media (max-width breakpoint-xxl)
-    font-size 14px
+    font-size font-size-small
 
 .friends-block__age-city
-  font-size 15px
+  font-size font-size-default
   line-height 22px
   color #5A5A5A
 
   @media (max-width breakpoint-xxl)
-    font-size 13px
+    font-size font-size-small
 
 .friends-block__actions
-  background-color #fff
+  background-color ui-cl-color-white-theme
   position absolute
   right 20px
   top 70%
   display flex
   flex-direction column
   align-items flex-start
-  border-radius 10px
-  box-shadow 0px 2px 8px rgba(0,0,0,0.08)
+  border-radius border-small
+  box-shadow box-shadow-main
   transition all 0.3s ease
   z-index 15
   overflow hidden
@@ -537,8 +548,8 @@ export default {
     display flex
     width 100%
     align-items center
-    font-size 14px
-    font-weight 500
+    font-size font-size-small
+    font-weight font-weight-medium
     justify-content flex-end
     gap 7px
     padding 12px
@@ -548,7 +559,7 @@ export default {
       &:hover
         background #fbfbfb
         span
-          color #21a45d
+          color ui-cl-color-eucalypt
 
   @media (max-width breakpoint-xxl)
     & + &
@@ -561,7 +572,7 @@ export default {
     margin-top 5px
 
     .simple-svg
-      fill eucalypt
+      fill ui-cl-color-eucalypt
 
   &.delete
     margin-top 3px

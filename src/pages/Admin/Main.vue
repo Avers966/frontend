@@ -41,6 +41,8 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
+
 .loading__info
   font-size 20px
   padding 40px
@@ -52,7 +54,7 @@ export default {
   align-items center
   padding 40px
   background #fff
-  border-radius 10px
+  border-radius border-small
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08)
   &__title
     margin 0
@@ -68,21 +70,21 @@ export default {
     margin-bottom 35px
   &__button
     background transparent
-    border 1px solid #21a45d
+    border 1px solid ui-cl-color-eucalypt
     padding 10px
     transition all .2s ease-in-out
-    border-radius 10px
+    border-radius border-small
     @media (any-hover: hover)
       &:hover
-        background #21a45d
-        border-color #21a45d
-        color #fff
+        background ui-cl-color-eucalypt
+        border-color ui-cl-color-eucalypt
+        color ui-cl-color-white-theme
 
 .panel
   box-shadow 0px 2px 8px rgba(0, 0, 0, 0.08)
-  border-radius 10px
+  border-radius border-small
   overflow hidden
-  background #FFFFFF
+  background ui-cl-color-white-theme
 .panel__title
   font-family 'Exo 2'
   font-style normal
@@ -109,7 +111,7 @@ export default {
   min-height 130px
   justify-content space-between
   padding 30px
-  background #21A45D
+  background ui-cl-color-gun-powder
 
 .panel__graphics
   padding 30px
@@ -132,8 +134,8 @@ export default {
   height 300px
 
 .panel-publications__info
-  color #fff
-  font-weight 600
+  color ui-cl-color-white-theme
+  font-weight font-weight-bold
   span:nth-child(1)
     font-size 20px
     line-height 30px
@@ -143,12 +145,11 @@ export default {
     line-height 58px
 .main-layout__header.admin
   .main-layout__user-name
-    color #333
+    color ui-cl-color-grey-color
   .main-layout__user-post
     color green
 .admin
   &__pages
-    padding 40px
     &-container
       display grid
       grid-template-columns 1000px 1fr
@@ -164,7 +165,7 @@ export default {
       background #fff
       min-height 145px
       max-height 145px
-      border-radius 10px
+      border-radius border-small
       overflow hidden
       box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08)
     &-img
@@ -172,7 +173,7 @@ export default {
       flex-direction column
       justify-content center
       align-items center
-      background #21A45D
+      background ui-cl-color-gun-powder
       height 100%
       width 148px
     &-info
@@ -182,11 +183,11 @@ export default {
       font-family 'Open Sans'
     &-title
       font-style normal
-      font-weight 300
-      font-size 18px
+      font-weight font-weight-light
+      font-size font-size-updefault
       line-height 30px
     &-statistic
-      font-weight 600
+      font-weight font-weight-bold
       font-size 40px
       line-height 48px
 </style>

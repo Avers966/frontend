@@ -1,5 +1,5 @@
 <template>
-  <header class="main-layout__header" :class="{ admin: isAdminPage }">
+  <header class="main-layout__header" :class="{ admin: isAdminPage }" v-if="!isAdminPage">
     <div class="wrapper wrapper__header">
       <template v-if="!isAdminPage">
         <div class="main-layout__header-left">
@@ -13,7 +13,7 @@
             <input
               class="main-layout__search-input"
               type="text"
-              placeholder="Поиск"
+              :placeholder="translations.searchPlaceholder"
               :value="searchText"
               @input="setSearchText($event.target.value)"
             />
@@ -29,20 +29,69 @@
             </span>
             <push :isOpen="isOpenPush" @close-push="togglePush" />
           </div>
-          <router-link class="main-layout__user" v-if="getInfo" :to="{ name: 'Profile' }">
-            <div class="main-layout__user-pic" style="background-color: #8bc49e">
+          <div
+            @click="toggleActionsProfile"
+            class="main-layout__user"
+            :class="{'active__profile-actions': showActionsProfile}"
+            v-if="getInfo"
+          >
+            <div class="main-layout__user-pic header__pic" style="background-color: #8bc49e">
               <img
                 v-if="getInfo.photo"
                 :src="getInfo.photo"
                 :alt="getInfo.firstName[0] + ' ' + getInfo.lastName[0]"
               />
               <div v-else>
-                {{ getInfo.firstName[0] + ' ' + getInfo.lastName[0] }}
+                <unknow-user />
               </div>
             </div>
-            <span class="main-layout__user-name">{{ getInfo.fullName }}</span>
-            <span class="main-layout__user-post" v-if="isAdminPage">- администратор</span>
-          </router-link>
+            <arrow-bottom />
+          </div>
+          <transition name="fade">
+            <div
+              v-if="showActionsProfile"
+              v-click-outside="closeActionsProfile"
+              class="main-layout__actions-profile"
+            >
+              <router-link :to="{ name: 'Profile' }" class="main-layout-profile__actions">
+                <div class="main-layout__user-pic header__pic" style="background-color: #8bc49e">
+                  <img
+                    v-if="getInfo.photo"
+                    :src="getInfo.photo"
+                    :alt="getInfo.firstName[0] + ' ' + getInfo.lastName[0]"
+                  />
+                  <div v-else>
+                    <unknow-user />
+                  </div>
+                </div>
+                <span class="main-layout__user-name">{{ getInfo.fullName }}</span>
+                <span class="main-layout__user-post" v-if="isAdminPage">- администратор</span>
+              </router-link>
+              <ul class="main-layout__actions-profile-list">
+                <li class="main-layout__actions-profile-item">
+                  <div class="simple-svg-wrapper">
+                    <sidebar-icons :name="'settings'" />
+                  </div>
+                  <router-link v-if="!isAdminPage" :to="{ name: 'Settings' }">{{ translations.sidebarSetting }}</router-link>
+                </li>
+                <li class="main-layout__actions-profile-item">
+                  <language-icon />
+                  <language-block :no-use-content="false" />
+                </li>
+                <li class="main-layout__actions-profile-item">
+                  <div class="simple-svg-wrapper">
+                    <sidebar-icons :name="'exit'" />
+                  </div>
+                  <a
+                    href="#"
+                    @click.prevent="onLogout"
+                  >
+                    {{ translations.logout }}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </transition>
         </div>
       </template>
     </div>
@@ -55,14 +104,35 @@ import SearchIcon from '../../Icons/SearchIcon.vue';
 import PushIcon from '../../Icons/PushIcon.vue';
 import Push from '@/components/MainLayout/Push';
 import ChangeTheme from '../Theme/ChangeTheme.vue';
+import vClickOutside from 'v-click-outside';
+import LanguageBlock from '@/components/FormLayout/Footer.vue';
+import translations from '@/utils/lang.js';
+import UnknowUser from '../../Icons/UnknowUser.vue';
+import ArrowBottom from '../../Icons/ArrowBottom.vue';
+import SidebarIcons from '../../Icons/sidebar/SidebarIcons.vue';
+import LanguageIcon from '../../Icons/LanguageIcon.vue';
 
 export default {
   name: 'MainLayoutHeader',
-  components: { Push, SearchIcon, PushIcon, ChangeTheme },
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
+  components: {
+    Push,
+    SearchIcon,
+    PushIcon,
+    ChangeTheme,
+    LanguageBlock,
+    UnknowUser,
+    ArrowBottom,
+    SidebarIcons,
+    LanguageIcon
+  },
 
   data: () => ({
     isOpenPush: false,
     isOpenSearch: false,
+    showActionsProfile: false,
   }),
 
   computed: {
@@ -70,11 +140,22 @@ export default {
     ...mapGetters('global/search', ['searchText']),
     ...mapGetters('profile/info', ['getInfo']),
     ...mapGetters('profile/notifications', ['getNotificationsLength']),
+
     isAdminPage() {
       return this.$route.path.indexOf('admin') !== -1;
     },
+
     activeDialogId() {
       return this.$route.params.activeDialogId;
+    },
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 
@@ -136,11 +217,26 @@ export default {
   methods: {
     ...mapMutations('global/search', ['setSearchText']),
     ...mapActions('profile/dialogs', ['fetchDialogs']),
+    ...mapActions('auth/api', ['logout']),
     ...mapMutations('profile/notifications', ['addNotification', 'addNotificationsLength']),
     ...mapMutations('profile/dialogs', ['setUnreadedMessages', 'setDialogs', 'setNewMessage']),
     ...mapActions('profile/info', ['apiInfo']),
     ...mapActions('global/search', ['searchAll']),
     ...mapActions('global/geo', ['apiGeo']),
+
+    onLogout() {
+      this.logout().finally(() => {
+        this.$router.push('/login');
+      });
+    },
+
+    toggleActionsProfile() {
+      this.showActionsProfile = !this.showActionsProfile;
+    },
+
+    closeActionsProfile() {
+      this.showActionsProfile = false
+    },
 
     onSearch() {
       this.searchAll(this.searchText).then(() => {
@@ -158,8 +254,77 @@ export default {
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 
-.vt-notification-container
-  display none!important
+.main-layout-profile__actions
+  display flex
+  padding 10px
+  align-items center
+  font-size font-size-small-medium
+  font-weight font-weight-medium
+  background ui-cl-color-white-bright
+  border-radius border-super-small
+  transition all .2s ease-in-out
+  margin-bottom 10px
+  gap 10px
+  @media (any-hover: hover)
+    &:hover
+      background ui-cl-color-white-bright-second
+
+
+.active__profile-actions
+  background-color #ffffff2b
+
+.header__pic
+  margin-right 0 !important
+
+.main-layout__actions-profile-list
+  display flex
+  flex-direction column
+  gap 5px
+
+.main-layout__actions-profile-item
+  display flex
+  gap 10px
+  word-wrap nowrap
+  cursor pointer
+  transition all .2s ease-in-out
+  padding 8px
+  border-radius border-super-small
+  @media (any-hover: hover)
+    &:hover
+      background ui-cl-color-white-lilac
+  a
+    display block
+    width 100%
+  .form-layout__footer
+    color ui-cl-color-full-black
+    font-size font-size-downdefault
+  .form-layout__footer-language .active:hover
+    color ui-cl-color-eucalypt
+  .form-layout__footer-language
+    margin-right 0
+  svg
+    opacity 80%
+
+.main-layout__actions-profile
+  position absolute
+  top 57px
+  color ui-cl-color-full-black
+  font-size font-size-downdefault
+  border-radius border-small 0 border-small border-small
+  right 0
+  padding 10px
+  max-width 300px
+  min-width 300px
+  width 100%
+  height auto
+  background ui-cl-color-white-theme
+  box-shadow box-shadow-main
+  &.fade-enter-active,
+  &.fade-leave-active
+    transition all .2s ease-in-out
+  &.fade-enter,
+  &.fade-leave-to
+    opacity 0
 
 .wrapper__header
   display flex
@@ -175,10 +340,13 @@ export default {
   align-items center
   gap 15px
 
+.main-layout__header-right
+  position relative
+
 
 .main-layout__header
-  background eucalypt
-  box-shadow standart-boxshadow
+  background ui-cl-color-eucalypt
+  box-shadow box-shadow-main
   height header-height
   position absolute
   top 0
@@ -186,13 +354,12 @@ export default {
   right 0
   display flex
   align-items center
-  padding 0 40px
   z-index 8
-  color #FFFFFF
+  color ui-cl-color-white-theme
 
   &.admin
-    background #fff
-    color steel-gray
+    background ui-cl-color-white-theme
+    color ui-cl-color-steel-gray
     justify-content flex-end
 
 .main-layout__search
@@ -208,7 +375,7 @@ export default {
   top 20%
   margin-right 10px
   background-color transparent
-  color: #fff
+  color ui-cl-color-white-theme
   outline none
 
   & svg
@@ -218,19 +385,19 @@ export default {
     transform scale(1.2)
 
 .main-layout__search-input
-  font-size 15px
+  font-size font-size-downdefault
   width 100%
   background #edeef026
   padding 10px 10px 10px 40px
-  border-radius 10px
-  color #fff
+  border-radius border-small
+  color ui-cl-color-white-theme
   transition all 0.2s
 
   &::placeholder
-    color #fff
+    color ui-cl-color-white-theme
 
   &:focus
-    background #00000029
+    background ui-cl-color-full-black29
 
 
 .main-layout__push
@@ -245,13 +412,13 @@ export default {
     &[data-push]:after
       content attr(data-push)
       font-style normal
-      font-weight bold
-      font-size 10px
+      font-weight font-weight-bold
+      font-size font-size-super-upsmall
       line-height 15px
       width 16px
       height 16px
       background-color #F9555F
-      border-radius 50%
+      border-radius border-half
       display flex
       align-items center
       justify-content center
@@ -265,15 +432,27 @@ export default {
 
 .main-layout__user
   display flex
+  cursor pointer
+  padding 5px
+  border-radius border-super-small
+  gap 5px
   align-items center
-  font-weight 600
-  font-size 15px
-  color #fff
+  font-weight font-weight-bold
+  font-size font-size-downdefault
+  color ui-cl-color-white-theme
+  transition all .2s ease-in-out
+  svg
+    width 24px
+    height 24px
+  @media (any-hover: hover)
+    &:hover
+      background-color #ffffff2b
+
 
 .main-layout__user-pic
   width 50px
   height 50px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
   margin-right 15px
   flex none
@@ -323,8 +502,8 @@ export default {
     &__user-pic
       margin-right 0
     &__user-name
-      font-size 14px
-      font-weight 400
+      font-size font-size-small
+      font-weight font-weight-regular
     .theme-switch
       grid-area theme
       margin-right 10px

@@ -219,20 +219,20 @@ export default {
   align-items center
   height 40px
   padding 30px 20px
-  font-size 13px
-  background-color #e7e7e7
+  font-size font-size-small
+  background-color ui-cl-color-white-bright-second
   border-bottom 1px solid #d2d4d7
 
   .user-status
     padding 4px
-    background-color #21a45d
-    font-size 10px
+    background-color ui-cl-color-eucalypt
+    font-size font-size-super-upsmall
     line-height 100%
 
 .im-chat__user-pic
   width 40px
   height 40px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
   margin-right 10px
   .main-layout__user-pic
@@ -240,16 +240,16 @@ export default {
     height 40px
 
 .im-chat__user-name
-  font-weight 600
-  font-size 15px
-  color steel-gray
+  font-weight font-weight-bold
+  font-size font-size-default
+  color ui-cl-color-steel-gray
   margin-right auto
 
 .im-chat__user-status
   color #9EA4AD
 
   &.online
-    color eucalypt
+    color ui-cl-color-eucalypt
 
 .im-chat__infitite_list_wrapper
   position relative
@@ -272,10 +272,10 @@ export default {
 
 .im-chat__enter-input
   width 100%
-  background-color #363636
+  background-color ui-cl-color-363636
   padding 0 40px
-  font-size 15px
-  color #fff
+  font-size font-size-default
+  color ui-cl-color-white-theme
   height 80px
 
   &::placeholder
@@ -285,19 +285,19 @@ export default {
   padding 1em
 
   .finished
-    font-size 14px
+    font-size font-size-small
     text-align center
     color #bfbfbf
 
   .spinner
-    font-size 10px
+    font-size font-size-super-upsmall
     margin 0 auto
     text-indent -9999em
     width 25px
     height 25px
-    border-radius 50%
-    background #ffffff
-    background linear-gradient(to right, eucalypt 10%, rgba(255, 255, 255, 0) 42%)
+    border-radius border-half
+    background ui-cl-color-white-theme
+    background linear-gradient(to right, ui-cl-color-eucalypt 10%, rgba(255, 255, 255, 0) 42%)
     position relative
     animation load3 1.4s infinite linear
     transform translateZ(0)
@@ -305,7 +305,7 @@ export default {
   .spinner:before
     width 50%
     height 50%
-    background eucalypt
+    background ui-cl-color-eucalypt
     border-radius 100% 0 0 0
     position absolute
     top 0
@@ -316,7 +316,7 @@ export default {
     background #f8fafd
     width 75%
     height 75%
-    border-radius 50%
+    border-radius border-half
     content ''
     margin auto
     position absolute

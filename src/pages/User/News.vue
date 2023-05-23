@@ -90,11 +90,11 @@ export default {
   top 25px !important
 
 .news__add
-  border-radius 10px
+  border-radius border-small
   margin-bottom 30px
 
 .news-add
-  border-radius 10px
+  border-radius border-small
 
 .news__list
   display flex

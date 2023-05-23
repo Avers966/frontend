@@ -1,16 +1,11 @@
 <!-- eslint-disable vue/html-indent -->
 <template>
-  <div class="main-layout__sidebar" :class="{ 'sticky': isSticky }" v-scroll="handleScroll">
+  <div class="main-layout__sidebar" :class="{ 'sticky': isSticky, 'admin': isAdminPage }" v-scroll="handleScroll">
     <div class="wrapper__sidebar">
-      <div class="main-layout__logo" :class="{ admin: isAdminPage }" v-if="isAdminPage">
-        <div class="main-layout__admin-logo">
-          <simple-svg :filepath="'/static/img/logo-admin.svg'" />
-        </div>
-      </div>
       <transition>
         <nav class="main-layout__nav">
           <router-link
-            :title="item.text"
+            :title="translations === 'Русский' ? item.textEng : item.textEng"
             class="main-layout__link"
             v-for="(item, index) in info"
             :key="index"
@@ -32,25 +27,9 @@
             <div class="simple-svg-wrapper">
               <sidebar-icons :name="item.icon" />
             </div>
-            <span class="sidebar__text">{{ item.text }}</span>
+            <span v-if="!isAdminPage" class="sidebar__text">{{ translations === 'Русский' ? item.text : item.textEng }}</span>
+            <span v-else>{{ item.text }}</span>
           </router-link>
-          <router-link
-            class="main-layout__link"
-            v-if="!isAdminPage"
-            :to="{ name: 'Settings' }"
-            title="Настройки"
-          >
-            <div class="simple-svg-wrapper">
-              <sidebar-icons :name="'settings'" />
-            </div>
-            <span class="sidebar__text">Настройки</span>
-          </router-link>
-          <a class="main-layout__link" @click.prevent="onLogout" href="#" title="Выйти">
-            <div class="simple-svg-wrapper">
-              <sidebar-icons :name="'exit'" />
-            </div>
-            <span class="sidebar__text">Выйти</span>
-          </a>
         </nav>
       </transition>
     </div>
@@ -80,19 +59,25 @@ export default {
     return {
       isOpen: false,
       isSticky: false,
-      scrollPosition: 0
+      scrollPosition: 0,
     }
   },
   computed: {
     ...mapGetters('global/menu', ['getSidebarById']),
     ...mapGetters('profile/dialogs', ['unreadedMessages']),
     ...mapState('profile/friends', ['requestsCount']),
+
     isAdminPage() {
       return this.$route.path.indexOf('admin') !== -1;
     },
     info() {
       return this.getSidebarById(this.isAdminPage ? 'admin' : 'user');
     },
+
+    translations() {
+      return this.$store.state.auth.languages.language.name;
+    },
+
     removeBodyOverflow() {
       const body = document.querySelector('body');
       return {
@@ -105,6 +90,7 @@ export default {
         }
       }
     },
+
     bodyOverflow() {
       return this.removeBodyOverflow.computedStyle();
     }
@@ -140,14 +126,9 @@ export default {
   },
 
   methods: {
-    ...mapActions('auth/api', ['logout']),
     ...mapActions('profile/friends', ['apiRequestsCount']),
     ...mapActions('profile/dialogs', ['apiUnreadedMessages']),
-    onLogout() {
-      this.logout().finally(() => {
-        this.$router.push('/login');
-      });
-    },
+
     handleScroll() {
       this.isSticky = window.pageYOffset > 85;
     }
@@ -180,7 +161,7 @@ export default {
   max-width unset
   p
     font-size 25px
-    font-weight 500
+    font-weight font-weight-medium
     text-transform uppercase
   svg path:nth-child(3)
     animation gradient 1s linear infinite
@@ -201,14 +182,26 @@ export default {
   position absolute
   top 85px
   left 0
-  color #fff
+  color ui-cl-color-white-theme
   display flex
   width 100%
   padding 20px 0
-  background #fff
+  background ui-cl-color-white-theme
   border-bottom 1px solid #cbcbcb
   z-index 7
   transition none
+
+  &.admin
+    background ui-cl-color-gun-powder
+    padding 0
+    top 0
+    .main-layout__link
+      padding 20px 10px
+      color ui-cl-color-white-theme
+      transition all .2s ease-in-out
+      @media (any-hover: hover)
+        &:hover
+          background #ffffff14
 
   &.sticky
     position fixed
@@ -238,20 +231,17 @@ export default {
   &:hover
     color #000
 
-  &:last-child
-    margin-left auto
-
 
   &--im
     &:after
       content attr(data-push)
-      font-weight 400
-      font-size 9px
+      font-weight font-weight-regular
+      font-size font-size-super-small
       width 15px
       height 15px
-      color #fff
+      color ui-cl-color-white-theme
       background-color #E65151
-      border-radius 50%
+      border-radius border-half
       display flex
       align-items center
       justify-content center
@@ -267,7 +257,7 @@ export default {
         right 5px
 
   &.router-link-active
-    color #21a45d
+    color ui-cl-color-eucalypt
 
   .simple-svg-wrapper
     width 16px
@@ -294,7 +284,7 @@ export default {
   position absolute
   height 3px
   width 100%
-  background-color #21A45D
+  background-color ui-cl-color-eucalypt
   opacity 1
   left 0
   transform rotate(0deg)
@@ -320,24 +310,5 @@ export default {
 
 .burger-menu__button.active span:nth-child(3)
   transform rotate(-45deg)
-
-@media (min-width: 768px)
-  .burger-menu__button
-    display none
-
-@media (max-width: 768px)
-  .burger-menu__button
-    display block
-  .main-layout__nav
-    position absolute
-    left 0
-    top 0
-    z-index 100
-    width 100%
-    height 1500px
-    overflow hidden
-    background radial-gradient(248.22% 257.37% at 9.27% 93.95%, rgba(161,128,255,0.1) 0%, rgba(74,157,255,0.1) 50%, rgba(117,247,255,0.1) 100%)
-    background-color #313135
-    padding 80px 30px
 
 </style>

@@ -18,7 +18,7 @@
         type="text"
         minlength="5"
         class="comment-add__input"
-        :placeholder="isSubcomment ? 'Написать ответ...' : 'Написать комментарий...'"
+        :placeholder="isSubcomment ? translations.commentAddPlaceholderFirst : translations.commentAddPlaceholderSecond"
         v-model="commentText"
         v-on:keydown.ctrl.enter="onSubmitComment"
       />
@@ -66,6 +66,7 @@ import { EmojiPicker } from 'vue-emoji-picker';
 import EmojiIcon from '../../Icons/EmojiIcon.vue';
 import SubmitIcon from '../../Icons/SubmitIcon.vue';
 import UnknowUser from '../../Icons/UnknowUser.vue';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'CommentAdd',
@@ -101,6 +102,16 @@ export default {
 
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
+
     commentText: {
       get() {
         return this.value;
@@ -123,13 +134,14 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
 .emoji-invoker
   position absolute
   top 18%
   right 10px
   width 1.5rem
   height 1.5rem
-  border-radius 50%
+  border-radius border-half
   cursor pointer
   transition all 0.2s
   padding 0
@@ -144,7 +156,6 @@ export default {
   bottom 100%
   left 100%
   z-index 1
-  font-family -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif
   border 1px solid #ccc
   width 386px
   height 400px
@@ -152,7 +163,7 @@ export default {
   padding 20px
   box-sizing border-box
   border-radius 0.5rem
-  background #fff
+  background ui-cl-color-white-theme
   box-shadow 1px 1px 8px #c7dbe6
 
 .emoji-picker__search
@@ -188,7 +199,7 @@ export default {
 .emoji-picker .emojis span
   padding 0.2rem
   cursor pointer
-  border-radius 5px
+  border-radius border-super-small
 
 .emoji-picker .emojis span:hover
   background #ececec
@@ -215,7 +226,7 @@ export default {
   &.is-subcomment
     padding-top 10px !important
     margin-bottom 10px !important
-    border-top 1px solid #e7e7e7
+    border-top 1px solid ui-cl-color-white-bright-second
     border-bottom none
     margin-top 20px
 
@@ -226,7 +237,7 @@ export default {
 .comment-add__pic
   width 34px
   height 34px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
   margin-right 15px
   flex none
@@ -249,7 +260,7 @@ export default {
     object-fit cover
 
 .comment-add__input
-  font-size 13px
+  font-size font-size-small
   width 100%
   line-height 17px
   color #6A6A80

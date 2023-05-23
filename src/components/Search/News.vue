@@ -1,14 +1,14 @@
 <template>
   <div class="search-news" v-if="news.length > 0">
     <div>
-      <search-block title="Новости" id="news">
+      <search-block :title="translations.searchNewsTitle" id="news">
         <news-block v-for="n in news" :key="n.id" :info="n" />
       </search-block>
     </div>
     <pagination :count="total" v-model="page" :per-page="size" />
   </div>
   <div class="search-news__nonews" v-else>
-    В данный момент нет новостей для отображения.
+    {{ translations.searchNewsEmpty }}
   </div>
 </template>
 
@@ -17,6 +17,7 @@ import { mapGetters, mapActions } from 'vuex';
 import SearchBlock from '@/components/Search/Block';
 import NewsBlock from '@/components/News/Block';
 import Pagination from '@/components/Pagination.vue';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'SearchNews',
@@ -34,6 +35,15 @@ export default {
     ...mapGetters('global/search', ['getResultById', 'getNewsQueryParams', 'getNewsPagination']),
     news() {
       return this.getResultById('news');
+    },
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 

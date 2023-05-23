@@ -91,7 +91,7 @@ export default {
 
 .like-amount
   color #FF3347
-  font-weight 600
+  font-weight font-weight-bold
   svg
     color #FF3347
 
@@ -103,7 +103,7 @@ export default {
     color #000 !important
   span
     color #000 !important
-    font-weight 500
+    font-weight font-weight-medium
 
 .yes-comment
   color #000
@@ -112,7 +112,7 @@ export default {
   display flex
   align-items center
   cursor pointer
-  font-size 13px
+  font-size font-size-small
   height 32px
   background-color #F0F2F5
   padding 4px 20px
@@ -120,8 +120,8 @@ export default {
   transition all .2s ease-in-out
   gap 5px
   &:hover
-    color #ff5573
-    background-color #d2d2d2
+    color ui-cl-color-wild-watermelon
+    background-color ui-cl-color-d2d2d2
 
 .like-comment__checkbox
   input
@@ -135,12 +135,12 @@ export default {
     &:checked
       & + label
         svg
-          color #ff5573
+          color ui-cl-color-wild-watermelon
 
   label
     display flex
     gap 5px
-    font-size 13px
+    font-size font-size-small
     align-items center
     cursor pointer
 </style>

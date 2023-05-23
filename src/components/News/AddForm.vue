@@ -8,7 +8,7 @@
       <div class="news-add__text">
         <textarea
           class="news-add__text-title"
-          placeholder="Дайте тему"
+          :placeholder="translations.newsAddTitle"
           v-model="title"
           maxlength="200"
           v:pattern="200"
@@ -73,19 +73,30 @@
       </div>
 
       <div class="news-add__settings">
-        <h4 class="news-add__settings-title">Настройка публикации</h4>
+        <h4 class="news-add__settings-title">{{ translations.newsAddSettings }}</h4>
 
         <add-tags :tags="tags" @change-tags="onChangeTags" />
 
         <div class="is_planing" v-if="isPlaning">
-          <h6>Запланированное время</h6>
+          <h6>{{ translations.newsAddSettingsTimePublished }}</h6>
 
           <p>{{ day }} {{ monthNames[month] }} {{ year }} г. в {{ dateTime }}</p>
         </div>
 
         <div class="plaining-list__btns">
-          <button v-if="!edit || deffered" class="post-btn-planing plaining-hole" @click.prevent="openModal">Запланировать</button>
-          <button class="post-btn-planing" @click.prevent="submitForm">Опубликовать</button>
+          <button
+            v-if="!edit || deffered"
+            class="post-btn-planing plaining-hole"
+            @click.prevent="openModal"
+          >
+            {{ translations.newsAddQueued }}
+          </button>
+          <button
+            class="post-btn-planing"
+            @click.prevent="submitForm"
+          >
+            {{ translations.newsAddPosted }}
+          </button>
         </div>
       </div>
     </form>
@@ -93,14 +104,14 @@
     <modal class="news-add__modal" v-model="modalShow">
       <div class="news-add__modal-selects deferred-post">
         <div class="alert-deferred-post">
-          <span>Публикация будет опубликована:</span>
+          <span>{{ translations.newsAddQueuedTimeToPosted }}</span>
           <span>{{ day || '01' }} {{ monthNames[month] || 'январь' }} {{ year || '1970' }} г. в {{ dateTime || '00:00' }}</span>
         </div>
         <div class="data-pickers-list">
           <date-picker
             v-model="date"
             type="date"
-            placeholder="Выберите дату"
+            :placeholder="translations.newsAddDataPickedData"
           >
           </date-picker>
           <date-picker
@@ -109,7 +120,7 @@
             format="HH:mm"
             value-type="format"
             type="time"
-            placeholder="Выберите время"
+            :placeholder="translations.newsAddDataPickedTime"
           >
           </date-picker>
         </div>
@@ -117,8 +128,8 @@
 
       <template slot="actions">
         <div class="plaining-list__btns on_plaining">
-          <button class="post-btn-planing" @click.prevent="onPlaning">Планировать</button>
-          <button class="post-btn-planing plaining-hole" @click.prevent="onCancelPlaning">Отмена</button>
+          <button class="post-btn-planing" @click.prevent="onPlaning">{{ translations.newsAddQueued }}</button>
+          <button class="post-btn-planing plaining-hole" @click.prevent="onCancelPlaning">{{ translations.cancel }}</button>
         </div>
       </template>
     </modal>
@@ -134,6 +145,7 @@ import AddTags from '@/components/News/AddTags';
 import Modal from '@/components/Modal';
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
+import translations from '@/utils/lang.js';
 
 Vue.directive( 'pattern', {
   update (el, binding) {
@@ -201,6 +213,15 @@ export default {
 
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
 
     fullDate() {
       if (this.dateTime) {
@@ -371,6 +392,8 @@ export default {
 };
 </script>
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
+
 @media (min-width: 320px) and (max-width: 768px)
   .news-add
     &__main
@@ -382,7 +405,7 @@ export default {
       border-right 0
       &__title
         padding-bottom 0
-        font-size 18px
+        font-size font-size-updefault
     &__actions-buttons
       padding 10px 15px 0 15px
       justify-content flex-end
@@ -391,7 +414,7 @@ export default {
     &__settings
       max-width unset
       &-title
-        font-size 18px
+        font-size font-size-updefault
     .modal__wrapper
       padding 15px
       max-width 300px
@@ -402,6 +425,7 @@ export default {
 
 </style>
 <style lang="stylus" media="screen">
+@import '../../assets/stylus/base/vars.styl'
 .close_modal
   position relative
   top 8px
@@ -415,8 +439,8 @@ export default {
   height 200px
 
 .is_planing
-  font-size 13px
-  background #fafafa
+  font-size font-size-small
+  background ui-cl-color-white-bright
   padding 5px
   color #6b6b6b
   display flex
@@ -453,41 +477,41 @@ export default {
   align-items center
   justify-content center
   padding 10px
-  font-size 16px
+  font-size font-size-default
   background #f6f6f6
-  border-radius 5px
+  border-radius border-super-small
   border 1px solid #d9d9d9
   span:nth-child(1)
-    font-weight bold
+    font-weight font-weight-bold
 
 
 .news-add__text-title
-  border-bottom: 1px solid #e6e6e6
+  border-bottom: 1px solid ui-cl-color-e6e6e6
   padding-bottom 20px
 
 .post-btn-planing
   display block
   text-align center
-  color #fff
+  color ui-cl-color-white-theme
   width 100%
   padding 10px 5px
-  border 2px solid #21a45d
+  border 2px solid ui-cl-color-eucalypt
   transition all 0.2s ease-in-out
-  background #21a45d
+  background ui-cl-color-eucalypt
   @media (any-hover: hover)
     &:hover
-      background #333
-      border-color #333
-      color #fff
+      background ui-cl-color-grey-color
+      border-color ui-cl-color-grey-color
+      color ui-cl-color-white-theme
 
 .post-btn-planing.plaining-hole
   background transparent
-  color #21a45d
+  color ui-cl-color-eucalypt
   @media (any-hover: hover)
     &:hover
-      background #21a45d
-      border-color #21a45d
-      color #fff
+      background ui-cl-color-eucalypt
+      border-color ui-cl-color-eucalypt
+      color ui-cl-color-white-theme
 
 .plaining-list__btns
   display flex

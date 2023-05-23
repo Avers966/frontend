@@ -1,6 +1,6 @@
 <template>
-  <div class="search-users" v-if="users">
-    <search-block title="Люди" id="users">
+  <div class="search-users" v-if="users.length > 0">
+    <search-block :title="translations.searchUserTitle" id="users">
       <div class="friends__list">
         <block-search
           v-for="user in users"
@@ -14,7 +14,7 @@
     </search-block>
   </div>
   <div class="search-news__nonews" v-else>
-    В данный момент нет людей для отображения.
+    {{ translations.searchUserEmpty }}
   </div>
 </template>
 
@@ -23,6 +23,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex';
 import SearchBlock from '@/components/Search/Block';
 import BlockSearch from '@/components/Friends/BlockSearch.vue';
 import Pagination from '@/components/Pagination.vue';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'SearchUsers',
@@ -37,8 +38,18 @@ export default {
 
   computed: {
     ...mapGetters('global/search', ['getResultById', 'getUsersQueryParams', 'getUsersPagination']),
+
     users() {
       return this.getResultById('users');
+    },
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 

@@ -34,32 +34,34 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
+
 .admin-panel__search .admin-panel__input:hover + *
   background-color lightblue
 
 .admin-panel
-  padding 40px
+  width 100%
 
   &__content
     display grid
-    grid-template-columns 1058px 430px
-    gap 37px
+    grid-template-columns 1fr 430px
+    gap 20px
     align-items flex-start
     justify-content space-between
   &__search
     display flex
     align-items center
     padding 20px 40px
-    background #FFFFFF
+    background ui-cl-color-white-theme
     transition all .3s ease-in-out
-    border-radius 10px
+    border-radius border-small
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
     &.active
-      background #21A45D
+      background ui-cl-color-gun-powder
       input
-        color #fff
+        color ui-cl-color-white-theme
         &::placeholder
-          color #fff
+          color ui-cl-color-white-theme
       svg
         stroke #fff
     svg

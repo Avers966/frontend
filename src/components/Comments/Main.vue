@@ -2,23 +2,13 @@
   <div class="comment-main">
     <template v-if="info.is_deleted">
       <p class="comment-main__text">
-        <span>Комментарий удален.</span>
+        <span>{{ translations.commentIsDeleted }}</span>
 
-        <a href="#" @click="onRecoverComment">Восстановить</a>
+        <a href="#" @click="onRecoverComment">{{ translations.commentIsRecovery }}</a>
       </p>
     </template>
 
     <template v-else>
-      <!-- <div class="edit edit--small" v-if="edit || deleted">
-        <div class="edit__icon" v-if="deleted" @click="onDeleteComment">
-          <simple-svg :filepath="'/static/img/delete-news.svg'" />
-        </div>
-
-        <div class="edit__icon" v-if="edit" @click="editComment">
-          <simple-svg :filepath="'/static/img/edit.svg'" />
-        </div>
-      </div> -->
-
       <router-link
         class="comment-main__pic"
         :to="{ name: 'ProfileId', params: { id: info.authorId } }"
@@ -69,7 +59,7 @@
             <div class="comment-main__actions-button">
               <span class="comment-main__time">{{ info.time | moment('from') }}</span>
               <a class="comment-main__review" href="#" @click.prevent="$emit('answer-comment')">
-                Ответить
+                {{ translations.commentAddAnswer }}
               </a>
             </div>
             <div class="show__like">
@@ -94,6 +84,7 @@ import LikeComment from '@/components/LikeComment';
 import EditIcon from '../../Icons/EditIcon.vue';
 import DeleteComment from '../../Icons/DeleteNewsIcon.vue';
 import UnknowUser from '../../Icons/UnknowUser.vue';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'CommentMain',
@@ -112,6 +103,17 @@ export default {
     return {
       like: this.info.myLike,
     };
+  },
+
+  computed: {
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
   },
 
   methods: {
@@ -159,7 +161,7 @@ export default {
 @import '../../assets/stylus/base/vars.styl'
 
 .comments
-  font-family 'Roboto', sans-serif !important
+  font-family 'Open Sans', sans-serif !important
 .comment-main__actions-button
   display flex
   gap 7px
@@ -172,7 +174,7 @@ export default {
 
 .comment-main
   display flex
-  font-size 13px
+  font-size font-size-small
   position relative
 
   .like-comment
@@ -184,7 +186,7 @@ export default {
       width 19px
       height 19px
       &:hover
-        color #ff5573
+        color ui-cl-color-wild-watermelon
 
   &__top
     display inline-flex
@@ -197,7 +199,7 @@ export default {
     align-items center
 
   &__icons-top
-    color #000
+    color ui-cl-color-full-black
     cursor pointer
     svg
       width 14px
@@ -214,7 +216,7 @@ export default {
   align-self flex-start
   width 40px
   height 40px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
   margin-right 10px
 
@@ -231,9 +233,9 @@ export default {
   width 100%
 
 .comment-main__author
-  font-weight 600
+  font-weight font-weight-bold
   color #444444
-  font-size 13px
+  font-size font-size-small
   display block
 
 .comment-main__text
@@ -274,7 +276,7 @@ export default {
   margin-right 10px
 
 .comment-main__review
-  color eucalypt
+  color ui-cl-color-eucalypt
   margin-right auto
 
 .comment-add__pic

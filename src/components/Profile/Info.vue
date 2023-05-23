@@ -1,240 +1,240 @@
 <template>
-  <div class="profile-info" v-if="info">
-    <div class="profile-info__background" :style="{ 'background-image': `url(${info.photo})` }">
-      <div class="qr">
-        <button @click="togglePopup" class="profile-info__shared-btn">
-          <shared-account />
-        </button>
-        <transition name="fade">
-          <div v-if="showPopup" class="profile-info__share-popup" v-click-outside="closePopup">
-            Поделиться:
-            <div class="qr-code" v-html="qrCode"></div>
-            <div class="profile-info__share-link">
-              <input
-                class="profile-info__link-profile"
-                ref="text" @click="copyText"
-                :value="currentUrl"
-              />
-              <button class="profile-info__link-btn" @click="copyToClipboard">
-                <span v-if="!copied"><copied-icon /></span>
-                <span v-else-if="copied"><done-copied /></span>
-              </button>
-            </div>
-          </div>
-        </transition>
-      </div>
-    </div>
-    <div class="profile-info__bottom">
-      <div class="profile-info__left">
-        <a
-          href="#"
-          class="profile-info__link"
-          @click.prevent="scrollToPosts"
-        >
-          <span v-if="me">Мои публикации</span>
-          <span v-else>Публикации {{ info.firstName }}</span>
-        </a>
-        <router-link class="profile-info__link" v-if="me" :to="{ name: 'Friends' }">
-          Друзья
-        </router-link>
-
-      </div>
-      <transition name="fade">
-        <div v-if="showAvatar" class="profile-info__avatar-container" @click="showAvatar = false">
-          <div class="profile-info__avatar-background">
-            <img :src="info.photo" class="profile-info__avatar-loupe">
-          </div>
-        </div>
-      </transition>
-      <div class="profile-info__image">
-        <div class="profile-info__status">
-          <span class="user-status" :class="{ online, offline: !online }">
-            {{ statusText }}
-          </span>
-        </div>
-        <div
-          class="profile-info__avatar"
-          :class="{ offline: !online && !me }"
-        >
-          <img
-            v-if="info.photo"
-            :src="info.photo"
-            :alt="info.firstName[0] + ' ' + info.lastName[0]"
-            @click="showAvatar = true"
-            @mouseover="showLoupe = true"
-            @mouseleave="showLoupe = false"
-          />
-          <img v-else src="/static/img/avatar.png" alt="avatar placeholder" />
+  <div>
+    <div class="profile-info" v-if="info">
+      <div class="profile-info__background" :style="{ 'background-image': `url(${info.photo})` }">
+        <div class="qr">
+          <button @click="togglePopup" class="profile-info__shared-btn">
+            <shared-account />
+          </button>
           <transition name="fade">
-            <div v-if="showLoupe" class="profile-info__avatar-zoom">
-              <plus-icon />
+            <div v-if="showPopup" class="profile-info__share-popup" v-click-outside="closePopup">
+              {{ translations.profileSharedAccTitle }}
+              <div class="qr-code" v-html="qrCode"></div>
+              <div class="profile-info__share-link">
+                <input
+                  class="profile-info__link-profile"
+                  ref="text" @click="copyText"
+                  :value="currentUrl"
+                />
+                <button class="profile-info__link-btn" @click="copyToClipboard">
+                  <span v-if="!copied"><copied-icon /></span>
+                  <span v-else-if="copied"><done-copied /></span>
+                </button>
+              </div>
             </div>
           </transition>
         </div>
-        <div class="profile-info__names">
-          <h1 class="profile-info__name">{{ info.firstName + ' ' + info.lastName }}</h1>
-          <span class="profile-info__cities" v-if="residenceText">{{ residenceText }}</span>
-          <span class="profile-info__val" v-else>не заполнено</span>
-        </div>
       </div>
-
-      <div class="profile-info__right">
-        <router-link class="profile-info__link" v-if="me" :to="{ name: 'Settings' }">
-          Редактировать профиль
-        </router-link>
-        <button class="profile-info__showmore" v-if="!me" @click.prevent="actionsShow">
-          Действия <arrow-buttom />
-        </button>
+      <div class="profile-info__bottom">
+        <div class="profile-info__left">
+          <a
+            href="#"
+            class="profile-info__link"
+            @click.prevent="scrollToPosts"
+          >
+            <span v-if="me">{{ translations.profileMyPublishText }}</span>
+            <span v-else>{{ translations.profileMyPublishNoMe }}</span>
+          </a>
+          <router-link class="profile-info__link" v-if="me" :to="{ name: 'Friends' }">
+            {{ translations.sidebarFriend }}
+          </router-link>
+        </div>
         <transition name="fade">
-          <div v-if="showActions" class="profile-info__actions" v-click-outside="closeActions">
-            <!-- Подписка/отписка/принимаем запрос -->
-            <a
-              v-if="info.statusCode === 'WATCHING' && info.statusCode !== 'FRIEND'"
-              href="#"
-              class="profile-info__btn btn-send__message"
-              @click.prevent="cancelApiRequests(info.id)">
-              <simple-svg :filepath="'/static/img/delete.svg'" />
-              Отписаться
-            </a>
-            <a
-              v-else-if="info.statusCode !== 'FRIEND' &&
-                info.statusCode !== 'REQUEST_TO' &&
-                info.statusCode !== 'BLOCKED' &&
-                info.statusCode !== 'REQUEST_FROM' &&
-                info.statusCode !== 'SUBSCRIBED'"
-              href="#"
-              class="profile-info__btn subscribe btn-send__message"
-              @click.prevent="subscribe(info.id)">
-              <simple-svg :filepath="'/static/img/sidebar/admin/comments.svg'" />
-              Подписаться
-            </a>
-            <a
-              v-if="info.statusCode === 'REQUEST_FROM'"
-              href="#"
-              class="profile-info__btn btn-send__message"
-              @click.prevent="acceptFriendRequest(info.id)">
-              <simple-svg class="accept" :filepath="'/static/img/add.svg'" />
-              Принять запрос
-            </a>
-            <!-- Сообщение -->
-            <a
-              v-if="info.statusCode !== 'BLOCKED'"
-              href="#"
-              class="profile-info__btn btn-send__message"
-              @click.prevent="onSentMessage">
-              <simple-svg :filepath="'/static/img/sidebar/im.svg'" />
-              Написать сообщение
-            </a>
-            <!-- Блокировка/разблокировка -->
-            <a
-              v-if="blocked || info.isBlocked || info.statusCode === 'BLOCKED'"
-              href="#"
-              class="profile-info__btn btn-send__message"
-              @click.prevent="unBlockedUser(info.id)">
-              <simple-svg class="filter-green" :filepath="'/static/img/security-system-unlock.svg'" />
-              Разблокировать
-            </a>
-            <a
-              v-else
-              href="#"
-              class="profile-info__btn block btn-send__message"
-              @click.prevent="blockedUser(info.id)">
-              <simple-svg :filepath="'/static/img/unblocked.svg'" />
-              Заблокировать
-            </a>
-            <!-- Добавление в друзья/отмена -->
-            <a
-              v-if="info.statusCode === 'FRIEND'"
-              href="#"
-              class="profile-info__btn btn-send__message"
-              @click.prevent="cancelApiRequests(info.id)">
-              Удалить из друзей
-            </a>
-            <a
-              v-if="info.statusCode === 'REQUEST_TO'"
-              href="#"
-              class="profile-info__btn btn-send__message"
-              @click.prevent="cancelApiRequests(info.id)">
-              Отменить заявку
-            </a>
-            <a
-              v-if="info.statusCode !== 'WATCHING' &&
-                info.statusCode !== 'REQUEST_TO' &&
-                info.statusCode !== 'BLOCKED' &&
-                info.statusCode !== 'REQUEST_FROM' &&
-                info.statusCode !== 'SUBSCRIBED'"
-              href="#"
-              class="profile-info__btn btn-send__message"
-              @click.prevent="addToFriend(info.id)">
-              <simple-svg class="accept" :filepath="'/static/img/add.svg'" />
-              Добавить в друзья
-            </a>
+          <div v-if="showAvatar" class="profile-info__avatar-container" @click="showAvatar = false">
+            <div class="profile-info__avatar-background">
+              <img :src="info.photo" class="profile-info__avatar-loupe">
+            </div>
           </div>
         </transition>
+        <div class="profile-info__image">
+          <div class="profile-info__status">
+            <span class="user-status" :class="{ online, offline: !online }">
+              {{ statusText }}
+            </span>
+          </div>
+          <div
+            class="profile-info__avatar"
+            :class="{ offline: !online && !me }"
+          >
+            <img
+              v-if="info.photo"
+              :src="info.photo"
+              :alt="info.firstName[0] + ' ' + info.lastName[0]"
+              @click="showAvatar = true"
+              @mouseover="showLoupe = true"
+              @mouseleave="showLoupe = false"
+            />
+            <img v-else src="/static/img/avatar.png" alt="avatar placeholder" />
+            <transition name="fade">
+              <div v-if="showLoupe" class="profile-info__avatar-zoom">
+                <plus-icon />
+              </div>
+            </transition>
+          </div>
+          <div class="profile-info__names">
+            <h1 class="profile-info__name">{{ info.firstName + ' ' + info.lastName }}</h1>
+            <span class="profile-info__cities" v-if="residenceText">{{ residenceText }}</span>
+            <span class="profile-info__val" v-else>{{ translations.profileNotFilled }}</span>
+          </div>
+        </div>
+        <div class="profile-info__right">
+          <router-link class="profile-info__link" v-if="me" :to="{ name: 'Settings' }">
+            {{ translations.profileEditingText }}
+          </router-link>
+          <button class="profile-info__showmore" v-if="!me" @click.prevent="actionsShow">
+            {{ translations.profileActionsUser }} <arrow-buttom />
+          </button>
+          <transition name="fade">
+            <div v-if="showActions" class="profile-info__actions" v-click-outside="closeActions">
+              <!-- Подписка/отписка/принимаем запрос -->
+              <a
+                v-if="info.statusCode === 'WATCHING' && info.statusCode !== 'FRIEND'"
+                href="#"
+                class="profile-info__btn btn-send__message"
+                @click.prevent="cancelApiRequests(info.id)">
+                <simple-svg :filepath="'/static/img/delete.svg'" />
+                {{ translations.profileAccountUnsubscribe }}
+              </a>
+              <a
+                v-else-if="info.statusCode !== 'FRIEND' &&
+                  info.statusCode !== 'REQUEST_TO' &&
+                  info.statusCode !== 'BLOCKED' &&
+                  info.statusCode !== 'REQUEST_FROM' &&
+                  info.statusCode !== 'SUBSCRIBED'"
+                href="#"
+                class="profile-info__btn subscribe btn-send__message"
+                @click.prevent="subscribe(info.id)">
+                <simple-svg :filepath="'/static/img/sidebar/admin/comments.svg'" />
+                {{ translations.profileAccountSubscribe }}
+              </a>
+              <a
+                v-if="info.statusCode === 'REQUEST_FROM'"
+                href="#"
+                class="profile-info__btn btn-send__message"
+                @click.prevent="acceptFriendRequest(info.id)">
+                <simple-svg class="accept" :filepath="'/static/img/add.svg'" />
+                {{ translations.profileAccountAcceptRequests }}
+              </a>
+              <!-- Сообщение -->
+              <a
+                v-if="info.statusCode !== 'BLOCKED'"
+                href="#"
+                class="profile-info__btn btn-send__message"
+                @click.prevent="onSentMessage">
+                <simple-svg :filepath="'/static/img/sidebar/im.svg'" />
+                {{ translations.profileAccountSendMessage }}
+              </a>
+              <!-- Блокировка/разблокировка -->
+              <a
+                v-if="blocked || info.isBlocked || info.statusCode === 'BLOCKED'"
+                href="#"
+                class="profile-info__btn btn-send__message"
+                @click.prevent="unBlockedUser(info.id)">
+                <simple-svg class="filter-green" :filepath="'/static/img/security-system-unlock.svg'" />
+                {{ translations.profileAccountUnblocking }}
+              </a>
+              <a
+                v-else
+                href="#"
+                class="profile-info__btn block btn-send__message"
+                @click.prevent="blockedUser(info.id)">
+                <simple-svg :filepath="'/static/img/unblocked.svg'" />
+                {{ translations.profileAccountBlocking }}
+              </a>
+              <!-- Добавление в друзья/отмена -->
+              <a
+                v-if="info.statusCode === 'FRIEND'"
+                href="#"
+                class="profile-info__btn btn-send__message"
+                @click.prevent="cancelApiRequests(info.id)">
+                {{ translations.profileAccountDeleteFriend }}
+              </a>
+              <a
+                v-if="info.statusCode === 'REQUEST_TO'"
+                href="#"
+                class="profile-info__btn btn-send__message"
+                @click.prevent="cancelApiRequests(info.id)">
+                {{ translations.profileAccountCancelFriend }}
+              </a>
+              <a
+                v-if="info.statusCode !== 'WATCHING' &&
+                  info.statusCode !== 'REQUEST_TO' &&
+                  info.statusCode !== 'BLOCKED' &&
+                  info.statusCode !== 'REQUEST_FROM' &&
+                  info.statusCode !== 'SUBSCRIBED'"
+                href="#"
+                class="profile-info__btn btn-send__message"
+                @click.prevent="addToFriend(info.id)">
+                <simple-svg class="accept" :filepath="'/static/img/add.svg'" />
+                {{ translations.profileAccountAddFriend }}
+              </a>
+            </div>
+          </transition>
+        </div>
       </div>
+      <div class="showmore-info">
+        <div class="profile-info__show">
+          <div class="profile-info__value">
+            <span class="profile-info__title">
+              <gift-icon />
+              {{ translations.profileInfoBirthday }}
+            </span>
+            <span class="profile-info__val" v-if="info.birthDate">
+              {{
+                new Date(info.birthDate).toLocaleString('ru', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })
+              }}
+            </span>
+            <span class="profile-info__val" v-else>{{ translations.profileNotFilled }}</span>
+          </div>
+          <div class="profile-info__value">
+            <span class="profile-info__title">
+              <phone-icon />
+              {{ translations.profileInfoPhone }}
+            </span>
+            <a class="profile-info__val" v-if="info.phone" :href="`tel: +7${info.phone}`">
+              {{ info.phone | phone }}
+            </a>
+            <a class="profile-info__val" v-else>{{ translations.profileNotFilled }}</a>
+          </div>
+          <div class="profile-info__value">
+            <span class="profile-info__title">
+              <home-icon />
+              {{ translations.profileInfoCountry }}
+            </span>
+            <span class="profile-info__val" v-if="residenceText">
+              {{ residenceText }}
+            </span>
+            <span class="profile-info__val" v-else>{{ translations.profileNotFilled }}</span>
+          </div>
+          <div class="profile-info__value">
+            <span class="profile-info__title">
+              <about-icon />
+              {{ translations.profileInfoAbout }}
+            </span>
+            <span class="profile-info__val info-about__text" v-if="info.about"> {{ info.about }}</span>
+            <span class="profile-info__val" v-else>{{ translations.profileNotFilled }}</span>
+          </div>
+        </div>
+        <div class="profile-info__weather" v-if="me">
+          <weather-block />
+        </div>
+      </div>
+      <modal v-model="modalShow">
+        <p v-if="modalText">{{ modalText }}</p>
+        <template slot="actions">
+          <button-hover @click.native.prevent="onConfirm">Да</button-hover>
+          <button-hover variant="red" bordered="bordered" @click.native="closeModal">
+            Отмена
+          </button-hover>
+        </template>
+      </modal>
     </div>
-    <div class="showmore-info">
-      <div class="profile-info__show">
-        <div class="profile-info__value">
-          <span class="profile-info__title">
-            <gift-icon />
-            Дата рождения:
-          </span>
-          <span class="profile-info__val" v-if="info.birthDate">
-            {{
-              new Date(info.birthDate).toLocaleString('ru', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })
-            }}
-          </span>
-          <span class="profile-info__val" v-else>не заполнено</span>
-        </div>
-        <div class="profile-info__value">
-          <span class="profile-info__title">
-            <phone-icon />
-            Телефон:
-          </span>
-          <a class="profile-info__val" v-if="info.phone" :href="`tel: +7${info.phone}`">
-            {{ info.phone | phone }}
-          </a>
-          <a class="profile-info__val" v-else>не заполнено</a>
-        </div>
-        <div class="profile-info__value">
-          <span class="profile-info__title">
-            <home-icon />
-            Страна, город:
-          </span>
-          <span class="profile-info__val" v-if="residenceText">
-            {{ residenceText }}
-          </span>
-          <span class="profile-info__val" v-else>не заполнено</span>
-        </div>
-        <div class="profile-info__value">
-          <span class="profile-info__title">
-            <about-icon />
-            О себе:
-          </span>
-          <span class="profile-info__val info-about__text" v-if="info.about"> {{ info.about }}</span>
-          <span class="profile-info__val" v-else>не заполнено</span>
-        </div>
-      </div>
-      <div class="profile-info__weather" v-if="me">
-        <weather-block />
-      </div>
+    <div class="shine profile-info__not-info" v-else>
     </div>
-    <modal v-model="modalShow">
-      <p v-if="modalText">{{ modalText }}</p>
-
-      <template slot="actions">
-        <button-hover @click.native.prevent="onConfirm">Да</button-hover>
-
-        <button-hover variant="red" bordered="bordered" @click.native="closeModal">
-          Отмена
-        </button-hover>
-      </template>
-    </modal>
   </div>
 </template>
 
@@ -253,7 +253,7 @@ import WeatherBlock from '@/components/WeatherBlock.vue';
 import Modal from '@/components/Modal';
 import QRCode from 'qrcode-generator';
 import vClickOutside from 'v-click-outside';
-
+import translations from '@/utils/lang.js';
 
 
 export default {
@@ -301,6 +301,14 @@ export default {
   computed: {
     ...mapGetters('profile/dialogs', ['dialogs']),
 
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
 
     residenceText() {
       let country = this.info?.country;
@@ -324,7 +332,7 @@ export default {
     },
 
     statusText() {
-      return this.online ? 'онлайн' : 'не в сети';
+      return this.online ? this.translations.profileInfoStatusOnline : this.translations.profileInfoStatusOffline;
     },
   },
 
@@ -515,6 +523,8 @@ export default {
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+@import '../../assets/stylus/base/settings.styl'
+
   .v-enter-active,
   .v-leave-active
     transition opacity .3s ease-in-out
@@ -522,29 +532,36 @@ export default {
   .showmore-info
     display grid
     align-items center
-    grid-template-columns repeat(2, 1fr)
-    background #fff
+    grid-template-columns 65% 1fr
+    background ui-cl-color-white-theme
     gap 70px
     &.not-me
       justify-content flex-start
 
   .profile-info
-    background #fff
-    border-radius 10px
-    box-shadow 0px 2px 8px rgba(0,0,0,0.08)
+    background ui-cl-color-white-theme
+    border-radius border-small
+    box-shadow box-shadow-main
     overflow hidden
     width 1250px
-    min-width 320px
+    max-width 100%
+
+    &__not-info
+      width 1250px
+      max-width 100%
+      height 300px
+      border-radius border-small
+      overflow hidden
 
     &__btn
       display flex
       align-items center
       gap 5px
-      color #333
+      color ui-cl-color-grey-color
       white-space nowrap
-      font-size 13px
+      font-size font-size-small
       padding 10px
-      border-radius 10px
+      border-radius border-small
       transition all .2s ease-in-out
       &:hover
         background-color #f5f6f8
@@ -579,11 +596,11 @@ export default {
       display flex
       align-items center
       gap 5px
-      background-color #21a45d
-      border-radius 5px
-      font-size 15px
+      background-color ui-cl-color-eucalypt
+      border-radius border-super-small
+      font-size font-size-downdefault
       padding 7px
-      color #fff
+      color ui-cl-color-white-theme
       transition background-color .2s ease-in-out
       @media (any-hover: hover)
         &:hover
@@ -596,9 +613,9 @@ export default {
       padding 10px
       top 40px
       right 0
-      background-color #fff
-      box-shadow 0px 2px 8px rgba(0,0,0,0.08)
-      border-radius 10px
+      background-color ui-cl-color-white-theme
+      box-shadow box-shadow-main
+      border-radius border-small
 
       &.fade-enter-active,
       &.fade-leave-active
@@ -633,18 +650,18 @@ export default {
       position relative
     &__link
       text-transform uppercase
-      font-size 15px
-      font-weight bold
+      font-size font-size-downdefault
+      font-weight font-weight-bold
       color #707070
       transition all .2s ease-in-out
       @media (any-hover: hover)
         &:hover
-          color #333
+          color ui-cl-color-grey-color
       &.active
-        color #99a2ad
-        border-bottom 3px solid #99a2ad
+        color ui-cl-color-bright-light-blue
+        border-bottom 3px solid ui-cl-color-bright-light-blue
         &:hover
-          color #99a2ad
+          color ui-cl-color-bright-light-blue
       &:not(:last-child)
         margin-right 20px
     &__image
@@ -660,8 +677,8 @@ export default {
       position relative
       width 150px
       height 150px
-      border-radius 50%
-      border 6px solid #21a45d
+      border-radius border-half
+      border 6px solid ui-cl-color-eucalypt
       overflow hidden
       margin-bottom 10px
       img
@@ -673,7 +690,7 @@ export default {
         object-fit cover
         cursor pointer
       &.offline
-        border-color #c2c2c2
+        border-color ui-cl-color-light-grey
       &-zoom
         position: absolute
         top: 50%
@@ -682,9 +699,9 @@ export default {
         width: 100%
         height: 100%
         opacity: 0.5
-        color #fff
+        color ui-cl-color-white-theme
         font-size 45px
-        background #000
+        background ui-cl-color-full-black
         pointer-events none
         display flex
         justify-content center
@@ -698,9 +715,9 @@ export default {
           opacity 0
 
       &-background
-        background-color #fff
+        background-color ui-cl-color-white-theme
         padding 10px
-        border-radius 10px
+        border-radius border-small
 
       &-container
         position fixed
@@ -724,7 +741,7 @@ export default {
       &-loupe
         max-width 700px
         max-height 700px
-        border-radius 10px
+        border-radius border-small
 
 
     &__bottom
@@ -733,27 +750,27 @@ export default {
       display flex
       align-items center
       justify-content space-between
-      background #fafafa
-      border-bottom 1px solid #e2e2e2
+      background ui-cl-color-white-bright
+      border-bottom 1px solid ui-cl-color-e2e2e2
     &__show
       padding 50px 0 50px 50px
     &__weather
       padding 50px 50px 50px 0
     &__names
-      color #000
+      color ui-cl-color-full-black
       text-align center
     &__name
       text-transform uppercase
       font-size 20px
       margin-bottom 5px
     &__cities
-      color #949494
+      color ui-cl-color-949494
     &__value
       margin-bottom 10px
     &__title
-      color #99a2ad
+      color ui-cl-color-bright-light-blue
       gap 5px
-      font-weight bold
+      font-weight font-weight-bold
     &__status
       position absolute
       top 0
@@ -764,10 +781,10 @@ export default {
       top 10px
       right 10px
       z-index 100
-      background #333
+      background ui-cl-color-grey-color
       padding 5px
-      border-radius 5px
-      box-shadow 0px 2px 8px rgba(0,0,0,0.08)
+      border-radius border-super-small
+      box-shadow box-shadow-main
     &__share-popup
       display flex
       flex-direction column
@@ -777,10 +794,10 @@ export default {
       top 50px
       right 10px
       padding 15px
-      background-color #fff
+      background-color ui-cl-color-white-theme
       z-index 100
-      border-radius 10px 0 10px 10px
-      box-shadow 0px 2px 8px rgba(0,0,0,0.08)
+      border-radius border-small 0 border-small border-small
+      box-shadow box-shadow-main
 
       &.fade-enter-active,
       &.fade-leave-active
@@ -795,18 +812,18 @@ export default {
     &__link-profile
       display block
       overflow hidden
-      border-left 1px solid #d2d2d2
-      border-top 1px solid #d2d2d2
-      border-bottom 1px solid #d2d2d2
-      border-radius 5px 0 0 5px
+      border-left 1px solid ui-cl-color-d2d2d2
+      border-top 1px solid ui-cl-color-d2d2d2
+      border-bottom 1px solid ui-cl-color-d2d2d2
+      border-radius border-super-small 0 0 border-super-small
       padding 10px
     &__link-btn
       display inline-block
-      background #21a45d
+      background ui-cl-color-eucalypt
       padding 0 10px
-      border-radius 0 5px 5px 0
-      color #fff
-      font-weight bold
+      border-radius 0 border-super-small border-super-small 0
+      color ui-cl-color-white-theme
+      font-weight font-weight-bold
     .qr-code
       img
         width 130px

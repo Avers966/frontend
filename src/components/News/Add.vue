@@ -16,7 +16,7 @@
         </div>
       </template>
 
-      <span class="news-add__placeholder">Поделитесь новостью...</span>
+      <span class="news-add__placeholder">{{ translations.newsAddPlaceholder }}</span>
 
       <div class="news-add__block add" @click.prevent="openForm">
         <add-icon />
@@ -32,6 +32,7 @@ import { mapGetters } from 'vuex';
 import AddIcon from '@/Icons/AddIcon.vue';
 import AddForm from '@/components/News/AddForm';
 import UnknowUser from '../../Icons/UnknowUser.vue';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'NewsAdd',
@@ -44,6 +45,14 @@ export default {
   }),
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
   },
   methods: {
     openForm() {
@@ -57,13 +66,15 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
+
 @media (min-width: 320px) and (max-width: 768px)
   .news-add
     &__mask
       padding 10px 20px
       height unset
     &__text-title
-      font-size 18px
+      font-size font-size-updefault
       padding-bottom 10px
 </style>
 

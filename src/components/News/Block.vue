@@ -24,10 +24,16 @@
               </div>
             </div>
             <div class="post-block__info">
-              <router-link :to="routerLink(info.author.id)">{{ info.author.firstName + ' ' + info.author.lastName }}</router-link>
-              <span v-if="!info.timeChanged">опубликован {{ info.time | moment('from') }}</span>
+              <router-link
+                :to="routerLink(info.author.id)"
+              >
+                {{ info.author.firstName + ' ' + info.author.lastName }}
+              </router-link>
+              <span v-if="!info.timeChanged">
+                {{ translations.newsBlockPublishedTitle }} {{ info.time | moment('from') }}
+              </span>
               <span v-if="info.timeChanged">
-                Изменен {{ info.timeChanged | moment('from') }}
+                {{ translations.newsBlockEditedTime }} {{ info.timeChanged | moment('from') }}
               </span>
             </div>
           </div>
@@ -38,16 +44,16 @@
             <transition name="fade">
               <div v-if="showActions" class="post-block__showmore-actions" v-click-outside="closeActions">
                 <button class="post-block__btn-edit" v-if="edit" @click="toggleEditNews">
-                  Редактировать
+                  {{ translations.friendsBlockEdit }}
                 </button>
                 <button class="post-block__btn-edit" v-if="deleted" @click="deleteNews">
-                  Удалить
+                  {{ translations.newsBlockDeleted }}
                 </button>
                 <button class="post-block__btn-edit" v-if="blocked">
-                  Разблокировать
+                  {{ translations.profileAccountUnblocking }}
                 </button>
                 <button class="post-block__btn-edit" v-if="blocked">
-                  Заблокировать
+                  {{ translations.profileAccountBlocking }}
                 </button>
             </div>
           </transition>
@@ -55,8 +61,8 @@
         </div>
         <div class="news-block__deffered" v-if="queued">
           <span class="news-block__deffered-text">
-            Дата и время публикации:
-            {{ info.time | moment('LLLL') }} (будет опубликован {{ info.publishDate | moment('LLLL') }})
+            {{ translations.newsBlockQueuedTime }}
+            {{ info.time | moment('LLLL') }} ({{ translations.newsBlockQueuedDatatime }} {{ info.publishDate | moment('LLLL') }})
           </span>
         </div>
         <div class="post-block__text">
@@ -69,15 +75,19 @@
             v-html="displayedText"
           />
           <div v-if="currentPostText > 65 && !openText" @click.prevent="toggleText">
-            <button class="post-block__showmore">Читать далее</button>
+            <button class="post-block__showmore">{{ translations.newsBlockReadedMore }}</button>
           </div>
           <div v-if="openText" @click.prevent="toggleText">
-            <button class="post-block__showmore">Скрыть</button>
+            <button class="post-block__showmore">{{ translations.newsBlockReadedHide }}</button>
           </div>
         </div>
       </template>
     </div>
-    <div v-if="!queued" class="news-block" :class="{ deffered, 'news-block--admin': admin, 'news-block--edited': isEditNews }">
+    <div
+      v-if="!queued"
+      class="news-block"
+      :class="{ deffered, 'news-block--admin': admin, 'news-block--edited': isEditNews }"
+    >
       <add-form
         v-if="isEditNews"
         :info="info"
@@ -101,9 +111,11 @@
             </div>
             <div class="post-block__info">
               <router-link :to="routerLink(info.author.id)">{{ info.author.firstName + ' ' + info.author.lastName }}</router-link>
-              <span v-if="!info.timeChanged">опубликован {{ info.time | moment('from') }}</span>
+              <span v-if="!info.timeChanged">
+                {{ translations.newsBlockPublishedTitle }} {{ info.time | moment('from') }}
+              </span>
               <span v-if="info.timeChanged">
-                Изменен {{ info.timeChanged | moment('from') }}
+                {{ translations.newsBlockEditedTime }} {{ info.timeChanged | moment('from') }}
               </span>
             </div>
           </div>
@@ -114,16 +126,16 @@
             <transition name="fade">
               <div v-if="showActions" class="post-block__showmore-actions" v-click-outside="closeActions">
                 <button class="post-block__btn-edit" v-if="edit" @click="toggleEditNews">
-                  Редактировать
+                  {{ translations.friendsBlockEdit }}
                 </button>
                 <button class="post-block__btn-edit" v-if="deleted" @click="deleteNews">
-                  Удалить
+                  {{ translations.newsBlockDeleted }}
                 </button>
                 <button class="post-block__btn-edit" v-if="blocked">
-                  Разблокировать
+                  {{ translations.profileAccountUnblocking }}
                 </button>
                 <button class="post-block__btn-edit" v-if="blocked">
-                  Заблокировать
+                  {{ translations.profileAccountBlocking }}
                 </button>
             </div>
           </transition>
@@ -132,9 +144,20 @@
         <h3 class="post-block__title">{{ info.title }}</h3>
         <div class="post-block__timer">
           <post-timer />
-          <span @mouseover="showInfoTimer = true" @mouseout="showInfoTimer = false">{{ timeToRead }} мин</span>
+          <span
+            @mouseover="showInfoTimer = true"
+            @mouseout="showInfoTimer = false"
+          >
+            {{ timeToRead }}
+            {{ translations.newsBlockReadedTime }}
+          </span>
           <transition name="fade">
-            <div v-if="showInfoTimer" class="post-block__timer-more">Примерно столько времени вы потратите на прочтение этой статьи</div>
+            <div
+              v-if="showInfoTimer"
+              class="post-block__timer-more"
+            >
+              {{ translations.newsBlockReadedDisclamer }}
+            </div>
           </transition>
         </div>
         <ul class="post-block__tags" v-if="info.tags && info.tags.length > 0">
@@ -155,10 +178,10 @@
             v-html="displayedText"
           />
           <div v-if="currentPostText > 65 && !openText" @click.prevent="toggleText">
-            <button class="post-block__showmore">Читать далее</button>
+            <button class="post-block__showmore">{{ translations.newsBlockReadedMore }}</button>
           </div>
           <div v-if="openText" @click.prevent="toggleText">
-            <button class="post-block__showmore">Скрыть</button>
+            <button class="post-block__showmore">{{ translations.newsBlockReadedHide }}</button>
           </div>
         </div>
 
@@ -177,14 +200,14 @@
           <div
             class="news-block__actions-block news-block__comments-btn"
             @click="toggleComments"
-            :title="!openCommnets ? 'Посмотреть комментарии' : 'Скрыть комментарии'"
+            :title="!openCommnets ? translations.newsBlockCommentTitleFirst : translations.newsBlockCommentTitleSecond"
           >
             <like-comment
               :quantity="info.commentsCount"
               width="16px"
               height="16px"
               font-size="15px"
-              color="#21a45d"
+              color="ui-cl-color-eucalypt"
               comment="comment"
             />
           </div>
@@ -207,7 +230,7 @@
               class="post-block__comment-more"
               @click.prevent="showMore"
             >
-              Ещё комментарии..
+            {{ translations.newsBlockCommentMore }}
             </button>
           </div>
         </transition>
@@ -225,6 +248,7 @@ import AddForm from '@/components/News/AddForm';
 import LikeComment from '@/components/LikeComment';
 import Comments from '@/components/Comments/Index.vue';
 import vClickOutside from 'v-click-outside';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'NewsBlock',
@@ -279,6 +303,15 @@ export default {
     ...mapGetters('profile/info', ['getInfo']),
     ...mapState('profile/comments', ['comments']),
 
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
+
     currentComments() {
       return this.comments[this.info.id];
     },
@@ -306,7 +339,6 @@ export default {
 
   mounted() {
     this.isLotText = this.$refs.text.offsetHeight > 150;
-
   },
 
   methods: {
@@ -366,6 +398,8 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
+
 .open-comment
   padding-bottom 30px
   border-bottom 1px solid #BDCDD6
@@ -377,16 +411,16 @@ export default {
 .post-block__comment-more
   background-color transparent
   margin-top 20px
-  font-size 14px
-  font-weight 500
-  color #21a45d
+  font-size font-size-downdefault
+  font-weight font-weight-medium
+  color ui-cl-color-eucalypt
 
 .post-block
   max-width 910px
   padding 30px
-  background-color #FFFFFF
-  border-radius 10px
-  box-shadow 0px 2px 8px rgba(0,0,0,0.08)
+  background-color ui-cl-color-white-theme
+  border-radius border-small
+  box-shadow box-shadow-main
   &__comments
     &.fade-enter-active,
     &.fade-leave-active
@@ -410,7 +444,7 @@ export default {
       background #BDCDD6
       width 40px
       height 40px
-      border-radius 50%
+      border-radius border-half
       overflow hidden
       margin-right 15px
       margin-right 10px
@@ -432,8 +466,8 @@ export default {
     flex-direction column
     top 40px
     right 0
-    background-color #fff
-    border-radius 10px
+    background-color ui-cl-color-white-theme
+    border-radius border-small
     padding 10px 0
     min-width 150px
     max-width 250px
@@ -448,15 +482,15 @@ export default {
       opacity 0
   &__info
     a:nth-child(1)
-      font-weight 600
-      font-size 16px
+      font-weight font-weight-bold
+      font-size font-size-default
       line-height 19px
       color #444444
       margin-right 10px
     span:nth-child(2)
-      font-weight 400
+      font-weight font-weight-regular
       color #777777
-      font-size 13px
+      font-size font-size-small
       line-height 15px
   &__btn-edit
     display flex
@@ -464,15 +498,15 @@ export default {
     gap 8px
     padding 8px 15px
     background-color transparent
-    font-size 13px
+    font-size font-size-small
     line-height 18px
-    color #000
+    color ui-cl-color-full-black
     transition all .2s ease-in-out
     &:hover
       background-color rgba(174, 183, 194, 0.12)
 
   &__title
-    font-weight 600
+    font-weight font-weight-bold
     font-size 20px
     line-height 23px
     margin-bottom 10px
@@ -481,8 +515,8 @@ export default {
     display inline-flex
     align-items center
     gap 3px
-    font-weight 600
-    font-size 13px
+    font-weight font-weight-bold
+    font-size font-size-small
     line-height 16px
     color #BDCDD6
     margin-bottom 15px
@@ -497,11 +531,11 @@ export default {
       position absolute
       white-space nowrap
       top -35%
-      font-weight 400
+      font-weight font-weight-regular
       left 100% + 15px
-      background #333
-      color #fff
-      border-radius 5px
+      background ui-cl-color-grey-color
+      color ui-cl-color-white-theme
+      border-radius border-super-small
       padding 5px 10px
       z-index 10
       &::after
@@ -512,7 +546,7 @@ export default {
         margin-top -5px
         border-width 5px
         border-style solid
-        border-color transparent #333 transparent transparent
+        border-color transparent ui-cl-color-grey-color transparent transparent
   &__tags
     display flex
     align-items center
@@ -521,17 +555,17 @@ export default {
     margin-bottom 25px
     &-item
       background-color #efefef
-      border-radius 5px
+      border-radius border-super-small
       padding 5px
       color #696767
-      font-size 13px
+      font-size font-size-small
       transition color, background-color .2s ease-in-out
       a
         color #696767
       &:hover
         background-color #9eaab0
         a
-          color #333
+          color ui-cl-color-grey-color
 
   &__text
     &.fade-enter-active,
@@ -541,7 +575,7 @@ export default {
     &.fade-leave-to
       opacity 0
     &-content
-      font-size 16px
+      font-size font-size-default
       line-height 24px
       color #444
       margin-bottom 25px
@@ -553,9 +587,9 @@ export default {
   &__showmore
     padding 10px
     background-color #9eaab0
-    color #fff
-    font-size 14px
-    border-radius 5px
+    color ui-cl-color-white-theme
+    font-size font-size-small
+    border-radius border-super-small
     margin-bottom 35px
     transition background-color .2s ease-in-out
     @media (any-hover: hover)
@@ -579,11 +613,11 @@ export default {
   margin-bottom 10px
 
 .news-block
-  background #FFFFFF
-  box-shadow standart-boxshadow
+  background ui-cl-color-white-theme
+  box-shadow box-shadow-main
   padding 30px
   position relative
-  border-radius 10px
+  border-radius border-small
   margin-bottom 20px
 
 .news-block__deffered
@@ -591,8 +625,8 @@ export default {
   display flex
 
 .news-block__deffered-text
-  color #5F5E7A
-  font-size 16px
+  color ui-cl-color-comet
+  font-size font-size-default
 
 @media (min-width: 320px) and (max-width: 768px)
   .news-block
@@ -621,15 +655,15 @@ export default {
         height 40px
     &__author-name
       margin-bottom 0
-      font-size 13px
+      font-size font-size-small
     &__author-time
       font-size 11px
     &__author-info
-      font-size 13px
+      font-size font-size-small
     &__content-title
-      font-size 16px
+      font-size font-size-default
     &__content-text
-      font-size 13px
+      font-size font-size-small
     &__content-main
       padding-bottom 10px
     &__content
@@ -646,11 +680,11 @@ export default {
         font-size 9px
       &__author
         margin-bottom 0
-        font-size 12px
+        font-size font-size-super-medium-small
       &__text
         margin-bottom 0
       &__review
-        font-size 10px
+        font-size font-size-super-upsmall
         margin-right auto
       &__reviews
         max-width calc(100% - 25px)

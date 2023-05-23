@@ -3,8 +3,11 @@
     <div class="inner-page__main">
       <div class="friends__header">
         <h2 class="friends__title">
-          <template v-if="searchUsers.length === 0">Найти друзей</template>
-          <template v-else>Найдено {{ searchUsers.length }} человек</template>
+          <template v-if="searchUsers.length === 0">{{ translations.friendsFindTitle }}</template>
+          <template v-else>
+            {{ translations.friendsFindFindFirstText }}
+            {{ searchUsers.length }}
+            {{ translations.friendsFindFindSecondText }}</template>
         </h2>
       </div>
 
@@ -12,11 +15,6 @@
         <div class="friends__list-wrapper">
           <div class="friends__list" v-if="searchUsers.length > 0">
             <friends-block v-for="user in searchUsers" :key="user.id" :info="user" />
-          </div>
-
-          <div class="friends__list" v-else-if="possibleFriends.length > 0">
-            <div class="friends-possible__title">Возможные друзья</div>
-            <friends-block v-for="user in possibleFriends" :key="user.id" :info="user" />
           </div>
         </div>
 
@@ -32,6 +30,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import FriendsBlock from '@/components/Friends/Block';
 import FriendsSearch from '@/components/Friends/Search';
+import translations from '@/utils/lang.js';
 export default {
   name: 'FriendsFind',
   components: { FriendsBlock, FriendsSearch },
@@ -42,6 +41,15 @@ export default {
 
   computed: {
     ...mapGetters('profile/friends', ['getResultById']),
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
 
     possibleFriends() {
       return this.getResultById('recommendations');
@@ -77,8 +85,10 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
+
 .friends-possible
-  border-radius 10px
+  border-radius border-small
   .friends-possible__btn
     color
 .friends-find
@@ -109,7 +119,7 @@ export default {
   margin-right 0
 
 .friends-search__select
-  border-radius 5px
+  border-radius border-super-small
 
 .friends-possible
   margin-top 0
