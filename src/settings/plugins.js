@@ -15,7 +15,7 @@ Vue.use(VueToastify);
 import moment from 'moment';
 
 const language = JSON.parse(localStorage.getItem('selectedLanguage'))
-if (language.name === 'Русский') {
+if (language && language.name === 'Русский') {
   moment.locale('ru')
 } else {
   moment.locale('en')
