@@ -3,7 +3,7 @@
     <input
       class="add-tags__input"
       type="text"
-      :placeholder="placeholder"
+      :placeholder="translations.newsTagPlaceholder"
       v-model="tag"
       @input="searchTags"
       @keydown.enter="addTag(tag)"
@@ -19,7 +19,12 @@
     </div>
     <transition name="fade">
       <div class="add-tags__search-results fade-in" v-if="searchResults.length > 0 || tag.length === 0">
-        <div class="add-tags__search-item" v-for="(result, index) in searchResults" :key="index" @click="addTagFromSearch(result)">
+        <div
+          class="add-tags__search-item"
+          v-for="(result, index) in searchResults"
+          :key="index"
+          @click="addTagFromSearch(result)"
+        >
           #{{ result.name }}
           <progress-tag v-if="index < 2" />
           <progress-tag v-else :stroke-color="`#D69A02`" />
@@ -34,6 +39,7 @@ import Vue from 'vue';
 import axios from 'axios';
 import { debounce } from 'lodash';
 import ProgressTag from '../../Icons/ProgressTag.vue';
+import translations from '@/utils/lang.js';
 
 Vue.directive('touppercase', {
   update (el, binding) {
@@ -67,10 +73,6 @@ export default {
       type: Boolean,
       default: true,
     },
-    placeholder: {
-      type: String,
-      default: 'Начните вводить...'
-    }
   },
 
   data: () => ({
@@ -82,6 +84,15 @@ export default {
   computed: {
     updateTags() {
       return this.tags;
+    },
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 
@@ -201,7 +212,7 @@ export default {
   top 24px
   left 0
   background-color #fbfbfb
-  border-radius: 0 0 5px 5px;
+  border-radius: 0 0 border-super-small border-super-small
   width 86%
   max-height 250px
   overflow-y auto
@@ -213,20 +224,20 @@ export default {
   display flex
   justify-content space-between
   align-items center
-  font-family "Roboto"
+  font-family "Open Sans"
   padding 10px
   cursor pointer
-  font-size 13px
+  font-size font-size-small
   transition background-color .2s ease-in-out
   @media (any-hover: hover)
     &:hover
-      background-color #ededed
+      background-color ui-cl-color-white-bright-second
 
 .add-tags__input
   border-bottom 1px solid rgba(0, 0, 0, 0.12)
   padding-bottom 5px
-  font-size 13px
-  color steel-gray
+  font-size font-size-small
+  color ui-cl-color-steel-gray
   margin-bottom 15px
 
   &::placeholder
@@ -239,18 +250,18 @@ export default {
 .add-tags__item
   display inline-block
   align-items center
-  color eucalypt
-  font-size 13px
+  color ui-cl-color-eucalypt
+  font-size font-size-small
   background-color #F5F7FB
   padding 5px
   margin 0 5px 10px
-  border-radius 5px
+  border-radius border-super-small
 
 .add-tags__delete
   margin-left 5px
   color #B0B0BC
-  font-size 10px
-  font-weight 600
+  font-size font-size-super-upsmall
+  font-weight font-weight-bold
   cursor pointer
 
 .fade-enter-active, .fade-leave-active

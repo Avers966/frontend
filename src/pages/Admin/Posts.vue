@@ -110,7 +110,7 @@ export default defineComponent({
             data: seriesData,
             type: 'line',
             smooth: true,
-            color: '#21A45D',
+            color: '#434257',
             position: 'right',
           }
         ],
@@ -135,7 +135,7 @@ export default defineComponent({
             type: 'bar',
             smooth: true,
             barWidth: '13px',
-            color: '#21A45D'
+            color: '#434257'
           }
         ],
       };

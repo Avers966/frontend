@@ -23,10 +23,12 @@ export default {
       {
         id: 'users',
         text: 'Люди',
+        textEng: 'People',
       },
       {
         id: 'news',
         text: 'Новости',
+        textEng: 'News',
       },
     ],
     tabSelect: 'users',

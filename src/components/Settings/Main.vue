@@ -8,7 +8,10 @@
             <img :src="src" :alt="firstName[0]" />
           </div>
           <div class="main-layout__user-pic" style="background-color: #333;" v-else>
-            <img src="https://yastatic.net/s3/yandex-id-static/yandex-id/_/_next/static/media/avatar-placeholder.f27a38d6.png" alt="Нет фото" />
+            <img
+              src="https://yastatic.net/s3/yandex-id-static/yandex-id/_/_next/static/media/avatar-placeholder.f27a38d6.png"
+              :alt="translations.settingMainPhotoAlt"
+            />
           </div>
         </div>
 
@@ -23,7 +26,7 @@
               accept="image/*"
             />
             <button class="setting-main__buttons" @click.prevent="loadPhoto">
-              <load-photo /> Добавить фото
+              <load-photo /> {{ translations.settingMainAddPhoto }}
             </button>
             <div v-if="src" class="settings-main__top--delete" @click="deletePhoto">
               <div class="settings-main__top--delete-icon">
@@ -36,34 +39,34 @@
     </div>
 
     <user-info-form-block
-      label="Имя:"
-      placeholder="Введите имя"
+      :label="translations.createAccNameField1"
+      :placeholder="translations.searchUserNameInput"
       text="firstName"
       v-model="firstName"
       ref="firstName"
     />
 
     <user-info-form-block
-      label="Фамилия:"
-      placeholder="Введите фамилию"
+      :label="translations.createAccNameField2"
+      :placeholder="translations.searchUserSurnameInput"
       text="lastName"
       v-model="lastName"
       ref="lastName"
     />
 
     <user-info-form-block
-      label="Телефон:"
-      placeholder="Введите телефон"
+      :label="translations.profileInfoPhone"
+      :placeholder="translations.settingMainPlaceholderPhone"
       v-model="phone"
       phone="phone"
     />
 
     <div class="settings-main-input">
-      <span class="user-info-form__label_stylus">Страна:</span>
+      <span class="user-info-form__label_stylus">{{ translations.settingMainCountry }}</span>
 
       <div class="user-info-form__wrap">
         <v-select
-          placeholder="Выберите страну"
+          :placeholder="translations.settingMainPlaceholderCountry"
           class="country"
           v-model="country"
           :options="countryNames"
@@ -73,11 +76,11 @@
     </div>
 
     <div class="settings-main-input">
-      <span class="user-info-form__label_stylus">Город:</span>
+      <span class="user-info-form__label_stylus">{{ translations.settingMainCity }}</span>
 
       <div class="user-info-form__wrap">
         <v-select
-          placeholder="Выберите город"
+          :placeholder="translations.settingMainPlaceholderCity"
           class="country"
           v-model="city"
           :options="cityNames"
@@ -87,37 +90,37 @@
     </div>
 
     <div class="settings-main-input">
-      <span class="user-info-form__label_stylus">Дата рождения:</span>
+      <span class="user-info-form__label_stylus">{{ translations.profileInfoBirthday }}</span>
 
       <div class="user-info-form__wrap">
         <select class="select user-info-form__select day" v-model="day">
-          <option :value="null">Неизвестно</option>
+          <option :value="null">{{ translations.settingMainUnknow }}</option>
           <option v-for="d in days" :key="d">{{ d }}</option>
         </select>
 
         <select class="select user-info-form__select month" v-model="month">
           <option :value="null">none</option>
           <option v-for="month in months" :key="month.val" :value="month">
-            {{ month.text }}
+            {{ currentTranslations === 'Русский' ? month.text : month.textEng }}
           </option>
         </select>
 
         <select class="select user-info-form__select year" v-model="year">
-          <option :value="null">Неизвестно</option>
+          <option :value="null">{{ translations.settingMainUnknow }}</option>
           <option v-for="i in years" :key="i">{{ i }}</option>
         </select>
       </div>
     </div>
 
-    <user-info-form-block label="О себе:" v-model="about" about="about" />
+    <user-info-form-block :label="translations.settingMainAbout" v-model="about" about="about" />
 
     <div class="user-info-form__block user-info-form__block--actions">
       <div class="user-info-form__wrap">
         <button class="setting-main__buttons button-submit" @click.prevent="submitHandler">
-          Сохранить
+          {{ translations.settingMainSave }}
         </button>
         <router-link :to="{ name: 'Profile' }" tag="button" class="setting-main__buttons canceled">
-          Отменить
+          {{ translations.settingMainCancel }}
         </router-link>
       </div>
     </div>
@@ -131,6 +134,7 @@ import DeleteIcon from '../../Icons/DeleteIcon.vue';
 import LoadPhoto from '@/Icons/LoadPhoto.vue';
 import VSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css'
+import translations from '@/utils/lang.js';
 // import moment from 'moment';
 import UserInfoFormBlock from '@/components/Settings/UserInfoForm/Block.vue';
 import axios from 'axios';
@@ -148,21 +152,21 @@ export default {
     phone: '',
     about: '',
     day: 1,
-    month: { val: 1, text: 'Января' },
+    month: { val: 1, text: 'Января', textEng: 'January' },
     year: 2000,
     months: [
-      { val: 0, text: 'Января' },
-      { val: 1, text: 'Февраля' },
-      { val: 2, text: 'Марта' },
-      { val: 3, text: 'Апреля' },
-      { val: 4, text: 'Мая' },
-      { val: 5, text: 'Июня' },
-      { val: 6, text: 'Июля' },
-      { val: 7, text: 'Августа' },
-      { val: 8, text: 'Сентября' },
-      { val: 9, text: 'Октября' },
-      { val: 10, text: 'Ноября' },
-      { val: 11, text: 'Декабря' },
+      { val: 0, text: 'Января', textEng: 'January' },
+      { val: 1, text: 'Февраля', textEng: 'February' },
+      { val: 2, text: 'Марта', textEng: 'March' },
+      { val: 3, text: 'Апреля', textEng: 'April' },
+      { val: 4, text: 'Мая', textEng: 'May' },
+      { val: 5, text: 'Июня', textEng: 'June' },
+      { val: 6, text: 'Июля', textEng: 'July' },
+      { val: 7, text: 'Августа', textEng: 'August' },
+      { val: 8, text: 'Сентября', textEng: 'September' },
+      { val: 9, text: 'Октября', textEng: 'October' },
+      { val: 10, text: 'Ноября', textEng: 'November' },
+      { val: 11, text: 'Декабря', textEng: 'December' },
     ],
     fileName: '',
     src: '',
@@ -176,6 +180,19 @@ export default {
   computed: {
     ...mapGetters('global/storage', ['getStorage']),
     ...mapGetters('profile/info', ['getInfo']),
+
+    currentTranslations() {
+      return this.$store.state.auth.languages.language.name;
+    },
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
 
     phoneNumber() {
       return this.phone.replace(/\D+/g, '');
@@ -381,11 +398,11 @@ export default {
 @import '../../assets/stylus/base/vars.styl'
 
 .settings-main
-  background #fff
+  background ui-cl-color-white-theme
   width 100%
-  box-shadow standart-boxshadow
+  box-shadow box-shadow-main
   padding 40px 20px
-  border-radius 20px
+  border-radius border-big-radius
 
   .user-info-form__label_stylus
     white-space pre-wrap
@@ -431,34 +448,34 @@ export default {
       display inline-flex
       justify-content center
       align-items center
-      background #e9e9e9
+      background ui-cl-color-e9e9e9
       padding 9px 10px
-      border-radius 100%
+      border-radius border-fullhalf
       margin-left 10px
       @media (any-hover: hover)
         &:hover
-          background #c5c5c5
+          background ui-cl-color-c5c5c5
 
 .setting-main__buttons
-  background #e9e9e9
+  background ui-cl-color-e9e9e9
   padding 10px
-  border-radius 20px
-  font-size 14px
+  border-radius border-big-radius
+  font-size font-size-small-medium
   &.button-submit
     min-width 150px
   @media (any-hover: hover)
     &:hover
-      background #c5c5c5
+      background ui-cl-color-c5c5c5
   &.canceled
     margin-left 10px
     background transparent
-    border: 1px solid #c5c5c5
-    color #8e8e8e
+    border: 1px solid ui-cl-color-c5c5c5
+    color ui-cl-color-8e8e8e
     @media (any-hover: hover)
       &:hover
-        background #c85252
-        border-color #c85252
-        color #fff
+        background ui-cl-color-c85252
+        border-color ui-cl-color-c85252
+        color ui-cl-color-white-theme
 
 .settings-main-photoblock
   margin-bottom 25px
@@ -470,35 +487,35 @@ export default {
 
 .user-info-form__select
   width 100%
-  border 1px solid #E3E3E3
+  border 1px solid ui-cl-color-e3e3e3
   padding 15px 20px
-  font-size 15px
-  color #000
+  font-size font-size-downdefault
+  color ui-cl-color-full-black
   display flex
   height auto
   align-items center
   white-space nowrap
   overflow hidden
   position relative
-  border-radius 10px
+  border-radius border-small
 
 .vs__dropdown-toggle
   width 100%
-  border 1px solid #e3e3e3
+  border 1px solid ui-cl-color-e3e3e3
   padding 0
   background transparent
-  font-size 15px
-  color #000
+  font-size font-size-downdefault
+  color ui-cl-color-full-black
   display flex
   align-items center
   white-space nowrap
   overflow hidden
   position relative
-  border-radius 10px
+  border-radius border-small
 .vs__selected
   margin 0
   padding 0
-  color #000
+  color ui-cl-color-full-black
 .vs__selected-options
   padding 11px 20px
 .vs__search,
@@ -527,7 +544,7 @@ export default {
         flex-direction column
       &__item
         padding 10px 0 10px 0
-        font-size 13px
+        font-size font-size-small
     &-main
       width 100%
       padding 15px
@@ -535,20 +552,20 @@ export default {
       width 100% !important
       padding 15px !important
       &__name
-        font-size 10px !important
+        font-size font-size-super-upsmall !important
       &__item
         padding 10px 0 !important
       &__icon
         width 14px !important
     .user-info-form__input_stylus
       padding 10px
-      font-size 12px
+      font-size font-size-small
     .vs__selected-options
       padding 10px
-      font-size 12px
+      font-size font-size-small
     .user-info-form__select
       padding 10px
-      font-size 12px
+      font-size font-size-small
     .settings-push__check-label:after
       width 30px
     .settings-push__check-label:before
@@ -561,11 +578,11 @@ export default {
       width 100%
       padding 15px
     .settings-delete__title
-      font-size 14px
+      font-size font-size-small-medium
       line-height 130%
       max-width unset
     .settings-delete__confirm-label
-      font-size 11px
+      font-size font-size-super-upsmall
     .settings-delete__confirm-label:before
       width 18px
       height 15px
@@ -583,7 +600,7 @@ export default {
       .btn.btn--warning
         margin 0
     .settings-delete__actions-link
-      font-size 12px
+      font-size font-size-super-medium-small
     .settings-security__title
       font-size 20px
 </style>

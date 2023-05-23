@@ -15,7 +15,7 @@
             @click.prevent="setActive('publications')"
             :class="{ 'friends__tabs__link active': isActive('publications') }"
           >
-            Опубликованные ({{ filteredWall.posted.length || 0 }})
+            {{ translations.profileBlockMyPublished }} ({{ filteredWall.posted.length || 0 }})
           </a>
 
           <a
@@ -24,7 +24,7 @@
             @click.prevent="setActive('queuedPublications')"
             :class="{ 'friends__tabs__link active': isActive('queuedPublications') }"
           >
-            Запланированные ({{ getWallQueuedLength }})
+            {{ translations.profileBlockMyQueued }} ({{ getWallQueuedLength }})
           </a>
         </div>
 
@@ -94,6 +94,7 @@ import NewsBlock from '@/components/News/Block';
 import Spinner from '@/components/Spinner.vue';
 import ErrorBlock from '@/components/ErrorBlock.vue';
 import AutoPaginator from '@/components/AutoPaginator.vue';
+import translations from '@/utils/lang.js';
 import { mapGetters, mapActions, mapState, mapMutations } from 'vuex';
 
 export default {
@@ -108,6 +109,15 @@ export default {
     ...mapGetters('profile/info', ['getInfo']),
     ...mapGetters('users/info', ['getWall', 'getWallQueuedLength', 'getWallPagination']),
     ...mapState('global/status', ['loading', 'error', 'errorMessage']),
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
 
     filteredWall() {
       const wall = this.getWall;
@@ -154,6 +164,8 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
+
 .profile
   .inner-page__main
     max-width 100%
@@ -162,14 +174,14 @@ export default {
     font-family 'Exo', Arial, sans-serif
     font-weight 200
     font-size 30px
-    color #1d1d2b
+    color ui-cl-color-steel-gray
   &__tabs__title
     cursor pointer
     font-family 'Exo', Arial, sans-serif
-    font-weight 600
+    font-weight font-weight-bold
     font-size 30px
     margin-bottom 20px
-    color #000000
+    color ui-cl-color-full-black
 
 .profile__info-top
   display grid
@@ -202,10 +214,10 @@ export default {
       &__header
         padding-bottom 10px
         justify-content center
-        border-bottom 1px solid #e6e6e6
+        border-bottom 1px solid ui-cl-color-e6e6e6
         margin-bottom 15px
       &__block
-        font-size 13px
+        font-size font-size-small
       &__title
         max-width 125px
       &__block:last-child
@@ -220,9 +232,9 @@ export default {
       margin-top 20px
     &__tabs
       &__title
-        font-size 14px
+        font-size font-size-small-medium
         margin-bottom 15px
     &__tab
-      font-size 13px
+      font-size font-size-small
 
 </style>

@@ -65,8 +65,8 @@ export default {
   bottom 20px
   right 30px
   background #fff
-  border-radius 50%
-  border 1px solid #424242
+  border-radius border-half
+  border 1px solid ui-cl-color-border-dark
   z-index 100
 
   svg
@@ -119,7 +119,7 @@ export default {
       padding 0
       z-index unset
       p
-        font-size 15px
+        font-size font-size-downdefault
     &__link
       margin-left 0
       margin-right 0

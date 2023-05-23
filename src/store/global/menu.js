@@ -9,6 +9,7 @@ export default {
         exact: true,
         icon: 'profile',
         text: 'Моя страница',
+        textEng: 'My page'
       },
       {
         link: {
@@ -16,6 +17,7 @@ export default {
         },
         icon: 'friends',
         text: 'Друзья',
+        textEng: 'Friends'
       },
       {
         link: {
@@ -23,6 +25,7 @@ export default {
         },
         icon: 'im',
         text: 'Сообщения',
+        textEng: 'Messages'
       },
       {
         link: {
@@ -31,6 +34,7 @@ export default {
         exact: true,
         icon: 'news',
         text: 'Новости',
+        textEng: 'News'
       },
     ],
     // admin: [

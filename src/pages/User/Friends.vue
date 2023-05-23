@@ -3,15 +3,29 @@
     <div class="inner-page__main">
       <div class="friends__header">
         <div class="friends__header-left">
-          <h2 class="friends__title" :style="friends.length === 0 || activeTab === 'no-data' || activeTab === 'no-data-users' ? 'margin-bottom: 0' : ''">Мои друзья</h2>
-          <div class="friends__search" v-if="friends.length !== 0 && activeTab !== 'no-data' && activeTab !== 'no-data-users'">
+          <h2
+            class="friends__title"
+            :style="
+              friends.length === 0 ||
+                activeTab === 'no-data' ||
+                activeTab === 'no-data-users' ?
+                  'margin-bottom: 0' : ''"
+          >
+            {{ translations.friendsTitle }}
+          </h2>
+          <div
+            class="friends__search"
+            v-if="friends.length !== 0 &&
+              activeTab !== 'no-data' &&
+              activeTab !== 'no-data-users'"
+          >
             <div class="friends__search-icon">
               <search-icon />
             </div>
 
             <input
               class="friends__search-input"
-              placeholder="Начните вводить имя друга..."
+              :placeholder="translations.friendsSearchPlaceholder"
               v-model="firstName"
               @keydown.enter="searchFriends"
             />
@@ -23,7 +37,7 @@
               :class="{ 'friends__tabs__link active': activeTab === 'REQUEST_FROM' }"
               @click.prevent="setActive('REQUEST_FROM')"
             >
-              {{ 'Запросы в друзья' + ' ' + `(${paginations.REQUEST_FROM.totalElements || 0})` }}
+              {{ `${translations.friendsRequestsFrom}` + ' ' + `(${paginations.REQUEST_FROM.totalElements || 0})` }}
             </button>
           </li>
 
@@ -33,7 +47,7 @@
               @click.prevent="setActive('REQUEST_TO')"
             >
 
-              {{ 'Исходящие запросы' + ' ' + `(${paginations.REQUEST_TO.totalElements || 0})` }}
+              {{  `${translations.friendsRequestsTo}` + ' ' + `(${paginations.REQUEST_TO.totalElements || 0})` }}
             </button>
           </li>
 
@@ -42,7 +56,7 @@
               :class="{ 'friends__tabs__link active': activeTab === 'FRIEND' }"
               @click.prevent="setActive('FRIEND')"
             >
-              {{ 'Друзья' + ' ' + `(${paginations.FRIEND.totalElements || 0})` }}
+              {{ `${translations.sidebarFriend}` + ' ' + `(${paginations.FRIEND.totalElements || 0})` }}
             </button>
           </li>
 
@@ -51,7 +65,7 @@
               :class="{ 'friends__tabs__link active': activeTab === 'SUBSCRIBED' }"
               @click.prevent="setActive('SUBSCRIBED')"
             >
-              {{ 'Подписчики' + ' ' + `(${paginations.SUBSCRIBED.totalElements || 0})` }}
+              {{ `${translations.friendsMySubscribe}` + ' ' + `(${paginations.SUBSCRIBED.totalElements || 0})` }}
             </button>
           </li>
 
@@ -60,7 +74,7 @@
               :class="{ 'friends__tabs__link active': activeTab === 'BLOCKED' }"
               @click.prevent="setActive('BLOCKED')"
             >
-              {{ 'Заблокированные' + ' ' + `(${paginations.BLOCKED.totalElements || 0})` }}
+              {{ `${translations.friendsBlocked}` + ' ' + `(${paginations.BLOCKED.totalElements || 0})` }}
             </button>
           </li>
 
@@ -69,7 +83,7 @@
               :class="{ 'friends__tabs__link active': activeTab === 'WATCHING' }"
               @click.prevent="setActive('WATCHING')"
             >
-              {{ 'Подписан(а)' + ' ' + `(${paginations.WATCHING.totalElements || 0})` }}
+              {{ `${translations.friendsMyPesonalSubscribed}` + ' ' + `(${paginations.WATCHING.totalElements || 0})` }}
             </button>
           </li>
         </ul>
@@ -82,15 +96,21 @@
             <h3
               class="friends_group_title friends__title"
             >
-              Запросы в друзья
+              {{ translations.friendsRequestsFrom }}
             </h3>
 
             <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
               <div class="friend__search__resultats">
                 <p class="friend__search-title">
-                  Результаты поиска по запросу "{{ localFirstName }}":
+                  {{ translations.friendsSearchDescription }} "{{ localFirstName }}":
                 </p>
-                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+                <button
+                  class="friend__search-clear"
+                  @click.prevent="resetFriendSearch"
+                >
+                  {{ translations.friendsSearchResultClear }}
+                  <span>✕</span>
+                </button>
               </div>
 
               <search-block
@@ -113,7 +133,7 @@
                 @click.prevent="loadMoreFriends('REQUEST_FROM')"
                 v-if="localFriends?.REQUEST_FROM.length !== paginations.REQUEST_FROM.totalElements || paginations.REQUEST_FROM.totalElements === 0"
               >
-                Загрузить ещё...
+                {{ translations.friendsShowMore }}
               </button>
             </div>
           </div>
@@ -122,15 +142,21 @@
             <h3
               class="friends_group_title friends__title"
             >
-              Исходящие запросы
+              {{ translations.friendsRequestsTo }}
             </h3>
 
             <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
               <div class="friend__search__resultats">
                 <p class="friend__search-title">
-                  Результаты поиска по запросу "{{ localFirstName }}":
+                  {{ translations.friendsSearchDescription }} "{{ localFirstName }}":
                 </p>
-                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+                <button
+                  class="friend__search-clear"
+                  @click.prevent="resetFriendSearch"
+                >
+                  {{ translations.friendsSearchResultClear }}
+                  <span>✕</span>
+                </button>
               </div>
 
               <search-block
@@ -152,7 +178,7 @@
                 @click.prevent="loadMoreFriends('REQUEST_TO')"
                 v-if="localFriends?.REQUEST_TO.length !== paginations.REQUEST_TO.totalElements || paginations.REQUEST_TO.totalElements === 0"
               >
-                Загрузить ещё...
+                {{ translations.friendsShowMore }}
               </button>
             </div>
           </div>
@@ -161,15 +187,21 @@
             <h3
               class="friends_group_title friends__title"
             >
-              Друзья
+              {{ translations.sidebarFriend }}
             </h3>
 
             <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
               <div class="friend__search__resultats">
                 <p class="friend__search-title">
-                  Результаты поиска по запросу "{{ localFirstName }}":
+                  {{ translations.friendsSearchDescription }} "{{ localFirstName }}":
                 </p>
-                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+                <button
+                  class="friend__search-clear"
+                  @click.prevent="resetFriendSearch"
+                >
+                  {{ translations.friendsSearchResultClear }}
+                  <span>✕</span>
+                </button>
               </div>
 
               <search-block
@@ -191,7 +223,7 @@
                 @click.prevent="loadMoreFriends('FRIEND')"
                 v-if="localFriends?.FRIEND.length !== paginations.FRIEND.totalElements || paginations.FRIEND.totalElements === 0"
               >
-                Загрузить ещё...
+                {{ translations.friendsShowMore }}
               </button>
             </div>
           </div>
@@ -200,15 +232,21 @@
             <h3
               class="friends_group_title friends__title"
             >
-              Подписчики
+              {{ translations.friendsMySubscribe }}
             </h3>
 
             <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
               <div class="friend__search__resultats">
                 <p class="friend__search-title">
-                  Результаты поиска по запросу "{{ localFirstName }}":
+                  {{ translations.friendsSearchDescription }} "{{ localFirstName }}":
                 </p>
-                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+                <button
+                  class="friend__search-clear"
+                  @click.prevent="resetFriendSearch"
+                >
+                  {{ translations.friendsSearchResultClear }}
+                  <span>✕</span>
+                </button>
               </div>
 
               <search-block
@@ -230,7 +268,7 @@
                 @click.prevent="loadMoreFriends('SUBSCRIBED')"
                 v-if="localFriends?.SUBSCRIBED.length !== paginations.SUBSCRIBED.totalElements || paginations.SUBSCRIBED.totalElements === 0"
               >
-                Загрузить ещё...
+                {{ translations.friendsShowMore }}
               </button>
             </div>
           </div>
@@ -239,15 +277,21 @@
             <h3
               class="friends_group_title friends__title"
             >
-              Заблокированные пользователи
+              {{ translations.friendsBlocked }}
             </h3>
 
             <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
               <div class="friend__search__resultats">
                 <p class="friend__search-title">
-                  Результаты поиска по запросу "{{ localFirstName }}":
+                  {{ translations.friendsSearchDescription }} "{{ localFirstName }}":
                 </p>
-                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+                <button
+                  class="friend__search-clear"
+                  @click.prevent="resetFriendSearch"
+                >
+                  {{ translations.friendsSearchResultClear }}
+                  <span>✕</span>
+                </button>
               </div>
 
               <search-block
@@ -270,7 +314,7 @@
                 @click.prevent="loadMoreFriends('BLOCKED')"
                 v-if="localFriends?.BLOCKED.length !== paginations.BLOCKED.totalElements || paginations.BLOCKED.totalElements === 0"
               >
-                Загрузить ещё...
+                {{ translations.friendsShowMore }}
               </button>
             </div>
           </div>
@@ -279,15 +323,21 @@
             <h3
               class="friends_group_title friends__title"
             >
-              Подписан(а)
+              {{ translations.friendsMyPesonalSubscribed }}
             </h3>
 
             <div v-if="friendSearch !== null && friendSearch.content.length !== 0">
               <div class="friend__search__resultats">
                 <p class="friend__search-title">
-                  Результаты поиска по запросу "{{ localFirstName }}":
+                  {{ translations.friendsSearchDescription }} "{{ localFirstName }}":
                 </p>
-                <button class="friend__search-clear" @click.prevent="resetFriendSearch">Сбросить<span>✕</span></button>
+                <button
+                  class="friend__search-clear"
+                  @click.prevent="resetFriendSearch"
+                >
+                  {{ translations.friendsSearchResultClear }}
+                  <span>✕</span>
+                </button>
               </div>
 
               <search-block
@@ -309,7 +359,7 @@
                 @click.prevent="loadMoreFriends('WATCHING')"
                 v-if="localFriends?.WATCHING.length !== paginations.WATCHING.totalElements || paginations.WATCHING.totalElements === 0"
               >
-                Загрузить ещё...
+                {{ translations.friendsShowMore }}
               </button>
             </div>
           </div>
@@ -318,11 +368,10 @@
             <h3
               class="friends_group_title no-data"
             >
-              Вы никому не отправляли заявку в друзья,<br>
-              самое время начать общаться.
+              {{ translations.friendsNoResult }}
             </h3>
             <router-link class="friends_group__search" href="#" :to="{ name: 'FriendsFind' }">
-              Искать друзей
+              {{ translations.recommendBlockBtn }}
             </router-link>
           </div>
           <!-- Нет информации -->
@@ -330,7 +379,7 @@
             <h3
               class="friends_group_title no-data"
             >
-              Выберите одну из доступных вкладок c друзьями.
+              {{ translations.friendsNoActiveTab }}
             </h3>
           </div>
         </div>
@@ -349,6 +398,7 @@ import RecommendFriend from '@/components/RecommendFriend.vue';
 import FriendsBlock from '@/components/Friends/Block';
 import SearchBlock from '@/components/Friends/BlockSearch'
 import SearchIcon from '@/Icons/SearchIcon.vue';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'Friends',
@@ -391,7 +441,16 @@ export default {
       } else {
         return 'no-data-users'
       }
-    }
+    },
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
   },
 
   watch: {
@@ -448,9 +507,10 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+
 .friends_group_title
   margin-bottom 15px
-  font-weight 600
+  font-weight font-weight-bold
   font-size 30px
   color #000
 
@@ -466,6 +526,7 @@ export default {
   display grid
   grid-template-columns 1fr 430px
   gap 30px
+  padding-bottom 30px
 
   .inner-page__aside
     max-width 100%
@@ -500,6 +561,8 @@ export default {
 </style>
 
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
+
 .friends .inner-page__main
   width 100%
 .friend__search__resultats
@@ -513,13 +576,13 @@ export default {
   display flex
   align-items center
   gap 10px
-  background #21a45d
+  background ui-cl-color-eucalypt
   padding 5px
-  color #fff
-  border-radius 5px
+  color ui-cl-color-white-theme
+  border-radius border-super-small
   transition all .2s ease-in-out
   span
-    font-size 14px
+    font-size font-size-small-medium
     line-height 0
   @media (any-hover: hover)
     &:hover
@@ -530,8 +593,8 @@ export default {
   line-height 0
 
 .friends_group_title.no-data
-  font-size 18px
-  font-weight 300
+  font-size font-size-updefault
+  font-weight font-weight-light
   text-align center
   margin-bottom 20px
 
@@ -545,29 +608,29 @@ export default {
   display flex
   justify-content center
   padding 10px 20px
-  font-size 18px
-  border 1px solid #21a45d
-  color #21a45d
-  border-radius 10px
+  font-size font-size-updefault
+  border 1px solid ui-cl-color-eucalypt
+  color ui-cl-color-eucalypt
+  border-radius border-small
   transition all .2s ease-in-out
   @media (any-hover: hover)
     &:hover
-      background #21a45d
-      color #fff
+      background ui-cl-color-eucalypt
+      color ui-cl-color-white-theme
 
 .friends-btn__more
   display block
   background transparent
   padding 15px
-  font-size 18px
+  font-size font-size-updefault
   user-select none
-  border 3px solid #21a45d
-  color #21a45d
-  border-radius 10px
+  border 3px solid ui-cl-color-eucalypt
+  color ui-cl-color-eucalypt
+  border-radius border-small
   margin 0 auto
   transition all .2s ease-in-out
   @media (any-hover: hover)
     &:hover
-      background #21a45d
-      color #fff
+      background ui-cl-color-eucalypt
+      color ui-cl-color-white-theme
 </style>

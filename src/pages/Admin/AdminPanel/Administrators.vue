@@ -149,11 +149,13 @@ export default {
 
 
 <style lang="stylus">
+@import '../../../assets/stylus/base/vars.styl'
+
 .radio-label {
   position relative
   display flex
   align-items center
-  font-size 14px
+  font-size font-size-small-medium
 }
 
 .radio-labels
@@ -168,14 +170,14 @@ export default {
   -moz-appearance none
   width 7px
   height 7px
-  border-radius 50%
-  border 2px solid #BCBCC7
+  border-radius border-half
+  border 2px solid ui-cl-color-BCBCC7
   outline none
   cursor pointer
 
 .radio-label input[type="radio"]:checked
-  background-color #21A45D
-  border-color #21A45D
+  background-color ui-cl-color-eucalypt
+  border-color ui-cl-color-eucalypt
 
 
 .admin-modal
@@ -198,17 +200,17 @@ export default {
   align-items center
   gap 5px
   border-radius 7px
-  border 1px solid #21a45d
+  border 1px solid ui-cl-color-gun-powder
   background-color transparent
   padding 10px 20px
-  font-weight 400
-  color #21a45d
+  font-weight font-weight-medium
+  color ui-cl-color-gun-powder
   transition all .2s ease-in-out
   @media (any-hover: hover)
     &:hover
-      border-color #21a45d
-      background-color #21a45d
-      color #fff
+      border-color ui-cl-color-gun-powder
+      background-color ui-cl-color-gun-powder
+      color ui-cl-color-white-theme
 
 .admin-panel__form
   display flex
@@ -217,9 +219,9 @@ export default {
 
 .admin-panel__modal-title
   font-family 'Exo 2'
-  font-size 18px
+  font-size font-size-updefault
   line-height 21px
-  font-weight 500
+  font-weight font-weight-medium
   margin-bottom 20px
 
 .admin-panel__form-input
@@ -229,14 +231,14 @@ export default {
   span
     display inline-block
     text-align left
-    font-size 14px
+    font-size font-size-small-medium
     line-height 100%
     margin-right 30px
   input
     border 1px solid #cacaca
-    border-radius 10px
+    border-radius border-small
     padding 10px
-    font-size 14px
+    font-size font-size-small-medium
 
 .admin-panel__modal-add
   margin-right 20px
@@ -245,7 +247,7 @@ export default {
   border 1px solid #d9a7a7
   background-color transparent
   padding 10px 20px
-  font-weight 400
+  font-weight font-weight-regular
   color #d9a7a7
   border-radius 7px
   transition all .2s ease-in-out
@@ -253,5 +255,5 @@ export default {
     &:hover
       border-color #e52b2b
       background-color #e52b2b
-      color #fff
+      color ui-cl-color-white-theme
 </style>

@@ -28,26 +28,24 @@
         </div>
         <div v-else>
           <div>
-            <p class="no__notifications">Уведомлений нет.</p>
+            <p class="no__notifications">{{ translations.notNotification }}</p>
           </div>
         </div>
       </div>
-      <div
-        href="#"
+      <button
         class="push__btn"
-        @click="showMore"
-        v-if="visibleNotifications.length !== getNotificationsLength && !isClickedButton"
+        @click.prevent="showMore"
+        v-if="visibleNotifications.length !== getNotificationsLength"
       >
-        Показать еще
-      </div>
-      <div
-        href="#"
+        {{ translations.showmoreNotification }}
+      </button>
+      <button
         class="push__btn"
-        @click="clickedButton"
-        v-if="visibleNotifications.length === getNotificationsLength && !isClickedButton"
+        @click.prevent="readedNotifications"
+        v-if="showButtonReaded"
       >
-        Прочитать всё
-      </div>
+        {{ translations.readedNotification }}
+      </button>
     </div>
   </div>
 </template>
@@ -55,6 +53,7 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex';
 import { getRouteByNotification } from '@/utils/notifications.utils.js';
+import translations from '@/utils/lang.js';
 export default {
   name: 'Push',
   props: {
@@ -75,7 +74,19 @@ export default {
     ]),
     shouldUpdateVisibleNotifications() {
       return this.getNotifications.length === 0;
-    }
+    },
+    showButtonReaded() {
+      return this.readedButton();
+    },
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
   },
 
   watch: {
@@ -133,11 +144,12 @@ export default {
       this.$emit('close-push');
     },
 
-    clickedButton() {
-      if (this.readedNotifications) {
-        this.readedNotifications();
+    readedButton() {
+      if (this.visibleNotifications.length === this.getNotificationsLength) {
+        return this.isClickedButton = true;
+      } else {
+        return this.isClickedButton = false;
       }
-      this.isClickedButton = true;
     },
 
     loadVisibleNotifications() {
@@ -157,7 +169,7 @@ export default {
 @import '../../assets/stylus/base/vars.styl'
 
 .no__notifications
-  color #000
+  color ui-cl-color-full-black
   padding 15px 0
   text-align center
   cursor default
@@ -181,14 +193,15 @@ export default {
 
 .push__wrap
   position absolute
-  background #FFf
-  box-shadow 0px 2px 60px rgba(0, 0, 0, 20%)
-  right 370px
+  background ui-cl-color-white-theme
+  box-shadow box-shadow-main
+  right 0px
   top 65px
   width 100%
-  border-radius 10px
+  border-radius border-small
   max-width 470px
   max-height 675px
+  min-width 400px
   z-index 100
   opacity 0
   visibility hidden
@@ -214,38 +227,40 @@ export default {
 
   @media (any-hover: hover)
     &:hover
-      background-color #fafafa
-      border-radius 5px
+      background-color ui-cl-color-white-bright
+      border-radius border-super-small
       &+&
         border-top 0
 
   &+&
-    border-top 1px solid #E7E7E7
+    border-top 1px solid ui-cl-color-white-bright-second
 
 .push__btn
   display flex
+  width 100%
+  background transparent
   align-items center
   justify-content center
-  font-weight bold
-  font-size 15px
+  font-weight font-weight-bold
+  font-size font-size-downdefault
   letter-spacing 0.01em
-  color eucalypt
-  border-top 1px solid #E7E7E7
+  color ui-cl-color-eucalypt
+  border-top 1px solid ui-cl-color-white-bright-second
   height 55px
   transition all .2s ease-in-out
   @media (any-hover: hover)
     &:hover
-      background-color #fafafa
+      background-color ui-cl-color-white-bright
 
 
 .main-layout__user-pic
   width 50px
   height 50px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
   margin-right 15px
   flex none
-  background-color #8bc49e
+  background-color ui-cl-color-light-eucalypt
 
   div
     display flex

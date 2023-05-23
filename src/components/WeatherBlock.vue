@@ -8,29 +8,29 @@
       </div>
       <div>
         <div class="weather__window">{{ getNameByIdWeather[0].text }}</div>
-        <div class="weather__humidity">Влажность {{ weather.humidity }}%</div>
-        <div class="weather__humidity">Ветер {{ weather.windSpeed }}м/с</div>
+        <div class="weather__humidity">{{ translations.weatherHumidity }} {{ weather.humidity }}%</div>
+        <div class="weather__humidity">{{ translations.weatherWind }} {{ weather.windSpeed }}м/с</div>
       </div>
     </div>
     <div class="weather__minmax">
       <div>
-        Мин. температура:
+        {{ translations.weatherMinTemp }}
         <span>{{ weather.temp_min }}°C</span>
       </div>
       <div>
-        Макс. температура:
+        {{ translations.weatherMaxTemp }}
         <span>{{ weather.temp_max }}°C</span>
       </div>
     </div>
   </div>
   <div class="weather" v-else>
-    <p>Загружаем данные с погодой...</p>
+    <p>{{ translations.weatherLoading }}</p>
   </div>
 </template>
 
 <script>
 import translateWeather from '../utils/translateWeather.js';
-
+import translations from '@/utils/lang.js';
 export default {
   name: 'WeatherBlock',
   data() {
@@ -42,6 +42,14 @@ export default {
   computed: {
     getNameByIdWeather() {
       return translateWeather.filter(item => item.id === this.weather.id);
+    },
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 
@@ -84,31 +92,33 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../assets/stylus/base/vars.styl'
+
 .weather
   display flex
   align-items center
   flex-direction column
   justify-content center
-  color #333
+  color ui-cl-color-grey-color
   &__city
     font-size 20px
     text-transform uppercase
     font-weight 900
     margin-bottom 10px
   &__title
-    color #333
+    color ui-cl-color-grey-color
   &__top
     display flex
     align-items center
     justify-content flex-start
     gap 5px
-    font-size 14px
+    font-size font-size-small-medium
     margin-bottom 10px
   &__humidity
     color #a4a4a4
   &__temp
     font-size 24px
-    font-weight bold
+    font-weight font-weight-bold
   &__clouds
     display flex
     align-items center
@@ -118,7 +128,7 @@ export default {
     display flex
     align-items center
     gap 10px
-    font-size 14px
+    font-size font-size-small-medium
     color #000
     span
       display block

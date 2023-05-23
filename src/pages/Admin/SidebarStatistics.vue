@@ -41,28 +41,30 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../assets/stylus/base/vars.styl'
+
 .admin
   &__aside
     display flex
     width 355px
     max-height: 307px
     flex-direction column
-    background-color #fff
-    border-radius 10px
+    background-color ui-cl-color-white-theme
+    border-radius border-small
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08)
     overflow hidden
     &-item
       &:not(:last-child)
-        border-bottom 1px solid #E6E6E6
+        border-bottom 1px solid ui-cl-color-e6e6e6
       a
         display block
         padding 20px 25px
         transition all .2s ease-in-out
         @media (any-hover: hover)
           &:hover
-            background-color #21A45D
-            color #fff
+            background-color ui-cl-color-gun-powder
+            color ui-cl-color-white-theme
         &.active
-          background-color #21A45D
-          color #fff
+          background-color ui-cl-color-gun-powder
+          color ui-cl-color-white-theme
 </style>

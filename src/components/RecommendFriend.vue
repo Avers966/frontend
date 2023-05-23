@@ -1,6 +1,6 @@
 <template>
   <div class="recommend-block">
-    <h3 class="recommend-block__title">Возможно вы их знаете</h3>
+    <h3 class="recommend-block__title">{{ translations.recommendBlockTitle }}</h3>
     <ul v-if="userInfo?.length > 0" class="recommend-block__list">
       <li class="recommend-block__item" v-for="user in userInfo" :key="user?.id">
         <div>
@@ -15,16 +15,15 @@
           </router-link>
 
         </div>
-        <a class="recommend-block__button" href="#" @click.prevent="apiAddFriends({ id: user?.id })">Добавить</a>
+        <a class="recommend-block__button" href="#" @click.prevent="apiAddFriends({ id: user?.id })">{{ translations.recommendBlockAdd }}</a>
       </li>
     </ul>
     <div v-else class="recommend-block__not">
       <p>
-        В данный момент нет вариантов.<br />
-        Для получения рекомендаций, добавьте несколько друзей.
+        {{ translations.recommendBlockDescription }}
       </p>
       <router-link class="recommend-block__search" href="#" :to="{ name: 'FriendsFind' }">
-        Искать друзей
+        {{ translations.recommendBlockBtn }}
       </router-link>
     </div>
   </div>
@@ -33,6 +32,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import axios from 'axios';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'FriendsPossible',
@@ -50,6 +50,15 @@ export default {
 
     getInfo() {
       return this.possibleFriends.map(friend => friend.friendId);
+    },
+
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
     },
   },
 
@@ -76,13 +85,15 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../assets/stylus/base/vars.styl'
+
   .recommend-block
     min-width 430px
     height max-content
     padding 30px 40px
-    background #FFFFFF
+    background ui-cl-color-white-theme
     box-shadow 0px 2px 8px rgba(0, 0, 0, 0.08)
-    border-radius 10px
+    border-radius border-small
 
     &__not
       display flex
@@ -90,12 +101,13 @@ export default {
       align-items center
       p
         margin-bottom 15px
+        line-height 120%
 
     &__title
       font-size 24px
-      font-weight bold
+      font-weight font-weight-bold
       padding-bottom 25px
-      border-bottom 1px solid #E6E6E6
+      border-bottom 1px solid ui-cl-color-e6e6e6
       margin-bottom 15px
 
     &__list
@@ -112,37 +124,38 @@ export default {
         padding-top 15px
 
       &:not(:last-child)
-        border-bottom 1px solid #E6E6E6
+        border-bottom 1px solid ui-cl-color-e6e6e6
         margin-bottom 15px
 
     &__img
-      border-radius 50%
+      border-radius border-half
       width 50px
       height 50px
       margin-right 20px
 
     &__name
-      font-weight 600
-      font-size 15px
+      font-weight font-weight-bold
+      font-size font-size-downdefault
       line-height 20px
 
     &__button
-      font-size 13px
+      font-size font-size-small
       line-height 21px
-      color #21A45D
+      color ui-cl-color-eucalypt
 
     &__search
       display block
       text-align center
-      color #21A45D
+      color ui-cl-color-eucalypt
       width 100%
       padding 18px 5px
-      border 2px solid #21A45D
+      border 2px solid ui-cl-color-eucalypt
+      border-radius border-super-small
       transition all .2s ease-in-out
       background transparent
       @media (any-hover: hover)
         &:hover
-          background #21A45D
-          border-color #21A45D
-          color #fff
+          background ui-cl-color-eucalypt
+          border-color ui-cl-color-eucalypt
+          color ui-cl-color-white-theme
 </style>

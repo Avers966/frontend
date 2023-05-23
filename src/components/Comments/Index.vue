@@ -115,14 +115,14 @@ export default {
   margin-bottom 30px
 
   span
-    font-weight 600
-    font-size 16px
-    color #555555
+    font-weight font-weight-bold
+    font-size font-size-default
+    color ui-cl-color-medium-grey-light
     display block
 
 .comments__show
-  font-size 13px
-  color eucalypt
+  font-size font-size-small
+  color ui-cl-color-eucalypt
 
 .comments__list
   width 100%

@@ -38,7 +38,7 @@ export default {
 
 .im-chat__message-title
   color #8A94A4
-  font-size 15px
+  font-size font-size-downdefault
   text-align center
   display block
   width 100%
@@ -60,8 +60,8 @@ export default {
     margin-left auto
 
     .im-chat__message-text
-      background-color eucalypt
-      color #fff
+      background-color ui-cl-color-eucalypt
+      color ui-cl-color-white-theme
       box-shadow 0px 4px 15px #D4E8DD
 
     .im-chat__message-time
@@ -69,16 +69,16 @@ export default {
       margin-left 0
 
 .im-chat__message-text
-  background-color #FFFFFF
+  background-color ui-cl-color-white-theme
   box-shadow 0px 4px 15px #EFF1F6
-  border-radius 20px
+  border-radius border-big-radius
   padding 15px 20px
-  color steel-gray
-  font-size 15px
+  color ui-cl-color-steel-gray
+  font-size font-size-downdefault
   line-height 23px
 
 .im-chat__message-time
-  font-size 13px
+  font-size font-size-small
   color #BAC3D0
   margin-left 15px
 </style>

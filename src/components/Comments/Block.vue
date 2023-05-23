@@ -28,7 +28,7 @@
         v-if="!currentSubComents && info.commentsCount"
         @click.prevent="showSubComments"
       >
-        показать {{ info.commentsCount }} {{ answerText }}
+        {{ translations.commentAnswerShow }} {{ info.commentsCount }} {{ answerText }}
       </a>
 
       <div class="comment-block__reviews-list" v-show="currentSubComents">
@@ -68,6 +68,7 @@
 import CommentMain from '@/components/Comments/Main';
 import CommentAdd from '@/components/Comments/Add';
 import { mapActions, mapGetters, mapState } from 'vuex';
+import translations from '@/utils/lang.js';
 
 export default {
   name: 'CommentBlock',
@@ -90,9 +91,18 @@ export default {
     ...mapGetters('profile/info', ['getInfo']),
     ...mapState('profile/comments', ['subComments']),
 
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
+
     answerText() {
-      if (!this.info) return 'ответ';
-      return this.info.commentsCount && this.info.commentsCount > 1 ? 'ответа' : 'ответ';
+      if (!this.info) return this.translations.commentAnswerTextSecond;
+      return this.info.commentsCount && this.info.commentsCount > 1 ? this.translations.commentAnswerTextFirst : this.translations.commentAnswerTextSecond;
     },
 
     currentSubComents() {
@@ -223,9 +233,9 @@ export default {
   margin-left auto
 
 .comment-block__reviews-show
-  color eucalypt
-  font-size 13px
-  font-weight 600
+  color ui-cl-color-eucalypt
+  font-size font-size-small
+  font-weight font-weight-bold
   display inline-flex
   align-items flex-start
 
@@ -234,7 +244,7 @@ export default {
     display block
     width 7px
     margin-right 5px
-    font-size 13px
+    font-size font-size-small
 
   .comment-main__pic
     width 30px
@@ -252,7 +262,7 @@ export default {
   .comment-add__pic
     width 30px
     height 30px
-    font-size 8px
+    font-size font-size-super-small
   .comment-main__pic
     margin-right 0
 </style>

@@ -10,7 +10,7 @@
 .friends__title
   margin-bottom 15px
   font-family font-exo
-  font-weight 600
+  font-weight font-weight-bold
   font-size 30px
   color #000
 
@@ -18,10 +18,10 @@
   display flex
   align-items center
   min-width 350px
-  background #FFFFFF
-  border-radius 10px
+  background ui-cl-color-white-theme
+  border-radius border-small
   padding 5px 10px
-  box-shadow 0px 2px 8px rgba(0,0,0,0.08)
+  box-shadow box-shadow-main
 
 .friends__search-icon
   .simple-svg-wrapper
@@ -29,11 +29,11 @@
     height 16px
   
   .simple-svg
-    stroke #5F5E7A
+    stroke ui-cl-color-comet
     fill transparent
   
 .friends__search-input
-  font-size 13px
+  font-size font-size-small
   color #000
   background-color transparent
   cursor inherit
@@ -43,7 +43,7 @@
   width 100%
 
   &::placeholder
-    color #5F5E7A
+    color ui-cl-color-comet
   
 .friends__list
   display flex
@@ -57,27 +57,27 @@
 
 		li button
 			display block
-			color #767676;
-			border-radius 10px
+			color ui-cl-color-767676;
+			border-radius border-small
 			text-align center
 			background #fff
-			border 1px solid #ababab
-			font-size 14px
+			border 1px solid ui-cl-color-ababab
+			font-size font-size-small-medium
 			padding 10px
 			@media (any-hover: hover)
 				&:hover:not(:disabled)
-					color #fff
-					background #21a45d
-					border-color #21a45d
+					color ui-cl-color-white-theme
+					background ui-cl-color-eucalypt
+					border-color ui-cl-color-eucalypt
 				&:disabled
-					color #fff
+					color ui-cl-color-white-theme
 					background #b3b3b3
-					border-color #919191
+					border-color ui-cl-color-919191
 					cursor not-allowed
 					opacity 35%
 			&.active
-				color #fff
-				background #21a45d
-				border-color #21a45d
+				color ui-cl-color-white-theme
+				background ui-cl-color-eucalypt
+				border-color ui-cl-color-eucalypt
 
 	

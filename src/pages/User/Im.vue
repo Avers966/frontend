@@ -162,7 +162,7 @@ export default {
   width 100%
   flex auto
   height 100%
-  background-color #ffffff
+  background-color ui-cl-color-white-themefff
   border-radius 0 10px 10px 0
   overflow hidden
 </style>

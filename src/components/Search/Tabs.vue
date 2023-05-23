@@ -7,7 +7,7 @@
       :class="{ active: item.id === tabSelect }"
       @click="changeTab(item.id)"
     >
-      {{ item.text }}
+      {{ currentTranslations === 'Русский' ? item.text : item.textEng  }}
     </li>
   </ul>
 </template>
@@ -19,6 +19,11 @@ export default {
   name: 'SearchTabs',
   computed: {
     ...mapGetters('global/search', ['tabs', 'tabSelect']),
+
+    currentTranslations() {
+      return this.$store.state.auth.languages.language.name;
+    },
+
   },
   methods: {
     ...mapActions('global/search', ['changeTab']),
@@ -39,29 +44,29 @@ export default {
   display block
   min-width 120px
   max-width 120px
-  color #767676
-  border-radius 5px
+  color ui-cl-color-767676
+  border-radius border-super-small
   text-align center
-  background #fff
-  border 1px solid #ababab
-  font-size 14px
+  background ui-cl-color-white-theme
+  border 1px solid ui-cl-color-ababab
+  font-size font-size-small
   padding 10px
   cursor pointer
   transition all .2s ease-in-out
 
   @media (any-hover: hover)
     &:hover
-      color #222
-      background #c8ecd8
-      border-color #c8ecd8
+      color ui-cl-color-dark-grey
+      background ui-cl-color-c8ecd8
+      border-color ui-cl-color-c8ecd8
 
 
   &.active
-    color #fff
-    background #21a45d
-    border-color #21a45d
+    color ui-cl-color-white-theme
+    background ui-cl-color-eucalypt
+    border-color ui-cl-color-eucalypt
     &:hover
-      color #fff
-      background #21a45d
-      border-color #21a45d
+      color ui-cl-color-white-theme
+      background ui-cl-color-eucalypt
+      border-color ui-cl-color-eucalypt
 </style>

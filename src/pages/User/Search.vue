@@ -73,8 +73,8 @@ export default {
 
 .search__tabs
   background #fff
-  box-shadow standart-boxshadow
-  border-radius 10px
+  box-shadow box-shadow-main
+  border-radius border-small
   padding 20px
 
   @media (max-width breakpoint-xxl)

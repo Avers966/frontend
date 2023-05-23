@@ -60,14 +60,15 @@ export default {
 </script>
 <style lang="stylus">
 
-@import './assets/stylus/main.styl'
+@import './assets/stylus/main.styl';
+@import './assets/stylus/base/vars.styl'
 
 .v-snack__wrapper
   &.success
-    background-coloreucalypt
+    background-color ui-cl-color-eucalypt
 
   &.error
-    background-colorwild-watermelon
+    background-color ui-cl-color-wild-watermelon
 </style>
 
 <style lang="css">

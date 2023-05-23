@@ -108,8 +108,8 @@ export default {
   display flex
   gap 10px
   align-items center
-  background #e7e7e7
-  border-radius 10px
+  background ui-cl-color-white-bright-second
+  border-radius border-small
   position relative
   padding 20px
   z-index 0
@@ -118,15 +118,15 @@ export default {
 
   .user-status
     padding 4px
-    background-color #21a45d
-    font-size 10px
+    background-color ui-cl-color-eucalypt
+    font-size font-size-super-upsmall
     line-height 100%
 
   &:not(:last-child)
     margin-bottom 15px
 
   &:hover
-    background #c5c5c5
+    background ui-cl-color-c5c5c5
 
 
   &.push + &.active, &.active + &.push
@@ -153,7 +153,7 @@ export default {
 
 .im-dailog__pic
   width 60px
-  border-radius 50%
+  border-radius border-half
   overflow hidden
   flex none
   .main-layout__user-pic
@@ -168,9 +168,9 @@ export default {
   width 100%
 
 .im-dialog__name
-  font-size 16px
-  color #333
-  font-weight 500
+  font-size font-size-default
+  color ui-cl-color-grey-color
+  font-weight font-weight-medium
   white-space nowrap
   overflow hidden
   text-overflow ellipsis
@@ -182,29 +182,29 @@ export default {
   white-space nowrap
   overflow hidden
   text-overflow ellipsis
-  font-size 12px
+  font-size font-size-small
   line-height 18px
   letter-spacing -0.003em
 
   &-me
-    color eucalypt
+    color ui-cl-color-eucalypt
 
 .im-dialog__time
-  color #A4A4B8
-  font-size 12px
+  color ui-cl-color-santas-gray
+  font-size font-size-small
   line-height 19px
 
 .im-dialog__push
   width 27px
   height 27px
-  border-radius 50%
+  border-radius border-half
   display flex
   align-items center
   justify-content center
-  font-size 12px
+  font-size font-size-small
   line-height 27px
-  font-weight 600
-  color #fff
+  font-weight font-weight-bold
+  color ui-cl-color-white-theme
   background-color #E65151
   margin-left auto
 

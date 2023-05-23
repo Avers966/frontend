@@ -37,11 +37,13 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '../../../assets/stylus/base/vars.styl'
+
 .admin-sidebar
   background #fff
   box-shadow 0px 2px 8px rgba(0, 0, 0, 0.08)
-  padding 0 40px
-  border-radius 10px
+  border-radius border-small
+  overflow hidden
 
   @media (max-width breakpoint-xl)
     background transparent
@@ -53,18 +55,22 @@ export default {
     display flex
 
 .admin-sidebar__item
-  color rgba(#000, 0.5)
-  font-size 15px
-  padding 30px 0
+  color ui-cl-color-gun-powder
+  padding 20px 25px
   cursor pointer
+  transition all .2s ease-in-out
 
   &+&
-    border-top 1px solid #e6e6e6
+    border-top 1px solid ui-cl-color-e6e6e6
+
+  &:hover
+    background ui-cl-color-gun-powder
+    color ui-cl-color-white-theme
 
   &.active
     cursor default
-    font-weight 600
-    color #21A45D
+    color ui-cl-color-white-theme
+    background ui-cl-color-gun-powder
 
   @media (max-width breakpoint-xl)
     padding 0
