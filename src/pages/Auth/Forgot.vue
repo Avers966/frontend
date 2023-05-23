@@ -28,6 +28,21 @@ export default {
     email: '',
   }),
 
+  validations: {
+    email: { required, email },
+  },
+
+  computed: {
+    translations() {
+      const lang = this.$store.state.auth.languages.language.name;
+      if (lang === 'Русский') {
+        return translations.rus;
+      } else {
+        return translations.eng;
+      }
+    },
+  },
+
   methods: {
     ...mapActions('profile/account', ['passwordRecovery']),
     ...mapMutations('auth/info', ['setBtn']),
@@ -50,19 +65,7 @@ export default {
       });
     },
   },
-  validations: {
-    email: { required, email },
-  },
-  computed: {
-    translations() {
-      const lang = this.$store.state.auth.languages.language.name;
-      if (lang === 'Русский') {
-        return translations.rus;
-      } else {
-        return translations.eng;
-      }
-    },
-  }
+
 };
 </script>
 
