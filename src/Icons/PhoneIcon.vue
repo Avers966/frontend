@@ -1,4 +1,5 @@
 <!-- eslint-disable max-len -->
+<!-- eslint-disable max-attributes-per-line -->
 <template>
   <icon-box width="24" height="24" viewBox="0 0 24 24" fill="none">
     <path
