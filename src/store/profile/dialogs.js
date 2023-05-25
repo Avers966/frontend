@@ -53,15 +53,16 @@ export default {
 
   actions: {
     async fetchMessages({ commit }, dialogId) {
-      const response = await dialogsApi.getMessages(dialogId);
-      if (response.data?.content?.length === 0) return;
-      const data = response.data?.content;
-      console.log(data);
-      const messages = data.map((message) => ({ ...message, time: message.time * 1000 }));
+      const response = await dialogsApi.newDialogs(dialogId);
+      if (!response.lastMessage) return;
+      const messages = [{
+        ...response.lastMessage,
+        time: new Date(response.lastMessage.time).getTime(),
+      }];
       commit('clearMessages');
       commit('addMessages', {
         messages,
-        total: response.data.total,
+        total: response.unreadCount,
       });
     },
 

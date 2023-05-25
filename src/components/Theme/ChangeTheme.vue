@@ -1,95 +1,203 @@
 <template>
-  <div class="theme-switch">
-    <input type="checkbox" id="theme-switch-checkbox" v-model="darkMode">
-    <label for="theme-switch-checkbox"></label>
+  <div class="theme__change">
+    <span>{{ translations.themeTitle }}</span>
+    <span class="theme__current" @click="toggleTheme">
+      {{ currentThemeLabel }}
+      <arrow-bottom />
+    </span>
+    <div class="theme__list" v-if="showThemes" v-click-outside="closeActions">
+      <div
+        class="theme__item"
+        v-for="(theme, index) in themes"
+        :key="index"
+        @click="onChangeTheme(theme.value)"
+        :class="{ 'active': index === activeThemeIndex }"
+      >
+        {{ currentTranslations === 'Русский' ? theme.label : theme.labelEng }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import vClickOutside from 'v-click-outside';
+import ArrowBottom from '../../Icons/ArrowBottom.vue';
+import translations from '@/utils/lang.js';
 
 export default {
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
+
+  components: {
+    ArrowBottom
+  },
 
   data() {
     return {
-      darkMode: localStorage.getItem('theme') === 'dark',
+      themes: [
+        { label: 'Темная', labelEng: 'Dark', value: 'dark' },
+        { label: 'Светлая', labelEng: 'Light', value: 'light' },
+        { label: 'Системная', labelEng: 'System', value: 'system' },
+      ],
+      selectedTheme: localStorage.getItem('theme') || 'system',
+      selectedThemeIndex: null,
+      showThemes: false,
     }
   },
 
   computed: {
-    bodyClasses() {
-      return {
-        'dark-theme': this.darkMode,
-      };
-    },
-  },
-  watch: {
-    darkMode(value) {
-      if (value) {
-        localStorage.setItem('theme', 'dark');
-        document.documentElement.setAttribute('data-theme', 'dark');
-      } else {
-        localStorage.setItem('theme', 'light');
-        document.documentElement.removeAttribute('data-theme');
-      }
-    },
-  },
-  mounted() {
-    if (this.darkMode) {
-      document.documentElement.setAttribute('data-theme', 'dark');
+  translations() {
+    const lang = this.$store.state.auth.languages.language.name;
+    if (lang === 'Русский') {
+      return translations.rus;
+    } else {
+      return translations.eng;
     }
   },
+
+  currentTranslations() {
+    return this.$store.state.auth.languages.language.name;
+  },
+
+  bodyClasses() {
+    return {
+      'dark-theme': this.selectedTheme === 'dark',
+    };
+  },
+
+  activeThemeIndex() {
+    for (let i = 0; i < this.themes.length; i++) {
+      if (this.themes[i].value === this.selectedTheme) {
+        return i;
+      }
+    }
+    return null;
+  },
+
+  currentThemeLabel() {
+    if (this.currentTranslations === 'Русский') {
+      if (this.selectedTheme === 'dark') {
+        return 'Черная';
+      } else if (this.selectedTheme === 'light') {
+        return 'Светлая';
+      } else {
+        return 'Системная';
+      }
+    } else {
+      if (this.selectedTheme === 'dark') {
+        return 'Dark';
+      } else if (this.selectedTheme === 'light') {
+        return 'Light';
+      } else {
+        return 'System';
+      }
+    }
+  }
+},
+
+mounted() {
+  // установка начальной темы
+  if (this.selectedTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  } else if (this.selectedTheme === 'light') {
+    document.documentElement.removeAttribute('data-theme');
+  } else if (this.selectedTheme === 'system') {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }
+
+  // добавление обработчика на изменение системной темы
+  if (window.matchMedia) {
+    const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    systemThemeQuery.addEventListener('change', this.onSystemThemeChange);
+  }
+},
+
+methods: {
+  onSystemThemeChange(event) {
+    if (this.selectedTheme === 'system') {
+      if (event.matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    }
+  },
+
+  toggleTheme() {
+    this.showThemes = !this.showThemes;
+  },
+
+  closeActions() {
+    this.showThemes = false;
+  },
+
+  onChangeTheme(theme) {
+    this.selectedTheme = theme;
+    localStorage.setItem('theme', theme);
+    if (this.selectedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else if (this.selectedTheme === 'light') {
+      document.documentElement.removeAttribute('data-theme');
+    } else if (this.selectedTheme === 'system') {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    }
+  },
+},
+
 }
 </script>
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 
-.theme-switch
+.theme__change
   position relative
-  display inline-block
-  width 45px
-  height 25px
+  display flex
+  align-items center
+  gap 5px
 
-.theme-switch input[type="checkbox"]
-  display none
-
-.theme-switch label
-  position absolute
-  top 0
-  left 0
-  width 100%
-  height 100%
-  background-color ui-cl-color-e3e4e8
-  background-image url('/static/img/moon.svg')
-  background-size 14px 14px
-  background-repeat no-repeat
-  background-position right 5px center
-  border-radius border-big-radius
-  transition background-color 0.2s ease-in-out
+.theme__current
+  background-color ui-cl-color-white-bright
+  padding 5px
+  font-size font-size-small
   cursor pointer
+  transition all .2s ease-in-out
+  @media (any-hover: hover)
+    &:hover
+      background-color #ebeaea
 
+  svg
+    opacity 1 !important
+    path
+      fill ui-cl-color-full-black
 
-.theme-switch label::before
-  content ""
+.theme__list
   position absolute
-  top 2px
-  left 2px
-  width 20px
-  height 20px
-  background-color ui-cl-color-white-theme
-  border-radius border-half
-  transition transform 0.2s ease-in-out
+  min-width 125px
+  max-width 125px
+  top 28px
+  right 0
+  background-color ui-cl-color-white-bright
 
-
-.theme-switch input[type="checkbox"]:checked + label
-  background-color ui-cl-color-3fb3ff
-  background-image url('/static/img/sun.svg')
-  background-position left 5px center
-
-
-.theme-switch input[type="checkbox"]:checked + label::before
-  transform translateX(20px)
-  background-color ui-cl-color-full-black
+.theme__item
+  padding 8px
+  font-size font-size-small
+  transition all .2s ease-in-out
+  cursor pointer
+  @media (any-hover: hover)
+    &:hover
+      background-color #ebeaea
+  &.active
+    background #ebeaea
 
 
 .dark-theme
@@ -119,17 +227,53 @@ export default {
   .main-layout__actions-profile-item .form-layout__footer
     color ui-cl-color-white-theme
   .main-layout__actions-profile-item:hover
-    background #f1f3f90f
+    background rgba(241,243,249,0.08)
   .main-layout__actions-profile-item
     color ui-cl-color-white-theme
   .main-layout__actions-profile-item:nth-child(2) svg
     stroke ui-cl-color-white-theme
+  .main-layout__actions-profile-item:nth-child(3) svg path
+    fill ui-cl-color-white-theme
   .main-layout-profile__actions
     background ui-cl-color-grey-color
     &:hover
       background rgba(241,243,249,0.08)
     .main-layout__user-name
       color ui-cl-color-white-theme
+  .main-layout__actions-profile-item:hover
+    background rgba(241,243,249,0.08) !important
+  .main-layout__actions-profile-item .form-layout__footer-language span:nth-child(2)
+    background ui-cl-color-grey-color
+  .main-layout__actions-profile-item .form-layout__footer-language .active:hover
+    color ui-cl-color-white-theme
+  .theme__current
+    background ui-cl-color-grey-color
+  .theme__list
+    background-color ui-cl-color-grey-color
+    border 1px solid ui-cl-color-border-dark
+  .theme__item
+    &:not(:last-child)
+      border-bottom 1px solid ui-cl-color-border-dark
+    @media (any-hover: hover)
+      &:hover
+        background-color rgba(241,243,249,0.08)
+    &.active
+      background-color rgba(241,243,249,0.08)
+  .main-layout__actions-profile-item .form-layout-list__language
+    background-color ui-cl-color-grey-color
+    border 1px solid ui-cl-color-border-dark
+  .main-layout__actions-profile-item .form-layout-list__language-item.active__lang
+    background-color rgba(241,243,249,0.08)
+    color ui-cl-color-white-theme
+  .main-layout__actions-profile-item .form-layout-list__language-item.active__lang span:nth-child(2)
+    color ui-cl-color-white-theme
+  .main-layout__actions-profile-item .form-layout-list__language-item
+    color ui-cl-color-white-theme
+  .main-layout__actions-profile-item .form-layout-list__language-item:hover
+    background-color rgba(241,243,249,0.15)
+  .main-layout__actions-profile-item .form-layout-list__language-item:hover span:nth-child(2)
+    color ui-cl-color-white-theme
+
   .shine
     background ui-cl-color-2f2f2f
     background-image linear-gradient(to right, ui-cl-color-2f2f2f 0%, ui-cl-color-dark-grey 20%, ui-cl-color-2f2f2f 40%, ui-cl-color-2f2f2f 100%)
@@ -249,8 +393,6 @@ export default {
 
   .news-block__deffered-text
     color ui-cl-color-medium-grey
-    padding 5px 10px
-    border-radius border-super-small
 
   .news-block__changed-time
     color ui-cl-color-medium-grey

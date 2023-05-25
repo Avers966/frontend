@@ -69,6 +69,7 @@
           <div v-if="info.imagePath">
             <img class="post-image" :src="info.imagePath" :alt="'photo'" />
           </div>
+          <h3 class="post-block__title">{{ info.title }}</h3>
           <p
             class="post-block__text-content"
             ref="text"
@@ -515,7 +516,7 @@ export default {
     display inline-flex
     align-items center
     gap 3px
-    font-weight font-weight-bold
+    font-weight font-weight-regular
     font-size font-size-small
     line-height 16px
     color #BDCDD6

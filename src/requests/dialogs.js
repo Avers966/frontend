@@ -1,8 +1,12 @@
 import axios from 'axios';
 
 export default {
+  newDialogs(id) {
+    return axios.get(`/dialogs/recipientId/${id}`);
+  },
+
   getMessages(id) {
-    return axios.get(`/dialogs/messages?page=0&size=3&sort=time,desc&companionId=${id}`);
+    return axios.get(`dialogs/messages?recipientId=${id}&page=0&size=1&sort=time,desc`);
   },
 
   getDialogs() {

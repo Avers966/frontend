@@ -3,6 +3,7 @@ export default {
     support: 'Поддержка',
     langSelect: 'Язык: ',
     lang: 'Русский',
+    themeTitle: 'Тема:',
     loginAuth: 'Войдите в аккаунт',
     loginAuthBtn: 'Войти',
     loginAuthForgot: 'Забыли пароль?',
@@ -55,7 +56,7 @@ export default {
 
     notNotification: 'Уведомлений нет',
     showmoreNotification: 'Показать еще',
-    readedNotification: 'Прочитать всё',
+    readedNotification: 'Отметить всё как прочитанное',
 
     recommendBlockTitle: 'Возможно вы их знаете',
     recommendBlockDescription: 'В данный момент нет вариантов. Для получения рекомендаций, добавьте несколько друзей.',
@@ -152,7 +153,7 @@ export default {
     newsBlockQueuedDatatime: 'будет опубликован',
     newsBlockReadedMore: 'Читать далее',
     newsBlockReadedHide: 'Скрыть',
-    newsBlockReadedTime: 'Мин.',
+    newsBlockReadedTime: 'мин.',
     newsBlockReadedDisclamer: 'Примерно столько времени вы потратите на прочтение этой статьи',
     newsBlockCommentTitleFirst: 'Посмотреть комментарии',
     newsBlockCommentTitleSecond: 'Скрыть комментарии',
@@ -213,6 +214,7 @@ export default {
     support: 'Support',
     langSelect: 'Language: ',
     lang: 'English',
+    themeTitle: 'Theme:',
     loginAuth: 'Log in to your account',
     loginAuthBtn: 'Log in',
     loginAuthForgot: 'Forgot your password?',
@@ -260,7 +262,7 @@ export default {
 
     notNotification: 'There are no notifications',
     showmoreNotification: 'Show more',
-    readedNotification: 'Read all',
+    readedNotification: 'Mark everything as read',
 
     recommendBlockTitle: 'Perhaps you know them',
     recommendBlockDescription: 'There are no options at the moment. To get recommendations, add a few friends.',
