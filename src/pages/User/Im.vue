@@ -13,7 +13,7 @@
     </div>
 
     <div class="im__chat" v-if="activeDialog && messagesLoaded">
-      <im-chat :info="activeDialog" :messages="messages" :online="checkOnlineUser(activeDialog)" />
+      <im-chat :info="activeDialog" :messages="messages" />
     </div>
 
     <div v-else class="no-dialog">Диалог не выбран</div>
@@ -56,8 +56,7 @@ export default {
           this.messagesLoaded = false;
           await this.fetchMessages(value);
           this.messagesLoaded = true;
-          const newActiveDialog = this.getDialogs().length ? this.getDialogs().filter((d) => +d.id === +value) : [];
-
+          const newActiveDialog = this.getDialogs().length ? this.getDialogs().filter((d) => d.id === value) : [];
           if (newActiveDialog.length > 0) {
             [this.activeDialog] = newActiveDialog;
             this.activeDialog.unreadCount = 0;

@@ -133,7 +133,6 @@ export default {
 
   },
 
-
   methods: {
     ...mapActions('profile/notifications', ['fetchNotifications', 'fetchNotificationsLength', 'readedNotifications']),
     ...mapMutations('profile/notifications', ['incrementOffset']),

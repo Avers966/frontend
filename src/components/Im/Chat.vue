@@ -1,6 +1,6 @@
 <template>
   <div class="im-chat">
-    <div class="im-chat__user">
+    <div class="im-chat__user" v-if="info.conversationPartner">
       <router-link
         class="im-chat__user-pic"
         :to="{
@@ -35,7 +35,46 @@
 
       <span class="user-status" :class="{ online }">
         Был(а) в сети
-        {{ this.info.conversationPartner.lastOnlineTime | moment('from') }}
+        <!-- {{ this.info.conversationPartner.lastOnlineTime | moment('from') }} -->
+      </span>
+    </div>
+
+    <div class="im-chat__user" v-if="userInfo">
+      <router-link
+        class="im-chat__user-pic"
+        :to="{
+          name: 'ProfileId',
+          params: { id: userInfo.id },
+        }"
+      >
+        <div class="main-layout__user-pic">
+          <img
+            v-if="userInfo.photo"
+            :src="userInfo.photo"
+            :alt="
+              userInfo.firstName[0] + ' ' + userInfo.firstName[0]
+            "
+          />
+
+          <div v-else>
+            <unknow-user />
+          </div>
+        </div>
+      </router-link>
+
+      <router-link
+        class="im-chat__user-name"
+        :to="{
+          name: 'ProfileId',
+          params: { id: userInfo.id },
+        }"
+      >
+        {{ userInfo.firstName }} {{ userInfo.lastName }}
+      </router-link>
+
+      <span class="user-status" :class="{ online }">
+        Был(а) в сети
+        <!-- {{ this.info.conversationPartner.lastOnlineTime | moment('from') }} -->
       </span>
     </div>
 
@@ -77,6 +116,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex';
 import ChatMessage from '@/components/Im/ChatMessage';
 import VirtualList from 'vue-virtual-scroll-list';
 import UnknowUser from '../../Icons/UnknowUser.vue';
+import axios from 'axios';
 
 const makeHeader = (msgDate) => {
   return { id: `group-${msgDate}`, stubDate: true, date: msgDate };
@@ -101,6 +141,7 @@ export default {
     isUserViewHistory: false,
     fetching: false,
     lastId: -1,
+    userInfo: null
   }),
 
   computed: {
@@ -119,6 +160,10 @@ export default {
       }
       return groups;
     },
+
+    getInfoConversationPartner() {
+      return this.info?.conversationPartner2
+    }
   },
 
   watch: {
@@ -131,6 +176,7 @@ export default {
     this.follow = true;
     this.markReadedMessages(this.$route.params.activeDialogId);
     this.$refs.vsl.scrollToBottom();
+    this.fetchUserInfo();
   },
 
   methods: {
@@ -144,19 +190,30 @@ export default {
       const time = new Date().getTime();
       const payload = {
         type: 'MESSAGE',
-        accountId: this.info.conversationPartner.id,
+        recipientId: this.info.conversationPartner2,
         data: {
-          id: "",
-          authorId: this.getInfo().id,
+          time: time,
+          conversationPartner1: this.info.conversationPartner1,
+          conversationPartner2: this.info.conversationPartner2,
           messageText: this.mes,
-          recipientId: this.info.conversationPartner.id,
-          time,
+          readStatus: null,
+          dialogId: this.info.id
         },
       };
       this.addOneMessage(payload.data);
       this.$socket.sendMessage(payload);
       this.lastId -= 1;
       this.mes = '';
+    },
+
+    fetchUserInfo() {
+      axios.get(`/account/${this.getInfoConversationPartner}`)
+      .then(response => {
+        this.userInfo = response.data;
+      })
+      .catch(error => {
+        console.log(error);
+      });
     },
 
     async onScrollToTop() {

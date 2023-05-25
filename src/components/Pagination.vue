@@ -3,7 +3,7 @@
     <li class="pagination__item">
       <a
         class="pagination__link pagination__link--arrow"
-        :class="{ 'pagination__link--disabled': page === 1 }"
+        :class="{ 'pagination__link--disabled': page === prevPage }"
         href="#"
         @click.prevent="paginate(page - 1, page > 1)"
         aria-label="Предыдущая страница"
@@ -18,7 +18,10 @@
       <a
         href="#"
         class="pagination__link"
-        :class="{ 'pagination__link--current': pageNumber === page }"
+        :class="{
+          'pagination__link--current': pageNumber === page,
+          'pagination__link--disabled': pageNumber === page
+        }"
         @click.prevent="paginate(pageNumber, true)"
       >
         {{ pageNumber }}
@@ -28,9 +31,9 @@
     <li class="pagination__item">
       <a
         class="pagination__link pagination__link--arrow"
-        :class="{ 'pagination__link--disabled': page === pages }"
+        :class="{ 'pagination__link--disabled': page === nextPage }"
         href="#"
-        @click.prevent="paginate(page + 1, page < pages)"
+        @click.prevent="paginate(nextPage)"
         aria-label="Следующая страница"
       >
         <svg width="8" height="14" fill="currentColor">

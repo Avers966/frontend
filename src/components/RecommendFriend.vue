@@ -90,7 +90,7 @@ export default {
   .recommend-block
     min-width 430px
     height max-content
-    padding 30px 40px
+    padding 30px
     background ui-cl-color-white-theme
     box-shadow 0px 2px 8px rgba(0, 0, 0, 0.08)
     border-radius border-small
@@ -126,22 +126,31 @@ export default {
       &:not(:last-child)
         border-bottom 1px solid ui-cl-color-e6e6e6
         margin-bottom 15px
+      &:last-child
+        padding-bottom 0
 
     &__img
       border-radius border-half
       width 50px
       height 50px
-      margin-right 20px
+      margin-right 5px
 
     &__name
-      font-weight font-weight-bold
+      font-weight font-weight-medium
       font-size font-size-downdefault
       line-height 20px
 
     &__button
-      font-size font-size-small
+      background-color ui-cl-color-eucalypt
+      padding 3px 5px
+      font-size font-size-small-medium
+      border-radius border-super-small
       line-height 21px
-      color ui-cl-color-eucalypt
+      color ui-cl-color-white-theme
+      transition all .2s ease-in-out
+      @media (any-hover: hover)
+        &:hover
+          background-color ui-cl-color-gun-powder
 
     &__search
       display block

@@ -8,13 +8,17 @@
       {{ translations.support }}
     </a>
 
-    <div class="form-layout__footer-language" v-if="showLanguage">
+    <div
+      class="form-layout__footer-language"
+      :class="{'footer__auth': showLanguage}"
+    >
       <span>{{ translations.langSelect }}</span>
       <span
         class="active"
         @click.prevent="toggleLanguageList"
       >
         {{ activeLanguage === 'Русский' ? translations.lang : translations.lang }}
+        <arrow-bottom />
       </span>
       <transition name="fade">
         <ul class="form-layout-list__language" v-if="languageShow" v-click-outside="closeLanguageList">
@@ -40,12 +44,17 @@
 import vClickOutside from 'v-click-outside';
 import translations from '@/utils/lang.js';
 import { mapMutations } from 'vuex';
+import ArrowBottom from '../../Icons/ArrowBottom.vue';
 
 export default {
   name: 'FormLayoutFooter',
   directives: {
     clickOutside: vClickOutside.directive
   },
+  components: {
+    ArrowBottom
+  },
+
   props: {
     showLanguage: {
       type: Boolean,
@@ -55,7 +64,7 @@ export default {
     noUseContent: {
       type: Boolean,
       default: true
-    }
+    },
   },
 
   data: () => ({

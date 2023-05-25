@@ -64,7 +64,7 @@ export default {
   margin-bottom -7px
   min-height 100px
   max-height 200px
-  opacity 20%
+  opacity 0.25
   &-container
     width 100%
     position absolute

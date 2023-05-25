@@ -20,7 +20,6 @@
           </form>
         </div>
         <div class="main-layout__header-right">
-          <change-theme />
           <div class="main-layout__push">
             <span @click="togglePush">
               <push-icon
@@ -37,9 +36,9 @@
           >
             <div class="main-layout__user-pic header__pic" style="background-color: #8bc49e">
               <img
-                v-if="getInfo.photo"
-                :src="getInfo.photo"
-                :alt="getInfo.firstName[0] + ' ' + getInfo.lastName[0]"
+                v-if="getInfo?.photo"
+                :src="getInfo?.photo"
+                :alt="getInfo?.firstName[0] + ' ' + getInfo.lastName[0]"
               />
               <div v-else>
                 <unknow-user />
@@ -49,22 +48,22 @@
           </div>
           <transition name="fade">
             <div
-              v-if="showActionsProfile"
+              v-show="showActionsProfile"
               v-click-outside="closeActionsProfile"
               class="main-layout__actions-profile"
             >
               <router-link :to="{ name: 'Profile' }" class="main-layout-profile__actions">
                 <div class="main-layout__user-pic header__pic" style="background-color: #8bc49e">
                   <img
-                    v-if="getInfo.photo"
-                    :src="getInfo.photo"
-                    :alt="getInfo.firstName[0] + ' ' + getInfo.lastName[0]"
+                    v-if="getInfo?.photo"
+                    :src="getInfo?.photo"
+                    :alt="getInfo?.firstName[0] + ' ' + getInfo?.lastName[0]"
                   />
                   <div v-else>
                     <unknow-user />
                   </div>
                 </div>
-                <span class="main-layout__user-name">{{ getInfo.fullName }}</span>
+                <span class="main-layout__user-name">{{ getInfo?.fullName }}</span>
                 <span class="main-layout__user-post" v-if="isAdminPage">- администратор</span>
               </router-link>
               <ul class="main-layout__actions-profile-list">
@@ -76,7 +75,11 @@
                 </li>
                 <li class="main-layout__actions-profile-item">
                   <language-icon />
-                  <language-block :no-use-content="false" />
+                  <language-block :show-language="false" :no-use-content="false" />
+                </li>
+                <li class="main-layout__actions-profile-item">
+                  <theme-icon />
+                  <change-theme />
                 </li>
                 <li class="main-layout__actions-profile-item">
                   <div class="simple-svg-wrapper">
@@ -102,6 +105,7 @@
 import { mapGetters, mapMutations, mapActions, mapState } from 'vuex';
 import SearchIcon from '../../Icons/SearchIcon.vue';
 import PushIcon from '../../Icons/PushIcon.vue';
+import ThemeIcon from '../../Icons/ThemeIcon.vue';
 import Push from '@/components/MainLayout/Push';
 import ChangeTheme from '../Theme/ChangeTheme.vue';
 import vClickOutside from 'v-click-outside';
@@ -126,7 +130,8 @@ export default {
     UnknowUser,
     ArrowBottom,
     SidebarIcons,
-    LanguageIcon
+    LanguageIcon,
+    ThemeIcon
   },
 
   data: () => ({
@@ -234,8 +239,10 @@ export default {
       this.showActionsProfile = !this.showActionsProfile;
     },
 
-    closeActionsProfile() {
-      this.showActionsProfile = false
+    closeActionsProfile(e) {
+      if (!this.$el.contains(e.target)) {
+        this.showActionsProfile = false;
+      }
     },
 
     onSearch() {
@@ -253,6 +260,10 @@ export default {
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+.vt-notification-container {
+  display none !important
+}
 
 .main-layout-profile__actions
   display flex
@@ -283,18 +294,31 @@ export default {
 
 .main-layout__actions-profile-item
   display flex
+  align-items center
   gap 10px
-  word-wrap nowrap
+  white-space nowrap
   cursor pointer
   transition all .2s ease-in-out
   padding 8px
   border-radius border-super-small
-  @media (any-hover: hover)
-    &:hover
-      background ui-cl-color-white-lilac
-  a
-    display block
-    width 100%
+  &:nth-child(2),
+    cursor default
+  &:not(:nth-child(2))
+    @media (any-hover: hover)
+      &:hover
+        background ui-cl-color-white-lilac
+    a
+      display block
+      width 100%
+  &:nth-child(3),
+    cursor default
+  &:not(:nth-child(3))
+    @media (any-hover: hover)
+      &:hover
+        background ui-cl-color-white-lilac
+    a
+      display block
+      width 100%
   .form-layout__footer
     color ui-cl-color-full-black
     font-size font-size-downdefault
@@ -302,8 +326,47 @@ export default {
     color ui-cl-color-eucalypt
   .form-layout__footer-language
     margin-right 0
+    .active
+      &:hover
+        color ui-cl-color-full-black
   svg
     opacity 80%
+  .form-layout__footer-language span:nth-child(2)
+    background-color ui-cl-color-white-bright
+    padding 5px
+    font-size font-size-small
+    font-weight font-weight-regular
+    svg path
+      fill ui-cl-color-full-black
+  .form-layout-list__language
+    background-color ui-cl-color-white-bright
+    border-radius unset
+    font-size font-size-small
+    padding 0
+    top 24px
+    right -44px
+    gap 0
+    &::before
+      display none
+  .form-layout-list__language-item
+    color ui-cl-color-full-black
+    padding 8px
+    border-radius 0
+    font-weight font-weight-regular
+    .active__lang
+      background-color #cdcdcd
+    span:nth-child(2)
+      padding 0 3px
+    @media (any-hover: hover)
+      &:hover
+        background-color #ebeaea
+  .form-layout-list__language-item.active__lang span:nth-child(2)
+    color ui-cl-color-full-black
+  .form-layout-list__language-item:hover span:nth-child(2)
+    color ui-cl-color-full-black
+  .form-layout-list__language-item.active__lang
+    background-color #ebeaea
+
 
 .main-layout__actions-profile
   position absolute
