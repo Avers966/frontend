@@ -499,6 +499,9 @@ export default {
     left 0
     width 100%
     height 230px
+    background-size cover
+    background-repeat no-repeat
+    background-position center center
     z-index -1
     opacity 0.8
     &::after
