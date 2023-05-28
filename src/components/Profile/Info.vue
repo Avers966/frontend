@@ -636,7 +636,7 @@ export default {
       object-fit cover
       background-size cover
       background-repeat no-repeat
-      background-position top center
+      background-position center center
       background-color #ededed
     &__left,
     &__right
