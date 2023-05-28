@@ -1,5 +1,51 @@
 <template>
   <div class="news-add-form">
+    <button class="news-hint__show" v-if="showHintButton" @click.prevent="showHintButton">?</button>
+    <transition name="fade">
+      <div v-if="showHint" class="news-hint">
+        <transition name="fade">
+          <div class="steps__news news-hint__step-first" v-if="step === 1">
+            <div class="steps_step">1.</div>
+            <p>Заголовок должен быть привлекательным и интересным.
+              Он должен содержать ключевые слова, которые будут отражать суть новости, и быть лаконичным, чтобы быстро захватить внимание.
+              Также важно использовать заголовки, которые вызывают эмоции, такие как любопытство, удивление или волнение,
+              чтобы привлечь внимание читателей.</p>
+          </div>
+        </transition>
+        <transition name="fade">
+          <div class="steps__news news-hint__step-second" v-if="step === 2">
+            <div class="steps_step">2.</div>
+            <p>Тело новости должно быть информативным, логичным и увлекательным.
+              Оно должно содержать все необходимые детали и факты, которые подтверждают заголовок.
+              Важно использовать ясный и простой язык, чтобы читатели могли легко понимать содержание статьи.
+              Также стоит использовать креативные подзаголовки, чтобы разбить текст на более мелкие части и сделать его более доступным для чтения.
+              Кроме того, тело новости должно вызывать эмоции и удерживать внимание читателей до конца статьи.</p>
+          </div>
+        </transition>
+        <transition name="fade">
+          <div class="steps__news news-hint__step-third" v-if="step === 3">
+            <div class="steps_step">3.</div>
+            <p>
+              Используйте уже существующие тэги, если они соответствуют содержанию вашей статьи.
+              Для этого начните вводить слово в поле и выберите нужный тэг из списка.<br />
+              Если нужного тэга нет в списке, добавьте новый, но придерживайтесь ограничения в 10 символов.
+              Название тэга должно быть кратким, но информативным.
+            </p>
+          </div>
+        </transition>
+        <transition name="fade">
+          <div class="steps__news news-hint__step-four" v-if="step === 4">
+            <div class="steps_step">4.</div>
+            <p>
+              Вы можете запланировать новость на любое доступное время, чтобы она была опубликована автоматически.
+              Пожалуйста, убедитесь, что время публикации не в прошлом времени.
+              Вы также можете отслеживать запланированные новости в своем профиле и редактировать их содержимое при необходимости.
+            </p>
+          </div>
+        </transition>
+      </div>
+    </transition>
+    <div class="news-hint__overlay" @click="hideHints()" v-if="showHint"></div>
     <div class="news-add__actions-buttons">
       <button class="close_modal bold" @click.prevent="closeAddForm">x</button>
     </div>
@@ -166,7 +212,6 @@ Vue.directive( 'pattern', {
 
 export default {
   name: 'NewsAddForm',
-
   components: { AddTags, Modal, DatePicker, EditorContent, EditorMenuBar },
 
   props: {
@@ -184,7 +229,8 @@ export default {
     modalShow: false,
     isPlaning: null,
     editor: null,
-
+    showHint: false,
+    step: 1,
     day: '',
     month: '',
     monthNames: ['', 'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
@@ -287,7 +333,6 @@ export default {
     this.editor.destroy();
   },
 
-
   created() {
     this.lastDate = this.fullDate;
     this.currentUtcDateTime = this.currentUtc;
@@ -298,6 +343,22 @@ export default {
     ...mapActions('global/storagePostPhoto', ['apiStoragePostPhoto']),
     ...mapGetters('global/storagePostPhoto', ['getStoragePostPhoto']),
     ...mapMutations('global/storagePostPhoto', ['setStoragePostPhoto']),
+
+    showHintButton() {
+      if (this.step <= 5) {
+        this.showHint = true;
+      } else {
+        this.showHint = false;
+      }
+    },
+
+    hideHints() {
+      this.step++;
+      if (this.step >= 5) {
+        this.showHint = false;
+        this.step = 1;
+      }
+    },
 
     onChangeTags(tags) {
       this.tags = tags;
@@ -393,6 +454,123 @@ export default {
 </script>
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+.steps__news
+  position absolute
+  width 400px
+  display flex
+  flex-direction column
+  z-index 25
+  p
+    background-color #333
+    color #fff
+    border-radius 5px
+    font-size 13px
+    padding 15px 35px
+  &.fade-enter-active,
+  &.fade-leave-active
+    transition all .2s ease-in-out
+  &.fade-enter,
+  &.fade-leave-to
+    opacity 0
+
+.steps_step
+  position absolute
+  top 15px
+  left 10px
+  font-size 18px
+  color #fff
+  font-weight bold
+
+
+.news-hint
+  position absolute
+  width 100%
+  height 100%
+  top 0
+  left 0
+  &.fade-enter-active,
+  &.fade-leave-active
+    transition all .2s ease-in-out
+  &.fade-enter,
+  &.fade-leave-to
+    opacity 0
+  &__show
+    position absolute
+    width 20px
+    height 20px
+    border-radius 50%
+    color ui-cl-color-medium-grey
+    border 1px solid ui-cl-color-medium-grey
+    background-color transparent
+    font-size 14px
+    line-height 18px
+    text-align center
+    top 10px
+    left 10px
+  &__overlay
+    position absolute
+    top 0
+    left 0
+    border-radius 10px
+    width 100%
+    height 100%
+    background-color #3a3a3a
+    outline 1px solid #ffffff
+    opacity 0.5
+    overflow hidden
+    z-index 9
+  &__step-first
+    top 80px
+    left 35px
+    &:before
+      content ""
+      border solid transparent
+      position absolute
+      left 8px
+      bottom 100%
+      border-bottom-color #333
+      border-width 5px
+      margin-left 0
+  &__step-second
+    top 120px
+    left 285px
+    z-index 10
+    &:before
+      content ""
+      border solid transparent
+      position absolute
+      right 100%
+      top 50%
+      border-right-color #333
+      border-width 5px
+      margin-top -9px
+  &__step-third
+    top 140px
+    right 55px
+    z-index 10
+    &:before
+      content ""
+      border solid transparent
+      position absolute
+      bottom 100%
+      right 8px
+      border-bottom-color #333
+      border-width 5px
+      margin-right -1px
+  &__step-four
+    bottom 30px
+    right 220px
+    z-index 10
+    &:before
+      content ""
+      border solid transparent
+      position absolute
+      left 100%
+      top 50%
+      border-left-color #333
+      border-width 5px
+      margin-top -9px
 
 @media (min-width: 320px) and (max-width: 768px)
   .news-add

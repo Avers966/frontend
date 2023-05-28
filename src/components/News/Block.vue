@@ -510,7 +510,7 @@ export default {
     font-weight font-weight-bold
     font-size 20px
     line-height 23px
-    margin-bottom 10px
+    margin-bottom 15px
   &__timer
     position relative
     display inline-flex

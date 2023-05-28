@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="profile-info" v-if="info">
-      <div class="profile-info__background" :style="{ 'background-image': `url(${info.photo})` }">
+      <div
+        class="profile-info__background"
+        :style="{ 'background-image': `url(${info.profileCover ? info.profileCover : '/static/img/no_cover.svg'})` }"
+      >
         <div class="qr">
           <button @click="togglePopup" class="profile-info__shared-btn">
             <shared-account />
@@ -631,16 +634,10 @@ export default {
       width 100%
       background-size cover
       object-fit cover
-      &::after
-        position absolute
-        content ''
-        width 100%
-        height 100%
-        top 0
-        left 0
-        background rgba(255, 255, 255, 0.2)
-        backdrop-filter blur(30px)
-        overflow hidden
+      background-size cover
+      background-repeat no-repeat
+      background-position top center
+      background-color #ededed
     &__left,
     &__right
       display flex

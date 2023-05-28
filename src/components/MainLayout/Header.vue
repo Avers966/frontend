@@ -329,8 +329,6 @@ export default {
     .active
       &:hover
         color ui-cl-color-full-black
-  svg
-    opacity 80%
   .form-layout__footer-language span:nth-child(2)
     background-color ui-cl-color-white-bright
     padding 5px

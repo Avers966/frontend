@@ -141,6 +141,7 @@ export default {
     background ui-cl-color-comet
     border-radius border-small
     box-shadow box-shadow-main
+    z-index 100
     &:before
       content ""
       border solid transparent

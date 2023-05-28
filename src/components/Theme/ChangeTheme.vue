@@ -288,6 +288,9 @@ methods: {
     background-color ui-cl-color-dark-grey
     border 1px solid ui-cl-color-border-dark
 
+  .settings-main__cover::after
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0), ui-cl-color-dark-grey);
+
   .im-dialog
     background ui-cl-color-303030
     border 1px solid ui-cl-color-424244
@@ -366,6 +369,9 @@ methods: {
   .profile__tabs__title
     color ui-cl-color-8a8a8a
 
+  .profile-info__background
+    background-color #1d1d1d
+
   .theme-switcher__button
     svg
       fill #e7e20e
@@ -412,6 +418,11 @@ methods: {
 
   .pagination__link
     color ui-cl-color-b2b2b2
+    &:hover
+      background ui-cl-color-grey-color
+      border-color #424242
+      color ui-cl-color-white-theme
+      opacity 1
 
   .search
     &__tabs
