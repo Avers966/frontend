@@ -94,13 +94,15 @@ export default {
       }
     },
 
-    async apiUnreadedMessages({ commit }) {
+    async apiUnreadedMessages({ commit, dispatch }) {
       const { data } = await dialogsApi.unreadedMessages();
       commit('setUnreadedMessages', data);
+      await dispatch('fetchDialogs');
     },
 
-    async markReadedMessages(_, id) {
+    async markReadedMessages({ dispatch }, _, id) {
       await dialogsApi.markReaded(id);
+      await dispatch('fetchDialogs');
     },
   },
 };

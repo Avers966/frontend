@@ -10,7 +10,12 @@
         />
       </div>
 
-      <pagination :count="total" v-model="page" :per-page="size" />
+      <pagination
+        v-if="getUsersPagination.totalElements > 10"
+        :count="getUsersPagination.totalElements"
+        v-model="page"
+        :per-page="size"
+      />
     </search-block>
   </div>
   <div class="search-news__nonews" v-else>
@@ -32,7 +37,7 @@ export default {
     return {
       page: 1,
       size: 10,
-      total: 5,
+      total: 20,
     };
   },
 

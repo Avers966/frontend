@@ -1,6 +1,11 @@
 <template>
   <div class="settings-main">
-
+    <div
+      v-if="srcCover"
+      :style="{'background-image': `url(${srcCover})`}"
+      class="settings-main__cover"
+    >
+    </div>
     <div class="settings-main-photoblock">
       <div class="user-info-form__block user-info-form__block--photo">
         <div class="settings-main__top">
@@ -25,13 +30,37 @@
               @change="processFile($event)"
               accept="image/*"
             />
+            <input
+              class="user-info-form__input_stylus-photo"
+              type="file"
+              ref="photoCover"
+              id="photoCover"
+              @change="processFileCoverProfile($event)"
+              accept="image/*"
+            />
+            <!-- Аватарка -->
             <button class="setting-main__buttons" @click.prevent="loadPhoto">
-              <load-photo /> {{ translations.settingMainAddPhoto }}
+              <load-photo />
+              <span v-if="src">Изменить фото</span>
+              <span v-else>Добавить фото</span>
             </button>
             <div v-if="src" class="settings-main__top--delete" @click="deletePhoto">
               <div class="settings-main__top--delete-icon">
                 <delete-icon />
               </div>
+            </div>
+            <!-- Обложка профиля -->
+            <div class="settings-main-actions__cover">
+              <button class="settings-main-actions-load__cover" @click.prevent="loadPhotoCover">
+                <load-photo />
+                <span v-if="srcCover">Изменить обложку</span>
+                <span v-else>Добавить обложку</span>
+              </button>
+              <button v-if="srcCover" class="settings-main-actions-delete__cover" @click.prevent="deletePhotoCover">
+                <div>
+                  <delete-icon />
+                </div>
+              </button>
             </div>
           </div>
         </div>
@@ -146,7 +175,7 @@ export default {
   components: { UserInfoFormBlock, DeleteIcon, LoadPhoto },
 
   data: () => ({
-    photoName: 'Фотография',
+    photoId: '',
     firstName: '',
     lastName: '',
     phone: '',
@@ -170,6 +199,10 @@ export default {
     ],
     fileName: '',
     src: '',
+
+    srcCover: '',
+    profileCover: '',
+
     country: '',
     city: '',
     countries: [],
@@ -326,8 +359,13 @@ export default {
 
       if (this.fileName) {
         await this.apiStorage(this.fileName).then((response) => {
-          this.photoName = response.data.photoName;
           this.fileName = response.data.fileName;
+        });
+      }
+
+      if (this.profileCover) {
+        await this.apiStorage(this.profileCover).then((response) => {
+          this.profileCover = response.data.fileName;
         });
       }
 
@@ -339,15 +377,17 @@ export default {
         about: this.about,
         country: this.country,
         city: this.city,
-        photoName: this.photoName,
-        photo: this.fileName,
+        photo: this.fileName === '' ? this.src : this.fileName,
+        profileCover: this.profileCover === '' ? this.srcCover : this.profileCover,
       }).then(() =>
-      this.setStorage(null))
-      this.$router.push('/profile');;
+      this.$router.push('/profile'))
     },
+
+    // Аватарка:
 
     processFile(event) {
       [this.fileName] = event.target.files;
+      this.photoId = this.fileName.name; // добавляем это
       const reader = new window.FileReader();
       reader.onload = (e) => {
         this.src = e.target.result;
@@ -361,8 +401,29 @@ export default {
 
     deletePhoto() {
       this.fileName = '';
-      this.photoName = '';
+      this.photoId = '';
       this.src = '';
+      this.setStorage('');
+    },
+
+    // Обложка
+
+    processFileCoverProfile(event) {
+      [this.profileCover] = event.target.files;
+      const reader = new window.FileReader();
+      reader.onload = (e) => {
+        this.srcCover = e.target.result;
+      };
+      reader.readAsDataURL(this.profileCover);
+    },
+
+    loadPhotoCover() {
+      this.$refs.photoCover.click();
+    },
+
+    deletePhotoCover() {
+      this.profileCover = '';
+      this.srcCover = '';
       this.setStorage('');
     },
 
@@ -370,6 +431,8 @@ export default {
       this.firstName = this.getInfo.firstName;
       this.lastName = this.getInfo.lastName;
       this.src = this.getInfo.photo;
+      this.srcCover = this.getInfo.profileCover;
+
       if (this.getInfo.phone) {
         this.phone = this.getInfo.phone.replace(/^[+]?[78]/, '');
       } else this.phone = '';
@@ -398,11 +461,54 @@ export default {
 @import '../../assets/stylus/base/vars.styl'
 
 .settings-main
+  position relative
   background ui-cl-color-white-theme
   width 100%
   box-shadow box-shadow-main
   padding 40px 20px
   border-radius border-big-radius
+  overflow hidden
+  z-index 10
+
+  &-actions-load__cover,
+  &-actions-delete__cover
+    display flex
+    align-items center
+    gap 5px
+    font-size font-size-small-medium
+    color ui-cl-color-white-theme
+    font-weight font-weight-regular
+    background rgba(0, 0, 0, 0.36)
+    padding 5px
+    border-radius border-small
+    transition all .2s ease-in-out
+    &:hover
+      background rgba(0, 0, 0, 0.5)
+
+  &-actions__cover
+    display flex
+    gap 10px
+    align-items center
+    position absolute
+    top 20px
+    right 20px
+
+  &__cover
+    position absolute
+    top 0
+    left 0
+    width 100%
+    height 230px
+    z-index -1
+    opacity 0.8
+    &::after
+      content ""
+      position absolute
+      bottom 0
+      left 0
+      right 0
+      height 150px
+      background-image linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))
 
   .user-info-form__label_stylus
     white-space pre-wrap
@@ -416,6 +522,7 @@ export default {
   top 12px
   width 12px
   height 12px
+  transition all .2s ease-in-out
 
 .country
   width 100%
@@ -452,15 +559,22 @@ export default {
       padding 9px 10px
       border-radius border-fullhalf
       margin-left 10px
+      transition all .2s ease-in-out
       @media (any-hover: hover)
         &:hover
           background ui-cl-color-c5c5c5
 
 .setting-main__buttons
+  display flex
+  align-items center
+  justify-content center
+  gap 5px
   background ui-cl-color-e9e9e9
   padding 10px
   border-radius border-big-radius
   font-size font-size-small-medium
+  transition all .2s ease-in-out
+  box-shadow box-shadow-main
   &.button-submit
     min-width 150px
   @media (any-hover: hover)

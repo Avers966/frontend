@@ -1094,9 +1094,16 @@ a {
 	font-size: 16px;
 	line-height: 1;
 	color: #222;
+	background-color: transparent;
 	text-align: center;
 	-webkit-transition: all .2s ease;
 	transition: all .2s ease
+}
+
+.pagination__link:hover {
+	background-color: #dddddd;
+	color: #000;
+	border-color: #bebebe;
 }
 
 .pagination__link[href]:not(:disabled):focus, .pagination__link[href]:not(:disabled):hover {
@@ -1118,7 +1125,7 @@ a {
 
 .pagination__link--disabled {
 	opacity: .6;
-	cursor: not-allowed
+	pointer-events: none;
 }
 
 .catalog {

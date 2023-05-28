@@ -5,7 +5,12 @@
         <news-block v-for="n in news" :key="n.id" :info="n" />
       </search-block>
     </div>
-    <pagination :count="total" v-model="page" :per-page="size" />
+    <pagination
+      v-if="getNewsPagination.totalElements > 5"
+      :count="getNewsPagination.totalElements"
+      v-model="page"
+      :per-page="size"
+    />
   </div>
   <div class="search-news__nonews" v-else>
     {{ translations.searchNewsEmpty }}

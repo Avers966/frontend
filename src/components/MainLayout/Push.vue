@@ -41,7 +41,7 @@
       </button>
       <button
         class="push__btn"
-        @click.prevent="readedNotifications"
+        @click.prevent="readedButton"
         v-if="showButtonReaded"
       >
         {{ translations.readedNotification }}
@@ -75,8 +75,15 @@ export default {
     shouldUpdateVisibleNotifications() {
       return this.getNotifications.length === 0;
     },
+
     showButtonReaded() {
-      return this.readedButton();
+      if (this.getNotifications.length === 0) {
+        return false
+      } else if (this.getNotifications.length === this.visibleNotifications.length) {
+        return true
+      } else {
+        return false
+      }
     },
 
     translations() {
@@ -144,11 +151,7 @@ export default {
     },
 
     readedButton() {
-      if (this.visibleNotifications.length === this.getNotificationsLength) {
-        return this.isClickedButton = true;
-      } else {
-        return this.isClickedButton = false;
-      }
+      return this.readedButton();
     },
 
     loadVisibleNotifications() {
