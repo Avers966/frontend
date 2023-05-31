@@ -5,7 +5,7 @@ export default {
   namespaced: true,
   state: {
     captchaSecret: localStorage.getItem('user-token') || '',
-    jwt: '',
+    // jwt: '',
     status: '',
     pollingToken: null,
     refreshAttempts: 0,
@@ -18,15 +18,15 @@ export default {
     getIsCode: (state) => state.isCode,
   },
   mutations: {
-    setJwt: (s) => {
-      const cookie = document.cookie.split('; ').reduce((acc, string) => {
-        const [key, value] = string.split('=');
-        acc[key] = value;
-        return acc;
-      }, {});
+    // setJwt: (s) => {
+    //   const cookie = document.cookie.split('; ').reduce((acc, string) => {
+    //     const [key, value] = string.split('=');
+    //     acc[key] = value;
+    //     return acc;
+    //   }, {});
 
-      s.jwt = cookie.jwt || '';
-    },
+    //   s.jwt = cookie.jwt || '';
+    // },
 
     setToken: (s, token) => (s.captchaSecret = token),
     setIsCode: (s, isCode) => (s.isCode = isCode),
@@ -76,7 +76,7 @@ export default {
         localStorage.setItem('user-token', newAccessToken);
         localStorage.setItem('refresh-token', newRefreshToken);
 
-        document.cookie = `jwt=${newAccessToken}`;
+        // document.cookie = `jwt=${newAccessToken}`;
         requestSettings.setDefaultHeader('Authorization', `Bearer ${newAccessToken}`);
         commit('resetAttempts');
       } catch {
@@ -94,10 +94,10 @@ export default {
         localStorage.setItem('user-token', accessToken);
         localStorage.setItem('refresh-token', refreshToken);
 
-        document.cookie = `jwt=${accessToken}`;
+        // document.cookie = `jwt=${accessToken}`;
         requestSettings.setDefaultHeader('Authorization', `Bearer ${accessToken}`);
 
-        commit('setJwt');
+        // commit('setJwt');
         commit('setToken', accessToken);
         commit('setStatus', 'success');
         commit('profile/info/setInfo', response.data, {
@@ -111,8 +111,8 @@ export default {
         localStorage.removeItem('user-token');
         localStorage.removeItem('refresh-token');
 
-        document.cookie = 'jwt=';
-        commit('setJwt');
+        // document.cookie = 'jwt=';
+        // commit('setJwt');
       }
     },
 
@@ -131,9 +131,9 @@ export default {
       localStorage.removeItem('user-token');
       localStorage.removeItem('refresh-token');
 
-      document.cookie = 'jwt=';
+      // document.cookie = 'jwt=';
       clearInterval(state.pollingToken);
-      commit('setJwt');
+      // commit('setJwt');
       requestSettings.deleteDefaultHeader('Authorization');
     },
   },

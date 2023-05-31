@@ -88,9 +88,6 @@ export default {
         .then(response => {
           this.userInfo = response.data;
         })
-        .catch(error => {
-          console.log(error);
-        });
     },
   }
 };

@@ -688,6 +688,8 @@ export default {
         cursor pointer
       &.offline
         border-color ui-cl-color-light-grey
+        img
+          cursor default
       &-zoom
         position: absolute
         top: 50%
