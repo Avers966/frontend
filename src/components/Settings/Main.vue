@@ -41,8 +41,8 @@
             <!-- Аватарка -->
             <button class="setting-main__buttons" @click.prevent="loadPhoto">
               <load-photo />
-              <span v-if="src">Изменить фото</span>
-              <span v-else>Добавить фото</span>
+              <span v-if="src">{{ translations.settingsMainEditPhoto }}</span>
+              <span v-else>{{ translations.settingMainAddPhoto }}</span>
             </button>
             <div v-if="src" class="settings-main__top--delete" @click="deletePhoto">
               <div class="settings-main__top--delete-icon">
@@ -53,8 +53,8 @@
             <div class="settings-main-actions__cover">
               <button class="settings-main-actions-load__cover" @click.prevent="loadPhotoCover">
                 <load-photo />
-                <span v-if="srcCover">Изменить обложку</span>
-                <span v-else>Добавить обложку</span>
+                <span v-if="srcCover">{{ translations.settingsMainEditCover }}</span>
+                <span v-else>{{ translations.settingsMainAddCover }}</span>
               </button>
               <button v-if="srcCover" class="settings-main-actions-delete__cover" @click.prevent="deletePhotoCover">
                 <div>

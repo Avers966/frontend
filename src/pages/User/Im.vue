@@ -7,7 +7,7 @@
         :info="dialog"
         :push="countPush(dialog.unreadСount)"
         :me="+info?.id === +dialog.lastMessage?.authorId"
-        :active="+dialog?.id === +activeDialogId"
+        :active="dialog?.id === activeDialogId"
         @click.native="clickOnDialog(dialog.id)"
       />
     </div>
@@ -24,6 +24,7 @@
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
 import ImDialog from '@/components/Im/Dialog';
 import ImChat from '@/components/Im/Chat';
+import dialogsApi from '@/requests/dialogs';
 
 export default {
   name: 'Im',
@@ -45,6 +46,10 @@ export default {
   computed: {
     ...mapState('profile/dialogs', ['dialogs', 'messages', 'newMessage']),
     ...mapState('profile/info', ['info']),
+
+    currentActiveDialogId() {
+      return this.$route.params.activeDialogId;
+    }
   },
 
   watch: {
@@ -61,11 +66,14 @@ export default {
             [this.activeDialog] = newActiveDialog;
             this.activeDialog.unreadCount = 0;
           } else {
-            await this.userInfoId(this.activeDialogId).then(() => {
-              this.activeUser = this.getUsersInfo();
-              this.activeDialog = this.generateNewDialog(this.activeUser);
-              this.setDialogs([...this.dialogs, this.activeDialog]);
-            });
+            const response = await dialogsApi.newDialogs(this.currentActiveDialogId);
+            const dialogData = response.data;
+            this.activeDialog = this.generateNewDialog(dialogData)
+            console.log(dialogData);
+
+            // const newDialog = this.generateNewDialog(data);
+            // this.activeDialog = newDialog;
+            // this.setDialogs([...this.dialogs, newDialog]);
           }
         }
       },
@@ -74,10 +82,10 @@ export default {
     newMessage: {
       handler(message) {
         // new message of partner
-        if (this.activeDialogId && +message.authorId === +this.activeDialogId) {
+        if (this.activeDialogId && message.authorId === +this.activeDialogId) {
           message.isSentByMe = false;
           this.addOneMessage(message);
-          this.markReadedMessages(message.authorId);
+          // this.markReadedMessages(message.authorId);
         }
       },
     },
@@ -97,19 +105,22 @@ export default {
     ...mapGetters('profile/dialogs', ['getDialogs']),
     ...mapGetters('profile/info', ['getInfo']),
 
-    generateNewDialog(user) {
+    // async testDialogSearch(dialogId) {
+    //   const response = await axios.get(`/dialogs/recipientId/${dialogId}`);
+    //   return response.data;
+    // },
+
+    generateNewDialog(dialogData) {
       return {
-        id: this.activeDialogId,
-        conversationPartner: {
-          id: this.activeDialogId,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          lastOnlineTime: user.lastOnlineTime,
-          isOnline: user.isOnline,
-          photo: user.photo || null,
+        id: dialogData.id,
+        unreadCount: dialogData.unreadCount,
+        conversationPartner1: dialogData.conversationPartner1,
+        conversationPartner2: dialogData.conversationPartner2,
+        lastMessage: {
+          time: dialogData.lastMessage && dialogData.lastMessage[0]?.time,
+          messageText: dialogData.lastMessage && dialogData.lastMessage[0]?.messageText,
+          authorId: dialogData.lastMessage && dialogData.lastMessage[0]?.authorId,
         },
-        lastMessage: {},
-        unreadCount: 0,
       };
     },
 

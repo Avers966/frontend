@@ -189,6 +189,9 @@ export default {
     settingPasswordPlaceholder: 'Введите текущий пароль',
     settingPasswordPlaceholder2: 'Введите новый пароль',
 
+    settingsMainAddCover: 'Добавить обложку',
+    settingsMainEditCover: 'Изменить обложку',
+    settingsMainEditPhoto: 'Изменить фото',
     settingMainAddPhoto: 'Добавить фото',
     settingMainPhotoAlt: 'Нет фото',
     settingMainPlaceholderPhone: 'Введите телефон',
@@ -394,6 +397,9 @@ export default {
     settingPasswordPlaceholder: 'Enter the current password',
     settingPasswordPlaceholder2: 'Enter a new password',
 
+    settingsMainAddCover: 'Add a cover',
+    settingsMainEditCover: 'Change the cover',
+    settingsMainEditPhoto: 'Edit photo',
     settingMainAddPhoto: 'Add a photo',
     settingMainPhotoAlt: 'No photo',
     settingMainPlaceholderPhone: 'Enter your phone number',

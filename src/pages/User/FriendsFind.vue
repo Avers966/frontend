@@ -28,7 +28,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import FriendsBlock from '@/components/Friends/Block';
+import FriendsBlock from '@/components/Friends/BlockSearch'
 import FriendsSearch from '@/components/Friends/Search';
 import translations from '@/utils/lang.js';
 export default {

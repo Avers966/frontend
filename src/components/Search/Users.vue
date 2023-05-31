@@ -11,7 +11,6 @@
       </div>
 
       <pagination
-        v-if="getUsersPagination.totalElements > 10"
         :count="getUsersPagination.totalElements"
         v-model="page"
         :per-page="size"
@@ -36,7 +35,7 @@ export default {
   data() {
     return {
       page: 1,
-      size: 10,
+      size: 5,
       total: 20,
     };
   },
