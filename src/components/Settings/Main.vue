@@ -62,6 +62,50 @@
                 </div>
               </button>
             </div>
+            <div>
+              <div class="settings-emoji__buttons">
+                <button
+                  class="settings-emoji__btn"
+                  @click.prevent="toggleEmojiStatus"
+                >
+                  <span v-if="emojiStatus">{{ translations.settingsUnknowEmojiStatus }}</span>
+                  <span v-else>{{ translations.settingsSetEmojiStatus }}</span>
+                </button>
+              </div>
+              <div class="overlay-emoji" v-if="showEmojiStatus" @click="showEmojiStatus = false"></div>
+              <transition name="fade">
+                <div class="settings-emoji" v-if="showEmojiStatus" v-click-outside="closeEmojiList">
+                  <div class="settings-emoji-top">
+                    <div class="settings-emoji-top__left">
+                      <h2 class="settings-emoji__title">{{ translations.settingsEmojiTitle }}</h2>
+                      <span class="settings-emoji__desclamer">{{ translations.settingsEmojiDisclamer }}</span>
+                    </div>
+                    <div class="settings-emoji-top__right">
+                      <button class="settings-emoji-top__btn settings-main-actions-delete__cover" @click.prevent="deleteEmojiStatus">
+                        <delete-icon />
+                        {{ translations.settingsEmojiDelete }}
+                      </button>
+                    </div>
+                  </div>
+                  <ul class="settings-emoji__list">
+                    <li
+                      class="settings-emoji__item"
+                      :class="{ 'selected': index.toString() === emojiStatus }"
+                      v-for="(item, index) in itemsEmojiStatus"
+                      :key="index"
+                      @click="currentEmojiStatus(index)"
+                    >
+                      <div v-if="typeof item === 'string'">{{ item }}</div>
+                      <div v-else-if="typeof item === 'object' && item.type === 'image'">
+                        <p class="settings-emoji__subtitle">{{ currentTranslations === 'Русский' ? item.text : item.textEng }}</p>
+                        <img class="settings-emoji__img" :src="item.src" :alt="currentTranslations === 'Русский' ? item.alt : item.altEng">
+                        <p class="settings-emoji__desc">{{ currentTranslations === 'Русский' ? item.desc : item.descEng }}</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </transition>
+            </div>
           </div>
         </div>
       </div>
@@ -164,6 +208,7 @@ import LoadPhoto from '@/Icons/LoadPhoto.vue';
 import VSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css'
 import translations from '@/utils/lang.js';
+import vClickOutside from 'v-click-outside';
 // import moment from 'moment';
 import UserInfoFormBlock from '@/components/Settings/UserInfoForm/Block.vue';
 import axios from 'axios';
@@ -172,10 +217,13 @@ import axios from 'axios';
 Vue.component('VSelect', VSelect)
 export default {
   name: 'SettingsMain',
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
   components: { UserInfoFormBlock, DeleteIcon, LoadPhoto },
 
   data: () => ({
-    photoId: '',
+    emojiStatus: '',
     firstName: '',
     lastName: '',
     phone: '',
@@ -199,6 +247,71 @@ export default {
     ],
     fileName: '',
     src: '',
+
+    showEmojiStatus: false,
+    itemsEmojiStatus: [
+        {
+          type: 'image',
+          src: '/static/img/user/status_guru.png',
+          alt: 'Гуру кода',
+          altEng: 'Code guru',
+          text: 'Гуру кода',
+          textEng: 'Code guru',
+          desc: 'Вы уже обладаете высоким уровнем знаний и опыта в программировании.',
+          descEng: 'You already have a high level of knowledge and experience in programming.'
+        },
+        {
+          type: 'image',
+          src: '/static/img/user/status_new.png',
+          alt: 'Новичок',
+          altEng: 'Beginner',
+          text: 'Новичок',
+          textEng: 'Beginner',
+          desc: 'Вы только начинаете изучать программирование и имеете базовые знания в этой области.',
+          descEng: 'You are just starting to learn programming and have basic knowledge in this field.'
+        },
+        {
+          type: 'image',
+          src: '/static/img/user/status_escp.png',
+          alt: 'Экспериментатор',
+          altEng: 'The experimenter',
+          text: 'Экспериментатор',
+          textEng: 'The experimenter',
+          desc: 'Вы любите экспериментировать с новыми технологиями и методами программирования.',
+          descEng: 'You like to experiment with new technologies and programming methods.'
+        },
+        {
+          type: 'image',
+          src: '/static/img/user/status_teacher.png',
+          alt: 'Учитель',
+          altEng: 'Teacher',
+          text: 'Учитель',
+          textEng: 'Teacher',
+          desc: 'Вы уже имеете опыт и знания в программировании и помогаете другим изучать эту область.',
+          descEng: 'You already have experience and knowledge in programming and are helping others to study this field.'
+        },
+        {
+          type: 'image',
+          src: '/static/img/user/status_student.png',
+          alt: 'Фрилансер',
+          altEng: 'Freelancer',
+          text: 'Фрилансер',
+          textEng: 'Freelancer',
+          desc: 'Ваша работа основана на свободе и творчестве, что позволяет вам достигать успеха в своей области и наслаждаться жизнью.',
+          descEng: 'Your work is based on freedom and creativity, which allows you to achieve success in your field and enjoy life.'
+        },
+        {
+          type: 'image',
+          src: '/static/img/user/status_love.png',
+          alt: 'Любитель',
+          altEng: 'Lover',
+          text: 'Любитель',
+          textEng: 'Lover',
+          desc: 'Вы увлекаетесь программированием и имеете базовые знания в этой области, но не являетесь профессионалом.',
+          descEng: 'You are interested in programming and have basic knowledge in this field, but you are not a professional.'
+        },
+      ],
+    selectedEmojiStatus: null,
 
     srcCover: '',
     profileCover: '',
@@ -302,6 +415,30 @@ export default {
       return;
     },
 
+    closeEmojiList() {
+      this.showEmojiStatus = false
+    },
+
+    toggleEmojiStatus() {
+      this.showEmojiStatus = !this.showEmojiStatus;
+    },
+
+    currentEmojiStatus(index) {
+      this.selectedEmojiStatus = index.toString();
+      this.emojiStatus = index.toString();
+      this.showEmojiStatus = false;
+    },
+
+    deleteEmojiStatus() {
+      this.emojiStatus = '';
+      this.selectedEmojiStatus = '';
+      this.$store.dispatch('global/alert/setAlert', {
+          status: 'response',
+          text: 'Статус удалён, вы всегда сможете поставить его заново',
+        });
+      this.showEmojiStatus = false;
+    },
+
     loadCities(countryId) {
       if (!countryId) {
         this.city = null;
@@ -325,69 +462,68 @@ export default {
           text: 'Поля "Имя" и "Фамилия" являются обязательными',
         });
         return
-      } else if (!this.$refs.firstName.validate()) {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'error',
-          text: 'Поле "Имя" является обязательным',
-        });
-        return;
-      } else if (!this.$refs.lastName.validate()) {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'error',
-          text: 'Поле "Фамилия" является обязательным',
-        });
-        return;
-      } else if (this.lastName.length < 3 && this.firstName.length < 3) {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'error',
-          text: 'Имя и Фамилия не могут быть короче 3-ёх символов',
-        });
-        return;
-      } else if (this.firstName.length < 3) {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'error',
-          text: 'Имя не может быть короче 3-ёх символов',
-        });
-        return;
-      } else if (this.lastName.length < 3) {
-        this.$store.dispatch('global/alert/setAlert', {
-          status: 'error',
-          text: 'Фамилия не может быть короче 3-ёх символов',
-        });
-        return;
-      }
+        } else if (!this.$refs.firstName.validate()) {
+          this.$store.dispatch('global/alert/setAlert', {
+            status: 'error',
+            text: 'Поле "Имя" является обязательным',
+          });
+          return;
+        } else if (!this.$refs.lastName.validate()) {
+          this.$store.dispatch('global/alert/setAlert', {
+            status: 'error',
+            text: 'Поле "Фамилия" является обязательным',
+          });
+          return;
+        } else if (this.lastName.length < 3 && this.firstName.length < 3) {
+          this.$store.dispatch('global/alert/setAlert', {
+            status: 'error',
+            text: 'Имя и Фамилия не могут быть короче 3-ёх символов',
+          });
+          return;
+        } else if (this.firstName.length < 3) {
+          this.$store.dispatch('global/alert/setAlert', {
+            status: 'error',
+            text: 'Имя не может быть короче 3-ёх символов',
+          });
+          return;
+        } else if (this.lastName.length < 3) {
+          this.$store.dispatch('global/alert/setAlert', {
+            status: 'error',
+            text: 'Фамилия не может быть короче 3-ёх символов',
+          });
+          return;
+        }
 
-      if (this.fileName) {
-        await this.apiStorage(this.fileName).then((response) => {
-          this.fileName = response.data.fileName;
-        });
-      }
+        if (this.fileName) {
+          await this.apiStorage(this.fileName).then((response) => {
+            this.fileName = response.data.fileName;
+          });
+        }
 
-      if (this.profileCover) {
-        await this.apiStorage(this.profileCover).then((response) => {
-          this.profileCover = response.data.fileName;
-        });
-      }
+        if (this.profileCover) {
+          await this.apiStorage(this.profileCover).then((response) => {
+            this.profileCover = response.data.fileName;
+          });
+        }
 
-      await this.apiChangeInfo({
-        firstName: this.firstName,
-        lastName: this.lastName,
-        birthDate: _birthDate,
-        phone: this.phoneNumber,
-        about: this.about,
-        country: this.country,
-        city: this.city,
-        photo: this.fileName === '' ? this.src : this.fileName,
-        profileCover: this.profileCover === '' ? this.srcCover : this.profileCover,
-      }).then(() =>
-      this.$router.push('/profile'))
-    },
+        await this.apiChangeInfo({
+          firstName: this.firstName,
+          lastName: this.lastName,
+          birthDate: _birthDate,
+          phone: this.phoneNumber,
+          about: this.about,
+          country: this.country,
+          city: this.city,
+          emojiStatus: this.selectedEmojiStatus === '' ? this.emojiStatus : this.selectedEmojiStatus,
+          photo: this.fileName === '' ? this.src : this.fileName,
+          profileCover: this.profileCover === '' ? this.srcCover : this.profileCover,
+        }).then(() =>
+        this.$router.push('/profile'))
+      },
 
     // Аватарка:
-
     processFile(event) {
       [this.fileName] = event.target.files;
-      this.photoId = this.fileName.name; // добавляем это
       const reader = new window.FileReader();
       reader.onload = (e) => {
         this.src = e.target.result;
@@ -401,13 +537,11 @@ export default {
 
     deletePhoto() {
       this.fileName = '';
-      this.photoId = '';
       this.src = '';
       this.setStorage('');
     },
 
     // Обложка
-
     processFileCoverProfile(event) {
       [this.profileCover] = event.target.files;
       const reader = new window.FileReader();
@@ -432,6 +566,7 @@ export default {
       this.lastName = this.getInfo.lastName;
       this.src = this.getInfo.photo;
       this.srcCover = this.getInfo.profileCover;
+      this.emojiStatus = this.getInfo.emojiStatus;
 
       if (this.getInfo.phone) {
         this.phone = this.getInfo.phone.replace(/^[+]?[78]/, '');
@@ -459,6 +594,111 @@ export default {
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+.vt-notification-container {
+  display block !important
+}
+
+.settings-emoji__buttons
+  display flex
+  gap 10px
+  align-items center
+  position absolute
+  top 20px
+  left 20px
+
+.settings-emoji-top
+  display flex
+  align-items flex-start
+  justify-content space-between
+  border-bottom 1px solid #e3e3e3
+  padding-bottom 20px
+  margin-bottom 20px
+
+  &__right
+    display flex
+    flex-direction column
+
+  &__btn
+    padding 5px 10px !important
+
+.settings-emoji__btn
+  display flex
+  align-items center
+  gap 5px
+  font-size font-size-small-medium
+  color ui-cl-color-white-theme
+  font-weight font-weight-regular
+  background rgba(0, 0, 0, 0.36)
+  padding 5px
+  border-radius border-small
+  transition all .2s ease-in-out
+  &:hover
+    background rgba(0, 0, 0, 0.5)
+
+.overlay-emoji
+  position fixed
+  top 0
+  left 0
+  width 100%
+  height 100%
+  background-color rgba(0, 0, 0, 0.5)
+  z-index 1
+
+.settings-emoji
+  position fixed
+  display flex
+  flex-direction column
+  justify-content center
+  max-width 100%
+  top 50%
+  left 50%
+  transform translate(-50%, -50%)
+  z-index 10
+  background ui-cl-color-white-theme
+  border-radius border-big-radius
+  box-shadow 0px 0px 33px rgba(0,0,0,0.42)
+  padding 20px
+  &.fade-enter-active,
+  &.fade-leave-active
+    transition all .2s ease-in-out
+  &.fade-enter,
+  &.fade-leave-to
+    opacity 0
+
+  &__list
+    display grid
+    grid-template-columns repeat(6, 180px)
+    gap 20px
+    align-items flex-start
+  &__item
+
+    height 100%
+    padding 10px
+    border-radius border-small
+    transition all .2s ease-in-out
+    cursor pointer
+    &:hover
+      background-color #efefef
+    &.selected
+      background-color ui-cl-color-eucalypt
+      color ui-cl-color-white-theme
+  &__img
+    max-width 40px
+    margin-bottom 10px
+  &__title
+    font-size 23px
+    margin-bottom 5px
+  &__desclamer
+    font-size font-size-super-medium-small
+    color ui-cl-color-medium-grey-light
+  &__subtitle
+    font-weight font-weight-bold
+    margin-top 0
+    margin-bottom 10px
+  &__desc
+    font-size font-size-super-medium-small
+
 
 .settings-main
   position relative
