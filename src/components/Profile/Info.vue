@@ -1,6 +1,60 @@
 <template>
   <div>
     <div class="profile-info" v-if="info">
+      <div class="profile-info__overlay" v-if="showEmojiStatus" @click="showEmojiStatus = false"></div>
+      <transition name="fade">
+        <div class="profile-info__emoji" v-if="showEmojiStatus" v-click-outside="closeEmojiList">
+          <div v-if="info.emojiStatus === '0'" class="profile-info__emoji-item">
+            <img src="/static/img/user/status_guru.png" />
+            <span>{{ info.firstName }} {{ translations.profileEmojiStatus1 }}</span>
+            <p>
+              {{ translations.profileEmojiStatusDisclamer1 }}
+            </p>
+          </div>
+          <div v-else-if="info.emojiStatus === '1'" class="profile-info__emoji-item">
+            <img src="/static/img/user/status_new.png" />
+            <span>{{ info.firstName }} {{ translations.profileEmojiStatus2 }}</span>
+            <p>
+              {{ translations.profileEmojiStatusDisclamer2 }}
+            </p>
+          </div>
+          <div v-else-if="info.emojiStatus === '2'" class="profile-info__emoji-item">
+            <img src="/static/img/user/status_escp.png" />
+            <span>{{ info.firstName }} {{ translations.profileEmojiStatus3 }}</span>
+            <p>
+              {{ translations.profileEmojiStatusDisclamer3 }}
+            </p>
+          </div>
+          <div v-else-if="info.emojiStatus === '3'" class="profile-info__emoji-item">
+            <img src="/static/img/user/status_teacher.png" />
+            <span>{{ info.firstName }} {{ translations.profileEmojiStatus4 }}</span>
+            <p>
+              {{ translations.profileEmojiStatusDisclamer4 }}
+            </p>
+          </div>
+          <div v-else-if="info.emojiStatus === '4'" class="profile-info__emoji-item">
+            <img src="/static/img/user/status_student.png" />
+            <span>{{ info.firstName }} {{ translations.profileEmojiStatus5 }}</span>
+            <p>
+              {{ translations.profileEmojiStatusDisclamer5 }}
+            </p>
+          </div>
+          <div v-else-if="info.emojiStatus === '5'" class="profile-info__emoji-item">
+            <img src="/static/img/user/status_love.png" />
+            <span>{{ info.firstName }} {{ translations.profileEmojiStatus6 }}</span>
+            <p>
+              {{ translations.profileEmojiStatusDisclamer6 }}
+            </p>
+          </div>
+          <router-link
+            class="profile-info__emoji-set"
+            tag="button"
+            :to="{ name: 'Settings' }"
+          >
+            {{ translations.settingsSetEmojiStatus }}
+          </router-link>
+        </div>
+      </transition>
       <div
         class="profile-info__background"
         :style="{ 'background-image': `url(${info.profileCover ? info.profileCover : '/static/img/no_cover.svg'})` }"
@@ -27,6 +81,11 @@
             </div>
           </transition>
         </div>
+        <div class="profile-info__status">
+          <span class="user-status" :class="{ online, offline: !online }">
+            {{ statusText }}
+          </span>
+        </div>
       </div>
       <div class="profile-info__bottom">
         <div class="profile-info__left">
@@ -50,11 +109,6 @@
           </div>
         </transition>
         <div class="profile-info__image">
-          <div class="profile-info__status">
-            <span class="user-status" :class="{ online, offline: !online }">
-              {{ statusText }}
-            </span>
-          </div>
           <div
             class="profile-info__avatar"
             :class="{ offline: !online && !me }"
@@ -75,7 +129,29 @@
             </transition>
           </div>
           <div class="profile-info__names">
-            <h1 class="profile-info__name">{{ info.firstName + ' ' + info.lastName }}</h1>
+            <div class="profile-info__name">
+              <strong>{{ info.firstName + ' ' + info.lastName }}</strong>
+              <div class="profile-info__emoji-name" @click="toggleEmojiStatus">
+                <div v-if="info.emojiStatus === '0'">
+                  <img class="profile-info__emoji-status" src="/static/img/user/status_guru.png" />
+                </div>
+                <div v-else-if="info.emojiStatus === '1'">
+                  <img class="profile-info__emoji-status" src="/static/img/user/status_new.png" />
+                </div>
+                <div v-else-if="info.emojiStatus === '2'">
+                  <img class="profile-info__emoji-status" src="/static/img/user/status_escp.png" />
+                </div>
+                <div v-else-if="info.emojiStatus === '3'">
+                  <img class="profile-info__emoji-status" src="/static/img/user/status_teacher.png" />
+                </div>
+                <div v-else-if="info.emojiStatus === '4'">
+                  <img class="profile-info__emoji-status" src="/static/img/user/status_student.png" />
+                </div>
+                <div v-else-if="info.emojiStatus === '5'">
+                  <img class="profile-info__emoji-status" src="/static/img/user/status_love.png" />
+                </div>
+              </div>
+            </div>
             <span class="profile-info__cities" v-if="residenceText">{{ residenceText }}</span>
             <span class="profile-info__val" v-else>{{ translations.profileNotFilled }}</span>
           </div>
@@ -293,6 +369,7 @@ export default {
     modalType: 'deleteFriend',
     showInfo: false,
     showInfoWeather: false,
+    showEmojiStatus: false,
     showPopup: false,
     qrCode: '',
     copied: false,
@@ -345,6 +422,15 @@ export default {
     ...mapActions('profile/dialogs', ['createDialogWithUser', 'apiLoadAllDialogs']),
     ...mapActions('users/info', ['userInfoId']),
     ...mapGetters('profile/info', ['getInfo']),
+
+
+    closeEmojiList() {
+      this.showEmojiStatus = false
+    },
+
+    toggleEmojiStatus() {
+      this.showEmojiStatus = !this.showEmojiStatus;
+    },
 
     getAgeAsString(age) {
       const ages = ['год', 'года', 'лет'];
@@ -527,6 +613,69 @@ export default {
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
 @import '../../assets/stylus/base/settings.styl'
+
+  .profile-info__emoji
+    position fixed
+    display flex
+    flex-direction column
+    justify-content center
+    max-width 450px
+    width 100%
+    top 50%
+    left 50%
+    transform translate(-50%, -50%)
+    z-index 10
+    background ui-cl-color-white-theme
+    border-radius border-big-radius
+    box-shadow 0px 0px 33px rgba(0,0,0,0.42)
+    padding 80px 20px
+    &.fade-enter-active,
+    &.fade-leave-active
+      transition all .2s ease-in-out
+    &.fade-enter,
+    &.fade-leave-to
+      opacity 0
+
+  .profile-info__emoji-name
+    cursor pointer
+
+  .profile-info__emoji-set
+    display flex
+    align-items center
+    align-self center
+    padding 10px
+    border-radius border-super-small
+    background-color #F0F0F0
+    transition all .2s ease-in-out
+    &:hover
+      background-color #dbd2d2
+
+  .profile-info__emoji-item
+    display flex
+    flex-direction column
+    align-items center
+    justify-content center
+    text-align center
+    span
+      font-weight font-weight-medium
+      font-size 19px
+      margin-bottom 16px
+    p
+      font-size font-size-default
+      line-height 19px
+      margin-bottom 25px
+    img
+      max-width 80px
+      margin-bottom 20px
+
+  .profile-info__overlay
+    position fixed
+    top 0
+    left 0
+    width 100%
+    height 100%
+    background-color rgba(0, 0, 0, 0.5)
+    z-index 1
 
   .v-enter-active,
   .v-leave-active
@@ -759,9 +908,14 @@ export default {
       color ui-cl-color-full-black
       text-align center
     &__name
+      display flex
+      gap 10px
+      align-items center
       text-transform uppercase
       font-size 20px
       margin-bottom 5px
+    &__emoji-status
+      max-width 25px
     &__cities
       color ui-cl-color-949494
     &__value
@@ -772,9 +926,9 @@ export default {
       font-weight font-weight-bold
     &__status
       position absolute
-      top 0
-      right 0
-      z-index 100
+      top 50%
+      right 43%
+      z-index 8
     &__shared-btn
       position absolute
       top 10px

@@ -86,6 +86,25 @@ export default {
     profileInfoStatusOnline: 'онлайн',
     profileInfoStatusOffline: 'оффлайн',
 
+    profileEmojiStatus1: 'эксперт в программировании',
+    profileEmojiStatusDisclamer1: `Настоящий гений в программировании! Он решает задачи быстрее, чем ты успеваешь выдохнуть.
+    Его код - это как шедевр искусства, только вместо кисти он использует клавиатуру.
+    Работать с ним - это как играть в шахматы с компьютером, только он не сливается в конце.`,
+    profileEmojiStatus2: 'новичок в программировании',
+    profileEmojiStatusDisclamer2: 'Настолько гениален в программировании, что способен написать код на языке, который только он сам придумал.',
+    profileEmojiStatus3: 'гениальный экспериментатор',
+    profileEmojiStatusDisclamer3: `Каждый его код - это как произведение искусства, только вместо кистей он использует клавиатуру.
+    Работать с ним - это как играть в шахматы с компьютером, только он всегда остается на шаг впереди, а ты чувствуешь себя как старенький Windows XP.`,
+    profileEmojiStatus4: 'преподаватель в программировании',
+    profileEmojiStatusDisclamer4: `Если бы программа была пирогом, то этот преподаватель был бы шеф-поваром.`,
+    profileEmojiStatus5: 'фрилансер по жизни',
+    profileEmojiStatusDisclamer5: `Он не останавливается на достигнутом, он постоянно ищет новые способы заработка на своем искусстве,
+    чтобы оплатить свои долги по кредитке.`,
+    profileEmojiStatus6: 'любит программирование',
+    profileEmojiStatusDisclamer6: `В его жизни нет места для скучных проектов и поверхностного подхода - только глубокий анализ
+    и творческий подход к каждой задаче. Если у тебя есть какой-то нудный проект, то лучше держись от этого парня подальше - он точно
+     не захочет с тобой иметь дело!`,
+
     profileBlockMyPublished: 'Опубликованные',
     profileBlockMyQueued: 'Запланированные',
 
@@ -188,6 +207,12 @@ export default {
     settingPasswordLabel: 'Пароль:',
     settingPasswordPlaceholder: 'Введите текущий пароль',
     settingPasswordPlaceholder2: 'Введите новый пароль',
+
+    settingsEmojiDelete: 'Удалить статус',
+    settingsUnknowEmojiStatus: 'Изменить эмодзи-статус',
+    settingsSetEmojiStatus: 'Выбрать эмодзи-статус',
+    settingsEmojiTitle: 'Выберите статус',
+    settingsEmojiDisclamer: 'Он будет виден всем справа от вашего имени',
 
     settingsMainAddCover: 'Добавить обложку',
     settingsMainEditCover: 'Изменить обложку',
@@ -297,6 +322,30 @@ export default {
     profileBlockMyPublished: 'Published',
     profileBlockMyQueued: 'Planned',
 
+    profileEmojiStatus1: 'expert in programming',
+    profileEmojiStatusDisclamer1: `A real programming genius! He solves problems faster than you have time to exhale.
+    His code is like a masterpiece of art, only instead of a brush he uses a keyboard.
+    Working with him is like playing chess with a computer, only he doesn't merge at the end.`,
+
+    profileEmojiStatus2: 'new to programming',
+    profileEmojiStatusDisclamer2: 'He is so brilliant in programming that he is able to write code in a language that only he himself invented.',
+
+    profileEmojiStatus3: 'a brilliant experimenter',
+    profileEmojiStatusDisclamer3: `His every code is like a work of art, only he uses a keyboard instead of brushes.
+    Working with him is like playing chess with a computer, only he always stays one step ahead, and you feel like an old Windows XP.`,
+
+    profileEmojiStatus4: 'teacher in programming',
+    profileEmojiStatusDisclamer4: `If the program was a pie, then this teacher would be a chef.`,
+
+    profileEmojiStatus5: 'freelancer for life',
+    profileEmojiStatusDisclamer5: `He does not stop there, he is constantly looking for new ways to make money on his art,
+    to pay off your credit card debts.`,
+
+    profileEmojiStatus6: 'loves programming',
+    profileEmojiStatusDisclamer6: `There is no place in his life for boring projects and a superficial approach - only deep analysis
+    and a creative approach to each task. If you have some boring project, then it's better to stay away from this guy - he's for sure
+    won't want to deal with you!`,
+
     weatherHumidity: 'Humidity',
     weatherWind: 'Wind',
     weatherMinTemp: 'Min. temperature:',
@@ -396,6 +445,12 @@ export default {
     settingPasswordLabel: 'Password:',
     settingPasswordPlaceholder: 'Enter the current password',
     settingPasswordPlaceholder2: 'Enter a new password',
+
+    settingsEmojiDelete: 'Delete status',
+    settingsUnknowEmojiStatus: 'Change emoji status',
+    settingsSetEmojiStatus: 'Choose emoji status',
+    settingsEmojiTitle: 'Select the status',
+    settingsEmojiDisclamer: 'It will be visible to everyone to the right of your name',
 
     settingsMainAddCover: 'Add a cover',
     settingsMainEditCover: 'Change the cover',

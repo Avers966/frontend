@@ -369,6 +369,33 @@ methods: {
   .profile__tabs__title
     color ui-cl-color-8a8a8a
 
+  .profile-info__emoji
+    background #2C2D2E
+    color ui-cl-color-white-theme
+    border 1px solid ui-cl-color-border-dark
+
+  .profile-info__emoji-set
+    background-color ui-cl-color-full-black
+    color ui-cl-color-white-theme
+    &:hover
+      background-color #3e3e3e
+
+  .settings-emoji
+    background #2C2D2E
+    border 1px solid ui-cl-color-border-dark
+    color ui-cl-color-white-theme
+
+  .settings-emoji__desclamer
+    border-color #585858
+    color #cfcfcf
+
+  .settings-emoji-top
+    border-color #464646
+
+  .settings-emoji__item
+    &:hover
+      background-color #3e3e3e
+
   .profile-info__background
     background-color #1d1d1d
 
