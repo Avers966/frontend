@@ -395,6 +395,10 @@ export default {
 
   mounted() {
     this.loadCountries();
+
+    if (this.$route.params.showEmojiPicker) {
+      this.showEmojiStatus = true;
+    }
   },
 
   methods: {

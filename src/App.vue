@@ -3,11 +3,15 @@
     <component :is="layout" v-if="$route.meta.layout">
       <router-view />
     </component>
+    <!-- <div class="deleted-account" v-else>
+      <delete-account />
+    </div> -->
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+// import DeleteAccount from './layouts/DeleteAccount.vue';
 
 export default {
   name: 'App',
@@ -18,12 +22,17 @@ export default {
   },
   computed: {
     ...mapGetters('global/alert', ['getState']),
+    ...mapGetters('profile/info', ['getInfo']),
     alert() {
       return this.$store.state.global.alert;
     },
     layout() {
       return this.$route.meta.layout + '-layout';
     },
+
+    // isDeleted() {
+    //   return this.getInfo && this.getInfo.isDeleted;
+    // },
   },
 
   watch: {
@@ -56,6 +65,17 @@ export default {
       return;
     },
   },
+
+  // async mounted() {
+  //   if (!this.getInfo) {
+  //     await this.apiInfo();
+  //   }
+  // },
+
+  // methods: {
+  //   ...mapActions('profile/info', ['apiInfo']),
+  // }
+
 };
 </script>
 <style lang="stylus">
@@ -69,6 +89,13 @@ export default {
 
   &.error
     background-color ui-cl-color-wild-watermelon
+
+.deleted-account
+  display flex
+  align-items center
+  justify-content center
+  width 100%
+  height 100vh
 </style>
 
 <style lang="css">

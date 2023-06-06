@@ -187,6 +187,11 @@
         </div>
 
         <div class="post-block__actions" v-if="!queued && !admin" :class="{ 'open-comment': openCommnets }">
+          <post-reactions
+            @reaction-added="newlikeAction"
+            :active="info.myLike"
+          />
+
           <div class="news-block__actions-block">
             <like-comment
               :quantity="info.likeAmount"
@@ -250,13 +255,14 @@ import LikeComment from '@/components/LikeComment';
 import Comments from '@/components/Comments/Index.vue';
 import vClickOutside from 'v-click-outside';
 import translations from '@/utils/lang.js';
+import PostReactions from '@/components/PostReactions.vue'
 
 export default {
   name: 'NewsBlock',
   directives: {
     clickOutside: vClickOutside.directive
   },
-  components: { Comments, LikeComment, AddForm, PostTimer, ShowMore, UnknowUser },
+  components: { Comments, LikeComment, AddForm, PostTimer, ShowMore, UnknowUser, PostReactions },
   props: {
     info: {
       type: Object,
@@ -370,6 +376,11 @@ export default {
 
     async showMore() {
       await this.commentsById({ postId: this.info.id, currentPage: this.currentComments.page });
+    },
+
+    newlikeAction(reactionType) {
+      console.log('Добавлена реакция:', reactionType);
+      // this.putLike({ itemId: this.info.id, type: 'POST' }, reactionType);
     },
 
     likeAction(active) {

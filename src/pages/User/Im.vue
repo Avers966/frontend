@@ -70,10 +70,6 @@ export default {
             const dialogData = response.data;
             this.activeDialog = this.generateNewDialog(dialogData)
             console.log(dialogData);
-
-            // const newDialog = this.generateNewDialog(data);
-            // this.activeDialog = newDialog;
-            // this.setDialogs([...this.dialogs, newDialog]);
           }
         }
       },
@@ -82,7 +78,7 @@ export default {
     newMessage: {
       handler(message) {
         // new message of partner
-        if (this.activeDialogId && message.authorId === +this.activeDialogId) {
+        if (this.activeDialogId && message.conversationPartner1 === this.activeDialogId) {
           message.isSentByMe = false;
           this.addOneMessage(message);
           // this.markReadedMessages(message.authorId);
@@ -105,10 +101,6 @@ export default {
     ...mapGetters('profile/dialogs', ['getDialogs']),
     ...mapGetters('profile/info', ['getInfo']),
 
-    // async testDialogSearch(dialogId) {
-    //   const response = await axios.get(`/dialogs/recipientId/${dialogId}`);
-    //   return response.data;
-    // },
 
     generateNewDialog(dialogData) {
       return {

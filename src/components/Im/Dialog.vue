@@ -26,36 +26,27 @@
           {{ userInfo.firstName }}
           {{ userInfo.lastName }}
         </a>
-        <span class="user-status" v-if="!online">
-          Был(а) в сети
-          <br />
-          <!-- {{ this.userInfo.lastOnlineTime | moment('from') }} -->
-        </span>
-        <span class="user-status" v-else :class="{ online, offline: !online }"> онлайн </span>
+        <div class="im-dialog-online">
+          <span v-if="userInfo.lastOnlineTime === null">был(а) в сети давно</span>
+          <span class="isonline-online" v-else-if="userInfo.isOnline">Онлайн</span>
+          <span v-else>Был(а) в сети {{ userInfo.lastOnlineTime | moment('from') }}</span>
+        </div>
       </div>
       <div class="im-dialog__content">
         <p class="im-dialog__last">
-          <span class="im-dialog__last-me"> Вы: привет</span> <span class="im-dialog__time">11 часов назад</span>
-          <!-- <span> {{ userInfo.lastMessage.messageText || null }}</span> -->
+          <span class="im-dialog__last-me" v-if="me"> Вы: {{ info.lastMessage.messageText }}</span>
+          <span v-else> {{ info.lastMessage.messageText }}</span>
+          <span>{{ info.lastMessage.time }}</span>
         </p>
       </div>
-    </div>
-
-    <!-- <div class="im-dialog__content">
-      <p class="im-dialog__last">
-        <span class="im-dialog__last-me" v-if="me"> Вы: {{ userInfo.lastMessage[0].messageText }}</span>
-        <span v-else> {{ userInfo.lastMessage.messageText || null }}</span>
-      </p>
-
-      <span class="im-dialog__time">{{ userInfo.lastMessage[0].time  || null | moment('from') }}</span>
-    </div> -->
-
-    <span class="im-dialog__push" v-if="push > 0">{{ push }}</span>
+      <span class="im-dialog__push" v-if="push > 0">{{ push }}</span>
+      </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import { mapGetters, mapActions } from 'vuex';
 import UnknowUser from '../../Icons/UnknowUser.vue';
 
 export default {
@@ -68,23 +59,33 @@ export default {
     me: Boolean,
     info: Object,
   },
+
   data: () => ({
     userInfo: null
   }),
 
   computed: {
-    getInfo() {
-      return this.info.conversationPartner2;
-    },
+    ...mapGetters('profile/info', ['getInfo']),
+
+    conversationPartner() {
+    return this.info.conversationPartner1 === this.getInfo.id ? this.info.conversationPartner2 :
+           this.info.conversationPartner2 === this.getInfo.id ? this.info.conversationPartner1 :
+           null;
+    }
   },
 
-  mounted() {
+  async mounted() {
     this.fetchUserInfo();
+    if (!this.getInfo) {
+      await this.apiInfo();
+    }
   },
 
   methods: {
+    ...mapActions('profile/info', ['apiInfo']),
+
     fetchUserInfo() {
-      axios.get(`/account/${this.getInfo}`)
+      axios.get(`/account/${this.conversationPartner}`)
         .then(response => {
           this.userInfo = response.data;
         })
@@ -95,6 +96,14 @@ export default {
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+.im-dialog-online
+  font-size font-size-super-small
+  background-color ui-cl-color-eucalypt
+  color ui-cl-color-white-theme
+  padding 3px
+  border-radius border-super-small
+  box-shadow box-shadow-main
 
 .im-dialog-contents
   display flex
@@ -160,7 +169,7 @@ export default {
 
 .im-dialog__info
   display flex
-  gap 15px
+  gap 5px
   align-items center
   width 100%
 
