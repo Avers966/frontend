@@ -10,6 +10,31 @@
             <p>
               {{ translations.profileEmojiStatusDisclamer1 }}
             </p>
+            <ul class="profile-info__emoji__list" v-if="usersByEmojiStatus[0]">
+              <li class="profile-info__emoji__item" v-for="(user, index) in usersByEmojiStatus[0]" :key="user.id">
+                <div class="profile-info__emoji-img" v-if="index < 3">
+                  <img :title="user.firstName + ' ' + user.lastName" v-if="user.photo" :src="user.photo" />
+                  <div :title="user.firstName + ' ' + user.lastName" v-else>
+                    <unknow-user />
+                  </div>
+                </div>
+              </li>
+              <li class="profile-info__emoji-img img-emoji__more" v-if="usersByEmojiStatus[0].length > 3">+{{ usersByEmojiStatus[0].length - 3 }}</li>
+            </ul>
+            <span
+              class="profile-info__emoji-quantity"
+              v-if="usersByEmojiStatus[0]"
+            >
+              <div class="profile-info__emoji-quantity-all">
+                {{ usersByEmojiStatus[0].length }}
+                <span v-if="usersByEmojiStatus[0].length === 1">человек</span>
+                <span v-else-if="usersByEmojiStatus[0].length > 1 && usersByEmojiStatus[0].length < 5">человека</span>
+                <span v-else>человек</span>
+                <span v-if="usersByEmojiStatus[0].length === 1"> установил</span>
+                <span v-else> установили</span>
+                статус
+              </div>
+            </span>
           </div>
           <div v-else-if="info.emojiStatus === '1'" class="profile-info__emoji-item">
             <img src="/static/img/user/status_new.png" />
@@ -17,6 +42,31 @@
             <p>
               {{ translations.profileEmojiStatusDisclamer2 }}
             </p>
+            <ul class="profile-info__emoji__list" v-if="usersByEmojiStatus[1]">
+              <li class="profile-info__emoji__item" v-for="(user, index) in usersByEmojiStatus[1]" :key="user.id">
+                <div class="profile-info__emoji-img" v-if="index < 3">
+                  <img :title="user.firstName + ' ' + user.lastName" v-if="user.photo" :src="user.photo" />
+                  <div :title="user.firstName + ' ' + user.lastName" v-else>
+                    <unknow-user />
+                  </div>
+                </div>
+              </li>
+              <li class="profile-info__emoji-img img-emoji__more" v-if="usersByEmojiStatus[1].length > 3">+{{ usersByEmojiStatus[1].length - 3 }}</li>
+            </ul>
+            <span
+              class="profile-info__emoji-quantity"
+              v-if="usersByEmojiStatus[1]"
+            >
+              <div class="profile-info__emoji-quantity-all">
+                {{ usersByEmojiStatus[1].length }}
+                <span v-if="usersByEmojiStatus[1].length === 1">человек</span>
+                <span v-else-if="usersByEmojiStatus[1].length > 1 && usersByEmojiStatus[1].length < 5">человека</span>
+                <span v-else>человек</span>
+                <span v-if="usersByEmojiStatus[1].length === 1"> установил</span>
+                <span v-else> установили</span>
+                статус
+              </div>
+            </span>
           </div>
           <div v-else-if="info.emojiStatus === '2'" class="profile-info__emoji-item">
             <img src="/static/img/user/status_escp.png" />
@@ -24,6 +74,31 @@
             <p>
               {{ translations.profileEmojiStatusDisclamer3 }}
             </p>
+            <ul class="profile-info__emoji__list" v-if="usersByEmojiStatus[2]">
+              <li class="profile-info__emoji__item" v-for="(user, index) in usersByEmojiStatus[2]" :key="user.id">
+                <div class="profile-info__emoji-img" v-if="index < 3">
+                  <img :title="user.firstName + ' ' + user.lastName" v-if="user.photo" :src="user.photo" />
+                  <div :title="user.firstName + ' ' + user.lastName" v-else>
+                    <unknow-user />
+                  </div>
+                </div>
+              </li>
+              <li class="profile-info__emoji-img img-emoji__more" v-if="usersByEmojiStatus[2].length > 3">+{{ usersByEmojiStatus[2].length - 3 }}</li>
+            </ul>
+            <span
+              class="profile-info__emoji-quantity"
+              v-if="usersByEmojiStatus[2]"
+            >
+              <div class="profile-info__emoji-quantity-all">
+                {{ usersByEmojiStatus[2].length }}
+                <span v-if="usersByEmojiStatus[2].length === 1">человек</span>
+                <span v-else-if="usersByEmojiStatus[2].length > 1 && usersByEmojiStatus[2].length < 5">человека</span>
+                <span v-else>человек</span>
+                <span v-if="usersByEmojiStatus[2].length === 1"> установил</span>
+                <span v-else> установили</span>
+                статус
+              </div>
+            </span>
           </div>
           <div v-else-if="info.emojiStatus === '3'" class="profile-info__emoji-item">
             <img src="/static/img/user/status_teacher.png" />
@@ -31,6 +106,31 @@
             <p>
               {{ translations.profileEmojiStatusDisclamer4 }}
             </p>
+            <ul class="profile-info__emoji__list" v-if="usersByEmojiStatus[3]">
+              <li class="profile-info__emoji__item" v-for="(user, index) in usersByEmojiStatus[3]" :key="user.id">
+                <div class="profile-info__emoji-img" v-if="index < 3">
+                  <img :title="user.firstName + ' ' + user.lastName" v-if="user.photo" :src="user.photo" />
+                  <div :title="user.firstName + ' ' + user.lastName" v-else>
+                    <unknow-user />
+                  </div>
+                </div>
+              </li>
+              <li class="profile-info__emoji-img img-emoji__more" v-if="usersByEmojiStatus[3].length > 3">+{{ usersByEmojiStatus[3].length - 3 }}</li>
+            </ul>
+            <span
+              class="profile-info__emoji-quantity"
+              v-if="usersByEmojiStatus[3]"
+            >
+              <div class="profile-info__emoji-quantity-all">
+                {{ usersByEmojiStatus[3].length }}
+                <span v-if="usersByEmojiStatus[3].length === 1">человек</span>
+                <span v-else-if="usersByEmojiStatus[3].length > 1 && usersByEmojiStatus[3].length < 5">человека</span>
+                <span v-else>человек</span>
+                <span v-if="usersByEmojiStatus[3].length === 1"> установил</span>
+                <span v-else> установили</span>
+                статус
+              </div>
+            </span>
           </div>
           <div v-else-if="info.emojiStatus === '4'" class="profile-info__emoji-item">
             <img src="/static/img/user/status_student.png" />
@@ -38,6 +138,31 @@
             <p>
               {{ translations.profileEmojiStatusDisclamer5 }}
             </p>
+            <ul class="profile-info__emoji__list" v-if="usersByEmojiStatus[4]">
+              <li class="profile-info__emoji__item" v-for="(user, index) in usersByEmojiStatus[4]" :key="user.id">
+                <div class="profile-info__emoji-img" v-if="index < 3">
+                  <img :title="user.firstName + ' ' + user.lastName" v-if="user.photo" :src="user.photo" />
+                  <div :title="user.firstName + ' ' + user.lastName" v-else>
+                    <unknow-user />
+                  </div>
+                </div>
+              </li>
+              <li class="profile-info__emoji-img img-emoji__more" v-if="usersByEmojiStatus[4].length > 3">+{{ usersByEmojiStatus[5].length - 3 }}</li>
+            </ul>
+            <span
+              class="profile-info__emoji-quantity"
+              v-if="usersByEmojiStatus[4]"
+            >
+              <div class="profile-info__emoji-quantity-all">
+                {{ usersByEmojiStatus[4].length }}
+                <span v-if="usersByEmojiStatus[4].length === 1">человек</span>
+                <span v-else-if="usersByEmojiStatus[4].length > 1 && usersByEmojiStatus[4].length < 5">человека</span>
+                <span v-else>человек</span>
+                <span v-if="usersByEmojiStatus[4].length === 1"> установил</span>
+                <span v-else> установили</span>
+                статус
+              </div>
+            </span>
           </div>
           <div v-else-if="info.emojiStatus === '5'" class="profile-info__emoji-item">
             <img src="/static/img/user/status_love.png" />
@@ -45,11 +170,36 @@
             <p>
               {{ translations.profileEmojiStatusDisclamer6 }}
             </p>
+            <ul class="profile-info__emoji__list" v-if="usersByEmojiStatus[5]">
+              <li class="profile-info__emoji__item" v-for="(user, index) in usersByEmojiStatus[5]" :key="user.id">
+                <div class="profile-info__emoji-img" v-if="index < 3">
+                  <img :title="user.firstName + ' ' + user.lastName" v-if="user.photo" :src="user.photo" />
+                  <div :title="user.firstName + ' ' + user.lastName" v-else>
+                    <unknow-user />
+                  </div>
+                </div>
+              </li>
+              <li class="profile-info__emoji-img img-emoji__more" v-if="usersByEmojiStatus[5].length > 3">+{{ usersByEmojiStatus[5].length - 3 }}</li>
+            </ul>
+            <span
+              class="profile-info__emoji-quantity"
+              v-if="usersByEmojiStatus[5]"
+            >
+              <div class="profile-info__emoji-quantity-all">
+                {{ usersByEmojiStatus[5].length }}
+                <span v-if="usersByEmojiStatus[5].length === 1">человек</span>
+                <span v-else-if="usersByEmojiStatus[5].length > 1 && usersByEmojiStatus[5].length < 5">человека</span>
+                <span v-else>человек</span>
+                <span v-if="usersByEmojiStatus[5].length === 1"> установил</span>
+                <span v-else> установили</span>
+                статус
+              </div>
+            </span>
           </div>
           <router-link
             class="profile-info__emoji-set"
             tag="button"
-            :to="{ name: 'Settings' }"
+            :to="{ name: 'Settings', params: { showEmojiPicker: true } }"
           >
             {{ translations.settingsSetEmojiStatus }}
           </router-link>
@@ -80,11 +230,6 @@
               </div>
             </div>
           </transition>
-        </div>
-        <div class="profile-info__status">
-          <span class="user-status" :class="{ online, offline: !online }">
-            {{ statusText }}
-          </span>
         </div>
       </div>
       <div class="profile-info__bottom">
@@ -154,6 +299,13 @@
             </div>
             <span class="profile-info__cities" v-if="residenceText">{{ residenceText }}</span>
             <span class="profile-info__val" v-else>{{ translations.profileNotFilled }}</span>
+            <div class="profile-info__status">
+              <span class="user-status" :class="{ online, offline: !online }">
+                <span v-if="info.lastOnlineTime === null">был(а) в сети давно</span>
+                <span class="isonline-online" v-else-if="info.isOnline">{{ translations.profileInfoStatusOnline }}</span>
+                <span v-else>Был(а) в сети {{ info.lastOnlineTime | moment('from') }}</span>
+              </span>
+            </div>
           </div>
         </div>
         <div class="profile-info__right">
@@ -328,6 +480,7 @@ import ArrowButtom from '../../Icons/ArrowBottom.vue';
 import CopiedIcon from '../../Icons/CopiedIcon.vue';
 import DoneCopied from '../../Icons/DoneCopied.vue';
 import PlusIcon from '../../Icons/PlusIcon.vue';
+import UnknowUser from '../../Icons/UnknowUser.vue';
 import WeatherBlock from '@/components/WeatherBlock.vue';
 import Modal from '@/components/Modal';
 import QRCode from 'qrcode-generator';
@@ -340,6 +493,7 @@ export default {
   directives: {
     clickOutside: vClickOutside.directive
   },
+
   components: {
     GiftIcon,
     PhoneIcon,
@@ -350,6 +504,7 @@ export default {
     DoneCopied,
     ArrowButtom,
     PlusIcon,
+    UnknowUser,
     Modal,
     WeatherBlock
   },
@@ -380,6 +535,23 @@ export default {
 
   computed: {
     ...mapGetters('profile/dialogs', ['dialogs']),
+    ...mapGetters('global/search', ['getResultById']),
+
+    users() {
+      return this.getResultById('users');
+    },
+
+    usersByEmojiStatus() {
+      return this.users.reduce((acc, user) => {
+        const { emojiStatus } = user;
+        if (acc[emojiStatus]) {
+          acc[emojiStatus].push(user);
+        } else {
+          acc[emojiStatus] = [user];
+        }
+        return acc;
+      }, {});
+    },
 
     translations() {
       const lang = this.$store.state.auth.languages.language.name;
@@ -416,10 +588,21 @@ export default {
     },
   },
 
+  mounted() {
+    let searchQuery = Object.assign({}, this.getUsersQueryParams, {
+      page: this.page - 1,
+      size: this.size,
+    });
+    if (this.users.length === 0) {
+      this.searchUsers(searchQuery);
+    }
+  },
+
   methods: {
     ...mapActions('users/actions', ['apiBlockedUser', 'apiUnblockUser']),
     ...mapActions('profile/friends', ['apiAddFriends', 'apiDeleteFriends', 'apiSubscribe']),
     ...mapActions('profile/dialogs', ['createDialogWithUser', 'apiLoadAllDialogs']),
+    ...mapActions('global/search', ['searchUsers']),
     ...mapActions('users/info', ['userInfoId']),
     ...mapGetters('profile/info', ['getInfo']),
 
@@ -614,6 +797,49 @@ export default {
 @import '../../assets/stylus/base/vars.styl'
 @import '../../assets/stylus/base/settings.styl'
 
+  .profile-info__emoji__list
+    display flex
+    align-items center
+    margin-bottom 16px
+
+  .profile-info__emoji__item
+    margin-left -12px
+
+  .profile-info__emoji-quantity-all
+    color ui-cl-color-santas-gray
+    span
+      font-size font-size-small !important
+
+  .img-emoji__more
+    background-color ui-cl-color-light-eucalypt !important
+    color ui-cl-color-white-theme !important
+
+  .profile-info__emoji-img
+    display flex
+    align-items center
+    justify-content center
+    width 50px
+    height 50px
+    border-radius 50%
+    overflow hidden
+    background-color #d9d9d9
+    color ui-cl-color-dark-grey
+    font-weight font-weight-medium
+    img
+      display flex
+      align-items center
+      justify-content center
+      width 100%
+      height 100%
+      -o-object-fit cover
+      object-fit cover
+      margin-bottom 0 !important
+
+  .profile-info__emoji-quantity,
+  .profile-info__emoji-quantity-user
+    font-size font-size-small !important
+
+
   .profile-info__emoji
     position fixed
     display flex
@@ -628,7 +854,7 @@ export default {
     background ui-cl-color-white-theme
     border-radius border-big-radius
     box-shadow 0px 0px 33px rgba(0,0,0,0.42)
-    padding 80px 20px
+    padding 50px 20px
     &.fade-enter-active,
     &.fade-leave-active
       transition all .2s ease-in-out
@@ -911,6 +1137,7 @@ export default {
       display flex
       gap 10px
       align-items center
+      justify-content center
       text-transform uppercase
       font-size 20px
       margin-bottom 5px
@@ -925,10 +1152,9 @@ export default {
       gap 5px
       font-weight font-weight-bold
     &__status
-      position absolute
-      top 50%
-      right 43%
-      z-index 8
+      display flex
+      justify-content center
+      margin-top 5px
     &__shared-btn
       position absolute
       top 10px

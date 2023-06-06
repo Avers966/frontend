@@ -6,7 +6,7 @@
           <div class="main-layout__logotype">
             <p>Code Lounge</p>
           </div>
-          <form class="main-layout__search" action="#" @submit.prevent="onSearch">
+          <form class="main-layout__search" action="#" v-if="getInfo && !getInfo.isDeleted" @submit.prevent="onSearch">
             <button class="main-layout__search-btn">
               <search-icon />
             </button>
@@ -20,7 +20,7 @@
           </form>
         </div>
         <div class="main-layout__header-right">
-          <div class="main-layout__push">
+          <div class="main-layout__push" v-if="getInfo && !getInfo.isDeleted">
             <span @click="togglePush">
               <push-icon
                 :isNotEmpty="getNotificationsLength > 0 && !isOpenPush"
@@ -36,7 +36,7 @@
           >
             <div class="main-layout__user-pic header__pic" style="background-color: #8bc49e">
               <img
-                v-if="getInfo?.photo"
+                v-if="getInfo?.photo && getInfo && !getInfo.isDeleted"
                 :src="getInfo?.photo"
                 :alt="getInfo?.firstName[0] + ' ' + getInfo.lastName[0]"
               />
@@ -52,7 +52,7 @@
               v-click-outside="closeActionsProfile"
               class="main-layout__actions-profile"
             >
-              <router-link :to="{ name: 'Profile' }" class="main-layout-profile__actions">
+              <router-link :to="{ name: 'Profile' }" v-if="getInfo && !getInfo.isDeleted" class="main-layout-profile__actions">
                 <div class="main-layout__user-pic header__pic" style="background-color: #8bc49e">
                   <img
                     v-if="getInfo?.photo"
@@ -63,11 +63,11 @@
                     <unknow-user />
                   </div>
                 </div>
-                <span class="main-layout__user-name">{{ getInfo?.fullName }}</span>
+                <span v-if="getInfo && !getInfo.isDeleted" class="main-layout__user-name">{{ getInfo?.fullName }}</span>
                 <span class="main-layout__user-post" v-if="isAdminPage">- администратор</span>
               </router-link>
               <ul class="main-layout__actions-profile-list">
-                <li class="main-layout__actions-profile-item">
+                <li v-if="getInfo && !getInfo.isDeleted" class="main-layout__actions-profile-item">
                   <div class="simple-svg-wrapper">
                     <sidebar-icons :name="'settings'" />
                   </div>

@@ -35,11 +35,11 @@
 
       <span class="user-status" :class="{ online }">
         Был(а) в сети
-        <!-- {{ this.info.conversationPartner.lastOnlineTime | moment('from') }} -->
+        {{ this.info.conversationPartner.lastOnlineTime | moment('from') }}
       </span>
     </div>
 
-    <div class="im-chat__user" v-if="userInfo">
+    <div class="im-chat__user" v-else-if="userInfo">
       <router-link
         class="im-chat__user-pic"
         :to="{
@@ -74,30 +74,12 @@
 
       <span class="user-status" :class="{ online }">
         Был(а) в сети
-        <!-- {{ this.info.conversationPartner.lastOnlineTime | moment('from') }} -->
+        {{ this.userInfo.lastOnlineTime | moment('from') }}
       </span>
     </div>
 
-    <div class="im-chat__infitite_list_wrapper">
-      <virtual-list
-        class="im-chat__infitite_list scroll-touch"
-        :size="60"
-        :keeps="120"
-        data-key="id"
-        :data-sources="messagesGrouped"
-        :data-component="itemComponent"
-        :wrap-class="'im-chat__message'"
-        :root-tag="'section'"
-        @totop="onScrollToTop"
-        @scroll.passive="onScroll"
-        @tobottom="onScrollToBottom"
-        ref="vsl"
-      >
-        <div class="im-chat__loader" slot="header" v-show="fetching">
-          <div class="spinner" v-show="!isHistoryEndReached()" />
-          <div class="finished" v-show="isHistoryEndReached()">Больше сообщений нет</div>
-        </div>
-      </virtual-list>
+    <div class="im-chat__infitite_list_wrapper chat-message" v-chat-scroll ref="chatContainer">
+      <chat-message v-for="(item, index) in messagesGrouped" :key="index" :source="item"/>
     </div>
 
     <form class="im-chat__enter" action="#" @submit.prevent="onSubmitMessage">
@@ -112,11 +94,13 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 import ChatMessage from '@/components/Im/ChatMessage';
-import VirtualList from 'vue-virtual-scroll-list';
 import UnknowUser from '../../Icons/UnknowUser.vue';
 import axios from 'axios';
+import VueChatScroll from 'vue-chat-scroll';
+Vue.use(VueChatScroll)
 
 const makeHeader = (msgDate) => {
   return { id: `group-${msgDate}`, stubDate: true, date: msgDate };
@@ -125,8 +109,8 @@ const makeHeader = (msgDate) => {
 export default {
   name: 'ImChat',
   components: {
-    VirtualList,
-    UnknowUser
+    UnknowUser,
+    ChatMessage
   },
 
   props: {
@@ -137,7 +121,6 @@ export default {
 
   data: () => ({
     mes: '',
-    itemComponent: ChatMessage,
     isUserViewHistory: false,
     fetching: false,
     lastId: -1,
@@ -145,6 +128,8 @@ export default {
   }),
 
   computed: {
+    ...mapGetters('profile/info', ['getInfo']),
+
     messagesGrouped() {
       let groups = [];
       let headerDate = null;
@@ -155,44 +140,49 @@ export default {
           headerDate = msgDate;
           groups.push(makeHeader(headerDate));
         }
-        msg.isSentByMe = +msg.authorId === +this.getInfo().id;
+        msg.isSentByMe = msg.conversationPartner2 === this.info.id;
         groups.push(msg);
+
       }
       return groups;
     },
 
     getInfoConversationPartner() {
-      return this.info?.conversationPartner2
+      return this.info.conversationPartner1 === this.getInfo.id ? this.info.conversationPartner2 :
+           this.info.conversationPartner2 === this.getInfo.id ? this.info.conversationPartner1 :
+           null;
     }
   },
 
-  watch: {
-    messages() {
-      if (this.follow) this.setVirtualListToBottom();
-    },
-  },
+  // watch: {
+  //   messages() {
+  //     if (this.follow) this.setVirtualListToBottom();
+  //   },
+  // },
 
-  mounted() {
+  async mounted() {
     this.follow = true;
-    this.markReadedMessages(this.$route.params.activeDialogId);
-    this.$refs.vsl.scrollToBottom();
+    // this.markReadedMessages(this.$route.params.activeDialogId);
+    // this.$refs.vsl.scrollToBottom();
     this.fetchUserInfo();
+    if (!this.getInfo) {
+      await this.apiInfo();
+    }
   },
 
   methods: {
     ...mapActions('profile/dialogs', ['postMessage', 'loadOlderMessages', 'markReadedMessages']),
     ...mapGetters('profile/dialogs', ['isHistoryEndReached', 'getDialogs']),
-    ...mapGetters('profile/info', ['getInfo']),
     ...mapMutations('profile/dialogs', ['addOneMessage']),
+    ...mapActions('profile/info', ['apiInfo']),
 
     onSubmitMessage() {
       if (!this.mes.trim()) return;
-      const time = new Date().getTime();
       const payload = {
         type: 'MESSAGE',
         recipientId: this.info.conversationPartner2,
         data: {
-          time: time,
+          time: null,
           conversationPartner1: this.info.conversationPartner1,
           conversationPartner2: this.info.conversationPartner2,
           messageText: this.mes,
@@ -216,48 +206,56 @@ export default {
       });
     },
 
-    async onScrollToTop() {
-      if (this.$refs.vsl) {
-        if (!this.isHistoryEndReached()) {
-          let [oldest] = this.messagesGrouped;
+    addMessage() {
+      this.messages.push(this.newMessage)
+      this.newMessage = ''
+      this.$nextTick(() => {
+        this.$refs.chatContainer.scrollTop = this.$refs.chatContainer.scrollHeight
+      })
+    }
 
-          this.fetching = true;
-          await this.loadOlderMessages();
-          this.setVirtualListToOffset(1);
+    // async onScrollToTop() {
+    //   if (this.$refs.vsl) {
+    //     if (!this.isHistoryEndReached()) {
+    //       let [oldest] = this.messagesGrouped;
 
-          this.$nextTick(() => {
-            let offset = 0;
-            for (const groupedMsg of this.messagesGrouped) {
-              if (groupedMsg.id === oldest.id) break;
-              offset += this.$refs.vsl.getSize(groupedMsg.id);
-            }
+    //       this.fetching = true;
+    //       await this.loadOlderMessages();
+    //       this.setVirtualListToOffset(1);
 
-            this.setVirtualListToOffset(offset);
-            this.fetching = false;
-          });
-        }
-      }
-    },
+    //       this.$nextTick(() => {
+    //         let offset = 0;
+    //         for (const groupedMsg of this.messagesGrouped) {
+    //           if (groupedMsg.id === oldest.id) break;
+    //           offset += this.$refs.vsl.getSize(groupedMsg.id);
+    //         }
 
-    onScroll() {
-      this.follow = false;
-    },
+    //         this.setVirtualListToOffset(offset);
+    //         this.fetching = false;
+    //       });
+    //     }
+    //   }
+    // },
 
-    onScrollToBottom() {
-      this.follow = true;
-    },
+    // onScroll() {
+    //   this.follow = false;
+    // },
 
-    setVirtualListToOffset(offset) {
-      if (this.$refs.vsl) {
-        this.$refs.vsl.scrollToOffset(offset);
-      }
-    },
+    // onScrollToBottom() {
+    //   this.follow = true;
+    // },
 
-    setVirtualListToBottom() {
-      if (this.$refs.vsl) {
-        this.$refs.vsl.scrollToBottom();
-      }
-    },
+    // setVirtualListToOffset(offset) {
+    //   if (this.$refs.vsl) {
+    //     this.$refs.vsl.scrollToOffset(offset);
+    //   }
+    // },
+
+    // setVirtualListToBottom() {
+    //   if (this.$refs.vsl) {
+    //     this.$refs.vsl.scrollToBottom();
+    //   }
+    // },
   },
 };
 </script>
@@ -309,8 +307,12 @@ export default {
     color ui-cl-color-eucalypt
 
 .im-chat__infitite_list_wrapper
+  padding 20px
   position relative
+  overflow-y auto
   flex 1
+  &.div:not(:last-child)
+    margin-bottom 20px
 
 .im-chat__infitite_list
   position absolute

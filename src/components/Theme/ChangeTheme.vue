@@ -395,6 +395,8 @@ methods: {
   .settings-emoji__item
     &:hover
       background-color #3e3e3e
+    &.selected
+      background-color ui-cl-color-eucalypt
 
   .profile-info__background
     background-color #1d1d1d

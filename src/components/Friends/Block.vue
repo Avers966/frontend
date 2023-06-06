@@ -6,10 +6,15 @@
       <img v-else src="/static/img/avatar.png" :alt="userInfo.firstName" />
     </div>
     <div class="friends-block__info">
-      <router-link class="friends-block__name" :to="{ name: 'ProfileId', params: { id: userInfo.id } }">
-        {{ userInfo.firstName }}
-        {{ userInfo.lastName }}
-      </router-link>
+      <div class="friends-block-top-name">
+        <router-link class="friends-block__name" :to="{ name: 'ProfileId', params: { id: userInfo.id } }">
+          {{ userInfo.firstName }}
+          {{ userInfo.lastName }}
+        </router-link>
+        <span class="status-isonline" v-if="userInfo.lastOnlineTime === null">был(а) в сети давно</span>
+        <span class="status-isonline isonline-online" v-else-if="userInfo.isOnline">{{ translations.profileInfoStatusOnline }}</span>
+        <span class="status-isonline" v-else>был(а) в сети {{ userInfo.lastOnlineTime | moment('from') }}</span>
+      </div>
       <span class="friends-block__age-city" v-if="moderator">модератор</span>
       <span class="friends-block__age-city" v-else-if="userInfo.birthDate && userInfo.country">
         {{ userInfo.birthDate | moment('from', true) }},
@@ -445,6 +450,21 @@ export default {
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+.friends-block-top-name
+  display flex
+  align-items center
+  gap 10px
+
+.isonline-online
+  color ui-cl-color-eucalypt
+
+.status-isonline
+  font-size font-size-super-medium-small
+  background-color ui-cl-color-white-theme
+  padding 3px
+  border-radius border-super-small
+  box-shadow box-shadow-main
 
 .v-enter-active,
 .v-leave-active
