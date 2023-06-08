@@ -5,15 +5,16 @@
         v-for="dialog in dialogs"
         :key="dialog.id"
         :info="dialog"
+        :user-info="users"
         :push="countPush(dialog.unreadСount)"
         :me="+info?.id === +dialog.lastMessage?.authorId"
-        :active="dialog?.id === activeDialogId"
-        @click.native="clickOnDialog(dialog.id)"
+        :active="dialog?.id === activeDialog?.id"
+        @click.native="clickOnDialog(dialog)"
       />
     </div>
 
     <div class="im__chat" v-if="activeDialog && messagesLoaded">
-      <im-chat :info="activeDialog" :messages="messages" />
+      <im-chat :user-info="users" :info="activeDialog" :messages="messages" />
     </div>
 
     <div v-else class="no-dialog">Диалог не выбран</div>
@@ -40,28 +41,44 @@ export default {
     return {
       activeDialog: null,
       messagesLoaded: false,
+      infoUser: null
     };
   },
 
   computed: {
     ...mapState('profile/dialogs', ['dialogs', 'messages', 'newMessage']),
+    ...mapGetters('global/search', ['getResultById', 'getUsersQueryParams']),
     ...mapState('profile/info', ['info']),
+
+    users() {
+      return this.getResultById('users');
+    },
 
     currentActiveDialogId() {
       return this.$route.params.activeDialogId;
-    }
+    },
+
+    conversationPartners() {
+      return this.dialogs.filter(dialog => {
+        return dialog.conversationPartner1 === this.info.id || dialog.conversationPartner2 === this.info.id;
+      }).map(dialog => {
+        return dialog.conversationPartner1 === this.info.id ? dialog.conversationPartner2 : dialog.conversationPartner1;
+      });
+    },
   },
 
   watch: {
     activeDialogId: {
       immediate: true,
       async handler(value) {
-        await this.fetchDialogs();
+        if (value) {
+          await this.newDialogs(this.currentActiveDialogId);
+        }
         if (value) {
           this.messagesLoaded = false;
-          await this.fetchMessages(value);
+          await this.fetchMessages(this.currentActiveDialogId);
           this.messagesLoaded = true;
-          const newActiveDialog = this.getDialogs().length ? this.getDialogs().filter((d) => d.id === value) : [];
+          const newActiveDialog = this.fetchDialogs().length ? this.fetchDialogs().filter((d) => d.id === this.currentActiveDialogId) : [];
           if (newActiveDialog.length > 0) {
             [this.activeDialog] = newActiveDialog;
             this.activeDialog.unreadCount = 0;
@@ -81,15 +98,21 @@ export default {
         if (this.activeDialogId && message.conversationPartner1 === this.activeDialogId) {
           message.isSentByMe = false;
           this.addOneMessage(message);
-          // this.markReadedMessages(message.authorId);
+          this.markReadedMessages(message.conversationPartner1);
         }
       },
     },
   },
 
+  beforeMount() {
+    setTimeout(() => {
+      this.onSearchUsers();
+    }, 1000)
+  },
+
   methods: {
-    ...mapActions('profile/dialogs', ['fetchDialogs', 'fetchMessages', 'markReadedMessages']),
-    ...mapActions('users/info', ['userInfoId']),
+    ...mapActions('profile/dialogs', ['newDialogs','fetchDialogs', 'fetchMessages', 'markReadedMessages']),
+    ...mapActions('global/search', ['searchUsers']),
     ...mapMutations('profile/dialogs', [
       'addOneMessage',
       'setUnreadedMessages',
@@ -101,6 +124,12 @@ export default {
     ...mapGetters('profile/dialogs', ['getDialogs']),
     ...mapGetters('profile/info', ['getInfo']),
 
+    onSearchUsers() {
+      const searchQuery = Object.assign({}, this.getUsersQueryParams, {
+        ids: this.conversationPartners,
+      });
+      this.searchUsers({ payload: searchQuery });
+    },
 
     generateNewDialog(dialogData) {
       return {
@@ -121,14 +150,12 @@ export default {
     },
 
     clickOnDialog(dialogId) {
-      if (+dialogId === +this.activeDialogId) {
-        return;
+      const dialog = this.dialogs.find(d => d.id === dialogId);
+      if (dialog) {
+        const conversationPartner = dialog.conversationPartner1 === this.info.id ? dialog.conversationPartner2 : dialog.conversationPartner1;
+        this.$router.push({ name: 'ImChat', params: { activeDialogId: conversationPartner } });
       }
-      this.$router.push({
-        name: 'ImChat',
-        params: { activeDialogId: dialogId },
-      });
-    },
+    }
   },
 };
 </script>

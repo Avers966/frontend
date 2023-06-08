@@ -1,14 +1,14 @@
 <template>
-  <div class="im-dialog" :class="{ active, push }" v-if="userInfo">
+  <div class="im-dialog" :class="{ active, push }" v-if="filteredUserInfo.length !== 0">
     <a
       class="im-dailog__pic"
       href="#"
     >
       <div class="main-layout__user-pic">
         <img
-          v-if="userInfo.photo"
-          :src="userInfo.photo"
-          :alt="userInfo.firstName[0] + ' ' + userInfo.lastName[0]"
+          v-if="filteredUserInfo && filteredUserInfo[0].photo"
+          :src="filteredUserInfo && filteredUserInfo[0].photo"
+          :alt="filteredUserInfo && filteredUserInfo[0].firstName[0] + ' ' + filteredUserInfo && filteredUserInfo[0].lastName[0]"
         />
 
         <div v-else>
@@ -23,20 +23,20 @@
           class="im-dialog__name"
           href="#"
         >
-          {{ userInfo.firstName }}
-          {{ userInfo.lastName }}
+          {{ filteredUserInfo && filteredUserInfo[0].firstName }}
+          {{ filteredUserInfo && filteredUserInfo[0].lastName }}
         </a>
         <div class="im-dialog-online">
-          <span v-if="userInfo.lastOnlineTime === null">был(а) в сети давно</span>
-          <span class="isonline-online" v-else-if="userInfo.isOnline">Онлайн</span>
-          <span v-else>Был(а) в сети {{ userInfo.lastOnlineTime | moment('from') }}</span>
+          <span v-if="filteredUserInfo && filteredUserInfo[0].lastOnlineTime === null">был(а) в сети давно</span>
+          <span class="isonline-online" v-else-if="filteredUserInfo && filteredUserInfo[0].isOnline">Онлайн</span>
+          <span v-else>Был(а) в сети {{ filteredUserInfo && filteredUserInfo[0].lastOnlineTime | moment('from') }}</span>
         </div>
       </div>
       <div class="im-dialog__content">
         <p class="im-dialog__last">
-          <span class="im-dialog__last-me" v-if="me"> Вы: {{ info.lastMessage.messageText }}</span>
-          <span v-else> {{ info.lastMessage.messageText }}</span>
-          <span>{{ info.lastMessage.time }}</span>
+          <span class="im-dialog__last-me" v-if="!conversationPartner"> Вы: {{ info.lastMessage && info.lastMessage[0]?.messageText }}</span>
+          <span v-else> {{ info.lastMessage && info.lastMessage[0]?.messageText }}</span>
+          <span>{{ info.lastMessage && info.lastMessage[0]?.time }}</span>
         </p>
       </div>
       <span class="im-dialog__push" v-if="push > 0">{{ push }}</span>
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 import { mapGetters, mapActions } from 'vuex';
 import UnknowUser from '../../Icons/UnknowUser.vue';
 
@@ -58,11 +58,8 @@ export default {
     online: Boolean,
     me: Boolean,
     info: Object,
+    userInfo: Array,
   },
-
-  data: () => ({
-    userInfo: null
-  }),
 
   computed: {
     ...mapGetters('profile/info', ['getInfo']),
@@ -71,11 +68,14 @@ export default {
     return this.info.conversationPartner1 === this.getInfo.id ? this.info.conversationPartner2 :
            this.info.conversationPartner2 === this.getInfo.id ? this.info.conversationPartner1 :
            null;
+    },
+
+    filteredUserInfo() {
+      return this.userInfo.filter(user => user.id === this.conversationPartner);
     }
   },
 
   async mounted() {
-    this.fetchUserInfo();
     if (!this.getInfo) {
       await this.apiInfo();
     }
@@ -83,19 +83,21 @@ export default {
 
   methods: {
     ...mapActions('profile/info', ['apiInfo']),
-
-    fetchUserInfo() {
-      axios.get(`/account/${this.conversationPartner}`)
-        .then(response => {
-          this.userInfo = response.data;
-        })
-    },
   }
 };
 </script>
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+.im-dialog
+  &.active
+    background-color #f5fff9
+    border 1px solid ui-cl-color-eucalypt
+    color ui-cl-color-white-theme
+    &:hover
+      background-color #f5fff9
+      border 1px solid ui-cl-color-eucalypt
 
 .im-dialog-online
   font-size font-size-super-small
