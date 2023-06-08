@@ -380,12 +380,16 @@ export default {
 
     newlikeAction(reactionType) {
       console.log('Добавлена реакция:', reactionType);
-      // this.putLike({ itemId: this.info.id, type: 'POST' }, reactionType);
+      this.putLike({
+        itemId: this.info.id,
+        type: 'POST',
+        reactionType
+        });
     },
 
     likeAction(active) {
       if (active) this.deleteLike({ itemId: this.info.id, type: 'DELETE' });
-      else this.putLike({ itemId: this.info.id, type: 'POST' });
+      else this.putLike({ itemId: this.info.id, type: 'POST', reactionType: null });
     },
 
     toggleEditNews() {

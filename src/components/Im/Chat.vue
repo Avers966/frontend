@@ -1,19 +1,19 @@
 <template>
   <div class="im-chat">
-    <div class="im-chat__user" v-if="info.conversationPartner">
+    <div class="im-chat__user" v-if="filteredUserInfo.length !== 0">
       <router-link
         class="im-chat__user-pic"
         :to="{
           name: 'ProfileId',
-          params: { id: info.conversationPartner.id },
+          params: { id: filteredUserInfo && filteredUserInfo[0].id },
         }"
       >
         <div class="main-layout__user-pic">
           <img
-            v-if="info.conversationPartner.photo"
-            :src="info.conversationPartner.photo"
+            v-if="filteredUserInfo && filteredUserInfo[0].photo"
+            :src="filteredUserInfo && filteredUserInfo[0].photo"
             :alt="
-              info.conversationPartner.firstName[0] + ' ' + info.conversationPartner.firstName[0]
+              filteredUserInfo && filteredUserInfo[0].firstName[0] + ' ' + filteredUserInfo && filteredUserInfo[0].firstName[0]
             "
           />
 
@@ -30,51 +30,12 @@
           params: { id: info.id },
         }"
       >
-        {{ info.conversationPartner.firstName }} {{ info.conversationPartner.lastName }}
+        {{ filteredUserInfo && filteredUserInfo[0].firstName }} {{ filteredUserInfo && filteredUserInfo[0].lastName }}
       </router-link>
 
       <span class="user-status" :class="{ online }">
         Был(а) в сети
-        {{ this.info.conversationPartner.lastOnlineTime | moment('from') }}
-      </span>
-    </div>
-
-    <div class="im-chat__user" v-else-if="userInfo">
-      <router-link
-        class="im-chat__user-pic"
-        :to="{
-          name: 'ProfileId',
-          params: { id: userInfo.id },
-        }"
-      >
-        <div class="main-layout__user-pic">
-          <img
-            v-if="userInfo.photo"
-            :src="userInfo.photo"
-            :alt="
-              userInfo.firstName[0] + ' ' + userInfo.firstName[0]
-            "
-          />
-
-          <div v-else>
-            <unknow-user />
-          </div>
-        </div>
-      </router-link>
-
-      <router-link
-        class="im-chat__user-name"
-        :to="{
-          name: 'ProfileId',
-          params: { id: userInfo.id },
-        }"
-      >
-        {{ userInfo.firstName }} {{ userInfo.lastName }}
-      </router-link>
-
-      <span class="user-status" :class="{ online }">
-        Был(а) в сети
-        {{ this.userInfo.lastOnlineTime | moment('from') }}
+        {{ this.filteredUserInfo && filteredUserInfo[0].lastOnlineTime | moment('from') }}
       </span>
     </div>
 
@@ -117,6 +78,7 @@ export default {
     info: Object,
     messages: Array,
     online: Boolean,
+    userInfo: Array
   },
 
   data: () => ({
@@ -124,7 +86,7 @@ export default {
     isUserViewHistory: false,
     fetching: false,
     lastId: -1,
-    userInfo: null
+    infoChatUser: null
   }),
 
   computed: {
@@ -151,22 +113,20 @@ export default {
       return this.info.conversationPartner1 === this.getInfo.id ? this.info.conversationPartner2 :
            this.info.conversationPartner2 === this.getInfo.id ? this.info.conversationPartner1 :
            null;
-    }
-  },
+    },
 
-  // watch: {
-  //   messages() {
-  //     if (this.follow) this.setVirtualListToBottom();
-  //   },
-  // },
+    filteredUserInfo() {
+      return this.userInfo.filter(user => user.id === this.getInfoConversationPartner);
+    }
+
+  },
 
   async mounted() {
     this.follow = true;
-    // this.markReadedMessages(this.$route.params.activeDialogId);
-    // this.$refs.vsl.scrollToBottom();
-    this.fetchUserInfo();
+    await axios.put(`dialogs/${this.info.id}`)
     if (!this.getInfo) {
       await this.apiInfo();
+      this.getInfoChat();
     }
   },
 
@@ -175,6 +135,15 @@ export default {
     ...mapGetters('profile/dialogs', ['isHistoryEndReached', 'getDialogs']),
     ...mapMutations('profile/dialogs', ['addOneMessage']),
     ...mapActions('profile/info', ['apiInfo']),
+
+    getInfoChat() {
+      const conversationPartnerId = this.info.conversationPartner1 === this.getInfo.id ? this.info.conversationPartner2 :
+            this.info.conversationPartner2 === this.getInfo.id ? this.info.conversationPartner1 :
+            null;
+      console.log(conversationPartnerId)
+      const user = this.userInfo.find(user => user.id === conversationPartnerId);
+      this.infoChatUser = user;
+    },
 
     onSubmitMessage() {
       if (!this.mes.trim()) return;
@@ -196,16 +165,6 @@ export default {
       this.mes = '';
     },
 
-    fetchUserInfo() {
-      axios.get(`/account/${this.getInfoConversationPartner}`)
-      .then(response => {
-        this.userInfo = response.data;
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    },
-
     addMessage() {
       this.messages.push(this.newMessage)
       this.newMessage = ''
@@ -213,49 +172,6 @@ export default {
         this.$refs.chatContainer.scrollTop = this.$refs.chatContainer.scrollHeight
       })
     }
-
-    // async onScrollToTop() {
-    //   if (this.$refs.vsl) {
-    //     if (!this.isHistoryEndReached()) {
-    //       let [oldest] = this.messagesGrouped;
-
-    //       this.fetching = true;
-    //       await this.loadOlderMessages();
-    //       this.setVirtualListToOffset(1);
-
-    //       this.$nextTick(() => {
-    //         let offset = 0;
-    //         for (const groupedMsg of this.messagesGrouped) {
-    //           if (groupedMsg.id === oldest.id) break;
-    //           offset += this.$refs.vsl.getSize(groupedMsg.id);
-    //         }
-
-    //         this.setVirtualListToOffset(offset);
-    //         this.fetching = false;
-    //       });
-    //     }
-    //   }
-    // },
-
-    // onScroll() {
-    //   this.follow = false;
-    // },
-
-    // onScrollToBottom() {
-    //   this.follow = true;
-    // },
-
-    // setVirtualListToOffset(offset) {
-    //   if (this.$refs.vsl) {
-    //     this.$refs.vsl.scrollToOffset(offset);
-    //   }
-    // },
-
-    // setVirtualListToBottom() {
-    //   if (this.$refs.vsl) {
-    //     this.$refs.vsl.scrollToBottom();
-    //   }
-    // },
   },
 };
 </script>
