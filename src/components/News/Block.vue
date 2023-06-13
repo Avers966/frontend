@@ -189,10 +189,13 @@
         <div class="post-block__actions" v-if="!queued && !admin" :class="{ 'open-comment': openCommnets }">
           <post-reactions
             @reaction-added="newlikeAction"
+            @liked="newlikeAction"
             :active="info.myLike"
+            :reaction="info.myReaction"
+            :quantity="info.likeAmount"
           />
 
-          <div class="news-block__actions-block">
+          <!-- <div class="news-block__actions-block">
             <like-comment
               :quantity="info.likeAmount"
               width="16px"
@@ -202,7 +205,7 @@
               :active="info.myLike"
               :id="info.id"
             />
-          </div>
+          </div> -->
           <div
             class="news-block__actions-block news-block__comments-btn"
             @click="toggleComments"
@@ -379,7 +382,9 @@ export default {
     },
 
     newlikeAction(reactionType) {
-      console.log('Добавлена реакция:', reactionType);
+      // if (this.info.myLike) {
+      //   this.deleteLike({ itemId: this.info.id, data: { type: 'DELETE', reactionType: null } });
+      // }
       this.putLike({ itemId: this.info.id, data: { type: 'POST', reactionType: reactionType } });
     },
 
