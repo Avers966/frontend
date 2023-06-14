@@ -1,8 +1,8 @@
 <template>
-  <a href="#" @click.prevent="onChange">
-    <div class="post-reactions" :class="['post-reactions', combinedReactionStyle]">
+  <a href="" @click.prevent="">
+    <div class="post-reactions">
       <div class="post-reactions__heart" @mouseover="showReactions = true" :class="{ active }">
-        <div class="post-reactions__likes">
+        <div class="post-reactions__likes" @click="deletedReaction">
           <span
             v-if="selectedReaction"
             class="post-reactions__selected"
@@ -23,14 +23,23 @@
               ref="reactionImg"
             />
           </span>
-          <span v-else-if="localQuantity === null">
+          <span v-else-if="localQuantity === 0">
             <like-icon />
           </span>
-          <span class="post-reactions__quantity" v-if="quantity !== 0">{{ localQuantity }}</span>
+          <span
+            class="post-reactions__quantity"
+            v-if="localQuantity >= 1">
+            {{ localQuantity }}
+          </span>
         </div>
         <div class="post-reactions__reactions" v-if="showReactions" @mouseleave="showReactions = false">
           <div v-for="(reaction, index) in reactions" :key="index" class="post-reactions__reaction" @click="addReaction(reaction.type)">
-            <img :title="reaction.label" :src="`/static/img/post-reactions/${reaction.type}.gif`" :alt="reaction.label" />
+            <img
+              :title="reaction.label"
+              :src="`/static/img/post-reactions/${reaction.type}.gif`"
+              :alt="reaction.label"
+              v-tooltip="`${getReactionCount(reaction.type) !== 0 ? getReactionCount(reaction.type) + ' &#10084; ' : ''}${reaction.label}`"
+            />
           </div>
         </div>
       </div>
@@ -46,6 +55,10 @@ export default {
   },
   props: {
     active: null,
+    reactionsInfo: {
+      type: Array,
+      default: () => [],
+    },
     quantity: {
       type: Number,
       required: true
@@ -67,19 +80,7 @@ export default {
       localQuantity: null,
       localActive: null,
       selectedReaction: null,
-      isGifPlaying: true
-    }
-  },
-
-  computed: {
-    combinedReactionStyle() {
-      return this.selectedReaction && this.reaction
-        ? `post-reactions--${this.selectedReaction} post-reactions--${this.reaction}`
-        : this.selectedReaction
-          ? `post-reactions--${this.selectedReaction}`
-          : this.reaction
-            ? `post-reactions--${this.reaction}`
-            : '';
+      localReaction: this.reaction
     }
   },
 
@@ -92,19 +93,31 @@ export default {
     },
   },
 
+  mounted() {
+    this.localQuantity = this.quantity;
+    this.localActive = this.active;
+  },
+
   methods: {
     addReaction(reactionType) {
+      if (this.selectedReaction === reactionType) return; // если выбранный тип реакции уже стоит, ничего не делаем
       this.selectedReaction = reactionType;
       this.$emit('reaction-added', reactionType);
-    },
-
-    onChange() {
-      this.$emit('liked', this.localActive);
       if (this.localActive) this.localQuantity--;
       else this.localQuantity++;
       this.localActive = !this.localActive;
     },
 
+    deletedReaction(reactionType) {
+      this.$emit('reaction-deleted', reactionType);
+      this.localReaction = '';
+      this.localQuantity = 0
+    },
+
+    getReactionCount(reactionType) {
+      const reaction = this.reactionsInfo.find((r) => r.reactionType === reactionType);
+      return reaction ? reaction.count : 0;
+    },
   },
 }
 </script>

@@ -70,7 +70,7 @@ export default {
 
 .im-chat__message-text
   background-color ui-cl-color-white-theme
-  box-shadow 0px 4px 15px #EFF1F6
+  box-shadow 0px 4px 14px #e1e1e1
   border-radius border-big-radius
   padding 15px 20px
   color ui-cl-color-steel-gray

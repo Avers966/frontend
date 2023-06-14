@@ -11,9 +11,9 @@
           {{ info.firstName }}
           {{ info.lastName }}
         </router-link>
-        <span class="status-isonline" v-if="info.lastOnlineTime === null">был(а) в сети давно</span>
-        <span class="status-isonline isonline-online" v-else-if="info.isOnline">{{ translations.profileInfoStatusOnline }}</span>
-        <span class="status-isonline" v-else>был(а) в сети {{ info.lastOnlineTime | moment('from') }}</span>
+        <span class="user-status isonline-lasttime" v-if="info.lastOnlineTime === null">был(а) в сети давно</span>
+        <span class="user-status isonline-online" v-else-if="info.isOnline">{{ translations.profileInfoStatusOnline }}</span>
+        <span class="user-status isonline-lasttime" v-else>был(а) в сети {{ info.lastOnlineTime | moment('from') }}</span>
       </div>
 
       <span class="friends-block__age-city" v-if="moderator">модератор</span>

@@ -188,11 +188,12 @@
 
         <div class="post-block__actions" v-if="!queued && !admin" :class="{ 'open-comment': openCommnets }">
           <post-reactions
+            @reaction-deleted="deleteReaction"
             @reaction-added="newlikeAction"
-            @liked="newlikeAction"
             :active="info.myLike"
             :reaction="info.myReaction"
             :quantity="info.likeAmount"
+            :reactions-info="info.reactions"
           />
 
           <!-- <div class="news-block__actions-block">
@@ -381,10 +382,11 @@ export default {
       await this.commentsById({ postId: this.info.id, currentPage: this.currentComments.page });
     },
 
+    deleteReaction() {
+      this.deleteLike({ itemId: this.info.id, data: { type: 'DELETE', reactionType: null } });
+    },
+
     newlikeAction(reactionType) {
-      // if (this.info.myLike) {
-      //   this.deleteLike({ itemId: this.info.id, data: { type: 'DELETE', reactionType: null } });
-      // }
       this.putLike({ itemId: this.info.id, data: { type: 'POST', reactionType: reactionType } });
     },
 

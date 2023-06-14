@@ -33,10 +33,11 @@
         {{ filteredUserInfo && filteredUserInfo[0].firstName }} {{ filteredUserInfo && filteredUserInfo[0].lastName }}
       </router-link>
 
-      <span class="user-status" :class="{ online }">
-        Был(а) в сети
-        {{ this.filteredUserInfo && filteredUserInfo[0].lastOnlineTime | moment('from') }}
-      </span>
+      <div>
+        <span class="user-status isonline-lasttime" v-if="filteredUserInfo[0].lastOnlineTime === null">был(а) в сети давно</span>
+        <span class="user-status isonline-online" v-else-if="filteredUserInfo[0].isOnline">Онлайн</span>
+        <span class="user-status isonline-lasttime" v-else>был(а) в сети {{ filteredUserInfo[0].lastOnlineTime | moment('from') }}</span>
+      </div>
     </div>
 
     <div class="im-chat__infitite_list_wrapper chat-message" v-chat-scroll ref="chatContainer">
@@ -185,6 +186,14 @@ export default {
   flex-direction column
   height 100%
 
+.isonline-online
+  color ui-cl-color-white-bright-second
+  background-color ui-cl-color-eucalypt
+
+.isonline-lasttime
+  background-color #333
+  color ui-cl-color-white-bright-second
+
 .im-chat__user
   display flex
   align-items center
@@ -196,7 +205,6 @@ export default {
 
   .user-status
     padding 4px
-    background-color ui-cl-color-eucalypt
     font-size font-size-super-upsmall
     line-height 100%
 

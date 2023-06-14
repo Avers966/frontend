@@ -303,14 +303,17 @@ methods: {
       border 1px solid ui-cl-color-border-dark
     &:hover
       background ui-cl-color-393838
+    &.active
+      background-color #222222
 
   .im__chat
     background ui-cl-color-5c5c5c
 
   .im-chat__message-text
-    background-color ui-cl-color-3a3a3a
-    box-shadow unset
-    color ui-cl-color-white-theme
+    background-color ui-cl-color-dark-grey !important
+    border 1px solid ui-cl-color-border-dark
+    box-shadow unset  !important
+    color ui-cl-color-white-theme  !important
 
   .im-chat__user
     background ui-cl-color-363636
@@ -368,6 +371,18 @@ methods: {
 
   .profile__tabs__title
     color ui-cl-color-8a8a8a
+
+  .post-reactions
+    background-color #333
+
+  .post-reactions__reactions
+    background-color #363636
+    border 1px solid #181818
+
+  .user-status
+    background-color ui-cl-color-dark-grey
+    border 1px solid ui-cl-color-border-dark
+
 
   .profile-info__emoji
     background #2C2D2E
@@ -858,13 +873,4 @@ methods: {
         color #838383
       ::placeholder
         color #838383
-
-    .user-status
-      width 86px
-      text-align center
-      background ui-cl-color-full-black
-      height: 24px;
-      padding: 0 10px
-      border-radius 12px
-      color ui-cl-color-fafaff
 </style>
