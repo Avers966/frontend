@@ -300,10 +300,10 @@
             <span class="profile-info__cities" v-if="residenceText">{{ residenceText }}</span>
             <span class="profile-info__val" v-else>{{ translations.profileNotFilled }}</span>
             <div class="profile-info__status">
-              <span class="user-status" :class="{ online, offline: !online }">
-                <span v-if="info.lastOnlineTime === null">был(а) в сети давно</span>
+              <span class="user-status">
+                <span class="isonline-lasttime" v-if="info.lastOnlineTime === null">был(а) в сети давно</span>
                 <span class="isonline-online" v-else-if="info.isOnline">{{ translations.profileInfoStatusOnline }}</span>
-                <span v-else>Был(а) в сети {{ info.lastOnlineTime | moment('from') }}</span>
+                <span class="isonline-lasttime" v-else>Был(а) в сети {{ info.lastOnlineTime | moment('from') }}</span>
               </span>
             </div>
           </div>
@@ -797,10 +797,19 @@ export default {
 @import '../../assets/stylus/base/vars.styl'
 @import '../../assets/stylus/base/settings.styl'
 
+  .isonline-online
+    color ui-cl-color-eucalypt
+
+  .isonline-lasttime
+    color #6c6c6c
+
   .profile-info__emoji__list
     display flex
     align-items center
     margin-bottom 16px
+
+  .profile-info__val
+    font-size font-size-small
 
   .profile-info__emoji__item
     margin-left -12px
@@ -1154,7 +1163,7 @@ export default {
     &__status
       display flex
       justify-content center
-      margin-top 5px
+      margin-top 8px
     &__shared-btn
       position absolute
       top 10px
@@ -1207,5 +1216,6 @@ export default {
       img
         width 130px
         height 130px
+
 
 </style>

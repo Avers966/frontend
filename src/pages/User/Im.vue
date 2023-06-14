@@ -1,16 +1,63 @@
 <template>
   <div class="im">
-    <div class="im__dialogs">
-      <im-dialog
+    <div class="im__dialogs" v-if="dialogs.length !== 0">
+      <div
+        class="im-dialog"
         v-for="dialog in dialogs"
         :key="dialog.id"
-        :info="dialog"
-        :user-info="users"
-        :push="countPush(dialog.unreadСount)"
-        :me="+info?.id === +dialog.lastMessage?.authorId"
-        :active="dialog?.id === activeDialog?.id"
-        @click.native="clickOnDialog(dialog)"
-      />
+        @click="clickOnDialog(dialog)"
+        :class="{ active: dialog.conversationPartner1 !== info.id ? dialog.conversationPartner1 : dialog.conversationPartner2 === activeDialogId }"
+      >
+        <a
+          class="im-dailog__pic"
+          href="#"
+        >
+          <div class="main-layout__user-pic">
+            <img
+              v-if="dialog.conversationPartner1 === info.id
+                ? users?.find(user => user.id === dialog.conversationPartner2)?.photo
+                : dialog.conversationPartner2 === info.id
+                  ? users?.find(user => user.id === dialog.conversationPartner1)?.photo
+                  : null"
+              :src="dialog.conversationPartner1 === info.id
+                ? users?.find(user => user.id === dialog.conversationPartner2)?.photo
+                : dialog.conversationPartner2 === info.id
+                  ? users?.find(user => user.id === dialog.conversationPartner1)?.photo
+                  : null"
+              alt="Аватар"
+            />
+
+            <div v-else>
+              <unknow-user />
+            </div>
+          </div>
+        </a>
+
+        <div class="im-dialog-contents">
+          <div class="im-dialog__info" v-if="users">
+            <a class="im-dialog__name" href="#">
+              {{
+                dialog.conversationPartner1 === info.id
+                  ? (users?.find(user => user.id === dialog.conversationPartner2)?.firstName || '...') +
+                  ' ' + (users.find(user => user.id === dialog.conversationPartner2)?.lastName || '...')
+                  : dialog.conversationPartner2 === info.id
+                    ? (users?.find(user => user.id === dialog.conversationPartner1)?.firstName || '...') +
+                     ' ' + (users.find(user => user.id === dialog.conversationPartner1)?.lastName || '...')
+                    : null
+              }}
+            </a>
+          </div>
+          <div class="im-dialog__content">
+            <p class="im-dialog__last" v-if="dialog.lastMessage">
+              <!-- <span class="im-dialog__last-me" v-if="!conversationPartner"> Вы: {{ info.lastMessage && info.lastMessage[0]?.messageText }}</span>
+              <span v-else> {{ info.lastMessage && info.lastMessage[0]?.messageText }}</span> -->
+              <span>{{ dialog.lastMessage && dialog.lastMessage[0]?.time }}</span>
+              <span>{{ dialog.lastMessage && dialog.lastMessage[0]?.messageText }}</span>
+            </p>
+          </div>
+          <!-- <span class="im-dialog__push" v-if="push > 0">{{ push }}</span> -->
+        </div>
+      </div>
     </div>
 
     <div class="im__chat" v-if="activeDialog && messagesLoaded">
@@ -23,13 +70,14 @@
 
 <script>
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex';
-import ImDialog from '@/components/Im/Dialog';
+// import ImDialog from '@/components/Im/Dialog';
+import UnknowUser from '../../Icons/UnknowUser.vue';
 import ImChat from '@/components/Im/Chat';
 import dialogsApi from '@/requests/dialogs';
 
 export default {
   name: 'Im',
-  components: { ImDialog, ImChat },
+  components: { ImChat, UnknowUser },
   props: {
     activeDialogId: {
       type: String,
@@ -149,19 +197,46 @@ export default {
       return unread > 0 ? unread : null;
     },
 
-    clickOnDialog(dialogId) {
-      const dialog = this.dialogs.find(d => d.id === dialogId);
-      if (dialog) {
-        const conversationPartner = dialog.conversationPartner1 === this.info.id ? dialog.conversationPartner2 : dialog.conversationPartner1;
-        this.$router.push({ name: 'ImChat', params: { activeDialogId: conversationPartner } });
-      }
+    clickOnDialog(dialog) {
+      const partnerId = dialog.conversationPartner1 !== this.info.id ? dialog.conversationPartner1 : dialog.conversationPartner2;
+      console.log(partnerId)
+      this.$router.push({
+        name: 'ImChat',
+        params: { activeDialogId: partnerId },
+      });
+
     }
+
   },
 };
 </script>
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+.im-dialog
+  display flex
+  align-items center
+  padding 15px 10px
+  cursor pointer
+  border-radius border-super-small
+  border 1px solid #b9b9b9
+  background-color #c9c9c9
+  transition all .2s ease-in-out
+  &:not(:last-child)
+    margin-bottom 10px
+  @media (any-hover: hover)
+    &:hover
+      background-color #c3c3c3
+  &.active
+    background-color #e1e1e1
+
+.im-dialog-online
+  font-size font-size-super-upsmall
+  background-color ui-cl-color-gun-powder
+  border-radius 3px
+  color ui-cl-color-white-theme
+  padding 3px
 
 .no-dialog
   display flex
@@ -191,7 +266,12 @@ export default {
   width 100%
   flex auto
   height 100%
-  background-color ui-cl-color-white-themefff
+  background-color ui-cl-color-white-theme
   border-radius 0 10px 10px 0
   overflow hidden
+
+.im-dialog__info
+  display flex
+  align-items center
+  gap 10px
 </style>
