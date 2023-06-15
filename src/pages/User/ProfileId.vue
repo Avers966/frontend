@@ -58,14 +58,14 @@ export default {
 
     myProfile() {
       return this.getInfo?.id === this.getUsersInfo?.id;
-    }
-  },
+    },
 
-  filteredWall() {
-    const wall = this.getWall;
-    const posted = wall.filter(item => item.type === 'POSTED');
-    const queued = wall.filter(item => item.type === 'QUEUED');
-    return { posted, queued };
+    filteredWall() {
+      const wall = this.getWall;
+      const posted = wall.filter(item => item.type === 'POSTED');
+      const queued = wall.filter(item => item.type === 'QUEUED');
+      return { posted, queued };
+    },
   },
 
   mounted() {
