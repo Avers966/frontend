@@ -49,10 +49,8 @@
           </div>
           <div class="im-dialog__content">
             <p class="im-dialog__last" v-if="dialog.lastMessage">
-              <!-- <span class="im-dialog__last-me" v-if="!conversationPartner"> Вы: {{ info.lastMessage && info.lastMessage[0]?.messageText }}</span>
-              <span v-else> {{ info.lastMessage && info.lastMessage[0]?.messageText }}</span> -->
-              <span>{{ dialog.lastMessage && dialog.lastMessage[0]?.time }}</span>
-              <span>{{ dialog.lastMessage && dialog.lastMessage[0]?.messageText }}</span>
+              <span v-if="dialog.lastMessage">{{ dialog.lastMessage && dialog.lastMessage[0]?.messageText }}</span>
+              <span class="im-dialog__last-time">{{ dialog.lastMessage && dialog.lastMessage[0]?.time | moment('from') }}</span>
             </p>
           </div>
           <!-- <span class="im-dialog__push" v-if="push > 0">{{ push }}</span> -->
@@ -89,17 +87,16 @@ export default {
     return {
       activeDialog: null,
       messagesLoaded: false,
-      infoUser: null
     };
   },
 
   computed: {
     ...mapState('profile/dialogs', ['dialogs', 'messages', 'newMessage']),
-    ...mapGetters('global/search', ['getResultById', 'getUsersQueryParams']),
+    ...mapGetters('global/search', ['getResultByIdSearch', 'getUsersQueryParams']),
     ...mapState('profile/info', ['info']),
 
     users() {
-      return this.getResultById('users');
+      return this.getResultByIdSearch('users');
     },
 
     currentActiveDialogId() {
@@ -213,6 +210,18 @@ export default {
 
 <style lang="stylus">
 @import '../../assets/stylus/base/vars.styl'
+
+
+.im-dialog__last
+  font-size font-size-super-medium-small
+  display flex
+  align-items center
+  gap 5px
+  &-time
+    color #979797
+
+.im-dialog__info
+  margin-bottom 5px
 
 .im-dialog
   display flex

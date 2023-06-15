@@ -535,10 +535,10 @@ export default {
 
   computed: {
     ...mapGetters('profile/dialogs', ['dialogs']),
-    ...mapGetters('global/search', ['getResultById']),
+    ...mapGetters('global/search', ['getResultByIdSearch']),
 
     users() {
-      return this.getResultById('users');
+      return this.getResultByIdSearch('users');
     },
 
     usersByEmojiStatus() {
@@ -798,6 +798,7 @@ export default {
 @import '../../assets/stylus/base/settings.styl'
 
   .isonline-online
+    background unset
     color ui-cl-color-eucalypt
 
   .isonline-lasttime

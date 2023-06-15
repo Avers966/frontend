@@ -1,11 +1,15 @@
 <template>
   <div class="recommend-block">
     <h3 class="recommend-block__title">{{ translations.recommendBlockTitle }}</h3>
-    <ul v-if="userInfo?.length > 0" class="recommend-block__list">
-      <li class="recommend-block__item" v-for="user in userInfo" :key="user?.id">
-        <div>
-          <img v-if="user.photo" class="recommend-block__img" :src="user?.photo" :alt="user?.firstName">
-          <img v-else class="recommend-block__img" src="/static/img/avatar.png" :alt="user?.firstName" />
+    <ul v-if="usersRecomendation.length !== 0" class="recommend-block__list">
+      <li class="recommend-block__item" v-for="user in usersRecomendation" :key="user?.id">
+        <div class="recommend-block__item-info">
+          <div class="recommend-block__img-container">
+            <img v-if="user.photo" class="recommend-block__img" :src="user?.photo" :alt="user?.firstName">
+            <span v-else>
+              <unknow-user />
+            </span>
+          </div>
 
           <router-link
             class="recommend-block__name"
@@ -31,25 +35,34 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import axios from 'axios';
+import UnknowUser from '../Icons/UnknowUser.vue';
 import translations from '@/utils/lang.js';
 
 export default {
   name: 'FriendsPossible',
 
-  data: () => ({
-    userInfo: null
-  }),
+  components: {
+    UnknowUser
+  },
 
   computed: {
     ...mapGetters('profile/friends', ['getResultById']),
+    ...mapGetters('global/search', ['getResultByIdSearch', 'getUsersQueryParams']),
 
     possibleFriends() {
       return this.getResultById('recommendations');
     },
 
-    getInfo() {
-      return this.possibleFriends.map(friend => friend.friendId);
+    usersRecomendation() {
+      return this.getResultByIdSearch('users');
+    },
+
+    getIdsPossibleFriends() {
+      if (this.possibleFriends) {
+        return this.possibleFriends.map(friend => friend.friendId);
+      } else {
+        return null
+      }
     },
 
     translations() {
@@ -62,24 +75,27 @@ export default {
     },
   },
 
-  mounted() {
-    if (this.possibleFriends.length === 0) this.apiRecommendations();
-    this.fetchUserInfo();
+  beforeMount() {
+    setTimeout(async () => {
+      await this.apiRecommendations();
+      this.onSearchUsers();
+    }, 5000)
+  },
+
+  async mounted() {
+
   },
 
   methods: {
     ...mapActions('profile/friends', ['apiAddFriends', 'apiRecommendations']),
+    ...mapActions('global/search', ['searchUsers']),
 
-    fetchUserInfo() {
-      const requests = this.getInfo.map(id => axios.get(`/account/${id}`));
-      Promise.all(requests)
-        .then(responses => {
-          this.userInfo = responses.map(response => response.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
+    onSearchUsers() {
+      const searchQuery = Object.assign({}, this.getUsersQueryParams, {
+        ids: this.getIdsPossibleFriends,
+      });
+      this.searchUsers({ payload: searchQuery });
+    },
   },
 };
 </script>
@@ -94,6 +110,26 @@ export default {
     background ui-cl-color-white-theme
     box-shadow 0px 2px 8px rgba(0, 0, 0, 0.08)
     border-radius border-small
+
+    &__img-container
+      display flex
+      align-items center
+      justify-content center
+      width 50px
+      height 50px
+      border-radius 50%
+      overflow hidden
+      flex none
+      background-color #8bc49e
+      img
+        display flex
+        align-items center
+        justify-content center
+        width 100%
+        height 100%
+        -o-object-fit cover
+        object-fit cover
+        margin-right 0
 
     &__not
       display flex
@@ -119,6 +155,11 @@ export default {
       align-items center
       padding-bottom 15px
       justify-content space-between
+
+      &-info
+        display flex
+        align-items center
+        gap 10px
 
       &:not(nth-child(1))
         padding-top 15px

@@ -34,9 +34,9 @@
       </router-link>
 
       <div>
-        <span class="user-status isonline-lasttime" v-if="filteredUserInfo[0].lastOnlineTime === null">был(а) в сети давно</span>
-        <span class="user-status isonline-online" v-else-if="filteredUserInfo[0].isOnline">Онлайн</span>
-        <span class="user-status isonline-lasttime" v-else>был(а) в сети {{ filteredUserInfo[0].lastOnlineTime | moment('from') }}</span>
+        <span class="user-status chat-isonline-lasttime" v-if="filteredUserInfo[0].lastOnlineTime === null">был(а) в сети давно</span>
+        <span class="user-status chat-isonline-isonline-online" v-else-if="filteredUserInfo[0].isOnline">Онлайн</span>
+        <span class="user-status chat-isonline-isonline-lasttime" v-else>был(а) в сети {{ filteredUserInfo[0].lastOnlineTime | moment('from') }}</span>
       </div>
     </div>
 

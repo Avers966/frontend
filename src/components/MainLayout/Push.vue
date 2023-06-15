@@ -35,7 +35,7 @@
       <button
         class="push__btn"
         @click.prevent="showMore"
-        v-if="visibleNotifications.length !== getNotificationsLength"
+        v-if="showButtonMore"
       >
         {{ translations.showmoreNotification }}
       </button>
@@ -74,6 +74,16 @@ export default {
     ]),
     shouldUpdateVisibleNotifications() {
       return this.getNotifications.length === 0;
+    },
+
+    showButtonMore() {
+      if (this.visibleNotifications.length !== this.getNotifications.length) {
+        return true
+      } else if (this.getNotifications.length === 0) {
+        return false
+      } else {
+        return false
+      }
     },
 
     showButtonReaded() {
@@ -151,7 +161,7 @@ export default {
     },
 
     readedButton() {
-      return this.readedButton();
+      return this.readedNotifications();
     },
 
     loadVisibleNotifications() {

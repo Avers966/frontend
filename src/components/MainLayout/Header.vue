@@ -21,6 +21,7 @@
         </div>
         <div class="main-layout__header-right">
           <div class="main-layout__push" v-if="getInfo && !getInfo.isDeleted">
+            <span class="indicator" v-if="getNotificationsLength">{{ getNotificationsLength }}</span>
             <span @click="togglePush">
               <push-icon
                 :isNotEmpty="getNotificationsLength > 0 && !isOpenPush"
@@ -460,15 +461,34 @@ export default {
   &:focus
     background ui-cl-color-full-black29
 
+.indicator
+  content ''
+  font-weight 400
+  font-size 8px
+  width 15px
+  height 15px
+  color #fff
+  background-color #e65151
+  border-radius 50%
+  display flex
+  align-items center
+  justify-content: center
+  position absolute
+  right -3px
+  top 3px
+  transform translateY(-50%)
+  z-index 10
+
 
 .main-layout__push
   display flex
   align-items center
   justify-content center
   cursor pointer
+  position relative
 
   svg
-    transition: transform 200ms linear
+    transition all .2s ease-in-out
 
     &[data-push]:after
       content attr(data-push)
@@ -489,7 +509,7 @@ export default {
       padding-right 1px
 
   &:hover svg
-    transform scale(1.2)
+    opacity 0.7
 
 .main-layout__user
   display flex

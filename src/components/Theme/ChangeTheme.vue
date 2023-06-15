@@ -323,6 +323,12 @@ methods: {
     .main-layout__user-pic
       background ui-cl-color-dark-grey
 
+  .im-dialog__last
+    color ui-cl-color-white-theme
+
+  .chat-isonline-isonline-online
+    color ui-cl-color-white-theme
+
   .im-chat__user-name
     color ui-cl-color-white-theme
 
@@ -353,6 +359,7 @@ methods: {
     color ui-cl-color-919191
 
   .im-chat__user .user-status
+    color ui-cl-color-white-theme
     background-color ui-cl-color-dark-grey
     border 1px solid ui-cl-color-border-dark
 
@@ -575,6 +582,76 @@ methods: {
     border 1px solid ui-cl-color-686868
     color ui-cl-color-white-theme
 
+  .steps__news p
+    background-color ui-cl-color-border-dark
+
+  .news-hint__step-third:before
+    border-bottom-color ui-cl-color-border-dark
+
+  .news-hint__step-four:before
+    border-left-color ui-cl-color-border-dark
+
+  .news-hint__step-first:before
+    border-bottom-color ui-cl-color-border-dark
+
+  .news-hint__step-second:before
+    border-right-color ui-cl-color-border-dark
+
+  .news-add__modal .modal__wrapper
+    background-color ui-cl-color-dark-grey
+    border 1px solid ui-cl-color-border-dark
+
+  .alert-deferred-post
+    background-color ui-cl-color-border-dark
+    border-color ui-cl-color-full-black
+    color ui-cl-color-white-theme
+
+  .mx-input
+    background-color ui-cl-color-dark-grey
+    border 1px solid ui-cl-color-border-dark
+
+  .mx-icon-calendar,
+  .mx-icon-clear
+    color #787878
+
+  .mx-calendar-content .cell:hover
+    background-color ui-cl-color-border-dark
+    border 1px solid ui-cl-color-dark-grey
+
+  .mx-table-date .today
+    color ui-cl-color-white-theme
+    background #4a4a4a
+
+  .mx-time-column
+    border-right 1px solid ui-cl-color-dark-grey
+
+  .mx-time-column .mx-time-item:hover
+    color ui-cl-color-white-theme
+    background #4a4a4a
+
+  .mx-datepicker-main,
+  .mx-time
+    background-color ui-cl-color-dark-grey
+    border 1px solid ui-cl-color-border-dark
+
+  .post-btn-planing
+    background-color ui-cl-color-border-dark
+    border 1px solid ui-cl-color-dark-grey
+    &:hover
+      background-color ui-cl-color-full-black
+
+  .post-btn-planing.plaining-hole
+    background transparent
+    color #6e6e6e
+    border 1px solid ui-cl-color-border-dark
+    &:hover
+      border-color #999999
+      color #999999
+
+  .post-reactions__likes svg path:nth-child(2)
+    fill #b2b2b2
+
+
   .user-info-form__select
     background-color transparent
     border 1px solid ui-cl-color-686868
@@ -596,20 +673,27 @@ methods: {
     background-color ui-cl-color-dark-grey
     border 1px solid ui-cl-color-border-dark
 
+    &__img-container
+      background-color ui-cl-color-border-dark
+
     &__not
       color ui-cl-color-white-theme
 
     &__title
       color ui-cl-color-white-theme
-      border-color ui-cl-color-medium-grey
+      border-color ui-cl-color-border-dark
 
     &__item
 
       &:not(:last-child)
-        border-color ui-cl-color-medium-grey
+        border-color ui-cl-color-border-dark
 
     &__name
       color ui-cl-color-white-theme
+
+    &__button
+      background-color ui-cl-color-border-dark
+      border 1px solid ui-cl-color-border-dark
 
     &__search
       background ui-cl-color-border-dark

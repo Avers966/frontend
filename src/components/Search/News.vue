@@ -2,7 +2,7 @@
   <div class="search-news" v-if="news.length > 0">
     <div>
       <search-block :title="translations.searchNewsTitle" id="news">
-        <news-block v-for="n in news" :key="n.id" :info="n" />
+        <news-block v-for="n in filteredWall.posted" :key="n.id" :info="n" :queued="false" />
       </search-block>
     </div>
     <pagination
@@ -37,9 +37,9 @@ export default {
   },
 
   computed: {
-    ...mapGetters('global/search', ['getResultById', 'getNewsQueryParams', 'getNewsPagination']),
+    ...mapGetters('global/search', ['getResultByIdSearch', 'getNewsQueryParams', 'getNewsPagination']),
     news() {
-      return this.getResultById('news');
+      return this.getResultByIdSearch('news');
     },
 
     translations() {
@@ -50,6 +50,13 @@ export default {
         return translations.eng;
       }
     },
+
+    filteredWall() {
+      const wall = this.news;
+      const posted = wall.filter(item => item.type === 'POSTED');
+      const queued = wall.filter(item => item.type === 'QUEUED');
+      return { posted, queued };
+    }
   },
 
   watch: {

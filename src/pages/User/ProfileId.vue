@@ -21,7 +21,7 @@
         <div v-if="getWall && getWall.length > 0" class="profile__news-list">
           <error-block v-if="!loading && error" :message="errorMessage" />
 
-          <news-block v-for="news in getWall" :key="news.id" :info="news" />
+          <news-block v-for="news in filteredWall.posted" :key="news.id" :info="news" />
 
           <div class="spinner-wrapper" v-if="loading">
             <spinner />
@@ -59,6 +59,13 @@ export default {
     myProfile() {
       return this.getInfo?.id === this.getUsersInfo?.id;
     }
+  },
+
+  filteredWall() {
+    const wall = this.getWall;
+    const posted = wall.filter(item => item.type === 'POSTED');
+    const queued = wall.filter(item => item.type === 'QUEUED');
+    return { posted, queued };
   },
 
   mounted() {

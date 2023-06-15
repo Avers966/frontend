@@ -457,6 +457,7 @@ export default {
   gap 10px
 
 .isonline-online
+  background unset
   color ui-cl-color-eucalypt
 
 .isonline-lasttime

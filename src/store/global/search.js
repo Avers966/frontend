@@ -43,7 +43,7 @@ export default {
     tabs: (s) => s.tabs,
     tabSelect: (s) => s.tabSelect,
     getResult: (s) => s.result,
-    getResultById: (s) => (id) => s.result[id],
+    getResultByIdSearch: (s) => (id) => s.result[id],
     getStatus: (s) => s.status,
     getLastSearchUsersRequest: (s) => s.lastSearchUsersRequest,
     getLastSearchNewsRequest: (s) => s.lastSearchNewsRequest,

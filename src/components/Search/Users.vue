@@ -41,10 +41,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters('global/search', ['getResultById', 'getUsersQueryParams', 'getUsersPagination']),
+    ...mapGetters('global/search', ['getResultByIdSearch', 'getUsersQueryParams', 'getUsersPagination']),
 
     users() {
-      return this.getResultById('users');
+      return this.getResultByIdSearch('users');
     },
 
     translations() {
