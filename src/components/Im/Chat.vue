@@ -1,19 +1,19 @@
 <template>
-  <div class="im-chat">
-    <div class="im-chat__user" v-if="filteredUserInfo.length !== 0">
+  <div class="im-chat" v-if="filteredUserInfo && filteredUserInfo.length > 0">
+    <div class="im-chat__user">
       <router-link
         class="im-chat__user-pic"
         :to="{
           name: 'ProfileId',
-          params: { id: filteredUserInfo && filteredUserInfo[0].id },
+          params: { id: filteredUserInfo && filteredUserInfo[0]?.id },
         }"
       >
         <div class="main-layout__user-pic">
           <img
-            v-if="filteredUserInfo && filteredUserInfo[0].photo"
-            :src="filteredUserInfo && filteredUserInfo[0].photo"
+            v-if="filteredUserInfo && filteredUserInfo[0]?.photo"
+            :src="filteredUserInfo && filteredUserInfo[0]?.photo"
             :alt="
-              filteredUserInfo && filteredUserInfo[0].firstName[0] + ' ' + filteredUserInfo && filteredUserInfo[0].firstName[0]
+              filteredUserInfo && filteredUserInfo[0]?.firstName[0] + ' ' + filteredUserInfo && filteredUserInfo[0]?.firstName[0]
             "
           />
 
@@ -27,21 +27,39 @@
         class="im-chat__user-name"
         :to="{
           name: 'ProfileId',
-          params: { id: info.id },
+          params: { id: filteredUserInfo && filteredUserInfo[0]?.id },
         }"
       >
-        {{ filteredUserInfo && filteredUserInfo[0].firstName }} {{ filteredUserInfo && filteredUserInfo[0].lastName }}
+        {{ filteredUserInfo && filteredUserInfo[0]?.firstName }} {{ filteredUserInfo && filteredUserInfo[0]?.lastName }}
       </router-link>
 
       <div>
-        <span class="user-status chat-isonline-lasttime" v-if="filteredUserInfo[0].lastOnlineTime === null">был(а) в сети давно</span>
-        <span class="user-status chat-isonline-isonline-online" v-else-if="filteredUserInfo[0].isOnline">Онлайн</span>
-        <span class="user-status chat-isonline-isonline-lasttime" v-else>был(а) в сети {{ filteredUserInfo[0].lastOnlineTime | moment('from') }}</span>
+        <span class="user-status chat-isonline-lasttime" v-if="filteredUserInfo[0]?.lastOnlineTime === null">был(а) в сети давно</span>
+        <span class="user-status chat-isonline-isonline-online" v-else-if="filteredUserInfo[0]?.isOnline">Онлайн</span>
+        <span class="user-status chat-isonline-isonline-lasttime" v-else>был(а) в сети {{ filteredUserInfo[0]?.lastOnlineTime | moment('from') }}</span>
       </div>
     </div>
 
-    <div class="im-chat__infitite_list_wrapper chat-message" v-chat-scroll ref="chatContainer">
-      <chat-message v-for="(item, index) in messagesGrouped" :key="index" :source="item"/>
+    <div class="im-chat__infitite_list_wrapper chat-message">
+      <virtual-list
+        class="im-chat__infitite_list scroll-touch"
+        :size="60"
+        :keeps="120"
+        :data-key="'key'"
+        :data-sources="messagesGrouped"
+        :data-component="itemComponent"
+        :wrap-class="'im-chat__message'"
+        :root-tag="'section'"
+        @totop="onScrollToTop"
+        @scroll.passive="onScroll"
+        @tobottom="onScrollToBottom"
+        ref="vsl"
+      >
+        <div class="im-chat__loader" slot="header" v-show="fetching">
+          <div class="spinner" v-show="!isHistoryEndReached()" />
+          <div class="finished" v-show="isHistoryEndReached()">Больше сообщений нет</div>
+        </div>
+      </virtual-list>
     </div>
 
     <form class="im-chat__enter" action="#" @submit.prevent="onSubmitMessage">
@@ -56,13 +74,11 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import { mapActions, mapGetters, mapMutations } from 'vuex';
-import ChatMessage from '@/components/Im/ChatMessage';
 import UnknowUser from '../../Icons/UnknowUser.vue';
 import axios from 'axios';
-import VueChatScroll from 'vue-chat-scroll';
-Vue.use(VueChatScroll)
+import ChatMessage from '@/components/Im/ChatMessage.vue'
+import VirtualList from 'vue-virtual-scroll-list';
 
 const makeHeader = (msgDate) => {
   return { id: `group-${msgDate}`, stubDate: true, date: msgDate };
@@ -72,7 +88,7 @@ export default {
   name: 'ImChat',
   components: {
     UnknowUser,
-    ChatMessage
+    VirtualList
   },
 
   props: {
@@ -85,6 +101,7 @@ export default {
   data: () => ({
     mes: '',
     isUserViewHistory: false,
+    itemComponent: ChatMessage,
     fetching: false,
     lastId: -1,
     infoChatUser: null
@@ -97,30 +114,38 @@ export default {
       let groups = [];
       let headerDate = null;
 
-      for (const msg of this.messages) {
+      for (let i = 0; i < this.messages.length; i++) {
+        const msg = this.messages[i];
         const msgDate = new Date(msg.time).toDateString();
         if (msgDate !== headerDate) {
           headerDate = msgDate;
           groups.push(makeHeader(headerDate));
         }
-        msg.isSentByMe = msg.conversationPartner2 === this.info.id;
+        msg.isSentByMe = msg.authorId === this.getInfo.id;
+        msg.key = `message-${i}`; // добавляем уникальный ключ
         groups.push(msg);
-
       }
       return groups;
     },
 
     getInfoConversationPartner() {
-      return this.info.conversationPartner1 === this.getInfo.id ? this.info.conversationPartner2 :
-           this.info.conversationPartner2 === this.getInfo.id ? this.info.conversationPartner1 :
+      return this.info?.conversationPartner1 === this.getInfo?.id ? this.info?.conversationPartner2 :
+           this.info?.conversationPartner2 === this.getInfo?.id ? this.info?.conversationPartner1 :
            null;
     },
 
     filteredUserInfo() {
-      return this.userInfo.filter(user => user.id === this.getInfoConversationPartner);
+      return this.userInfo?.filter(user => user.id === this.getInfoConversationPartner);
     }
 
   },
+
+  watch: {
+    messages() {
+      if (this.follow) this.setVirtualListToBottom();
+    },
+  },
+
 
   async mounted() {
     this.follow = true;
@@ -166,13 +191,48 @@ export default {
       this.mes = '';
     },
 
-    addMessage() {
-      this.messages.push(this.newMessage)
-      this.newMessage = ''
-      this.$nextTick(() => {
-        this.$refs.chatContainer.scrollTop = this.$refs.chatContainer.scrollHeight
-      })
-    }
+    async onScrollToTop() {
+      if (this.$refs.vsl) {
+        if (!this.isHistoryEndReached()) {
+          let [oldest] = this.messagesGrouped;
+
+          this.fetching = true;
+          await this.loadOlderMessages();
+          this.setVirtualListToOffset(1);
+
+          this.$nextTick(() => {
+            let offset = 0;
+            for (const groupedMsg of this.messagesGrouped) {
+              if (groupedMsg.id === oldest.id) break;
+              offset += this.$refs.vsl.getSize(groupedMsg.id);
+            }
+
+            this.setVirtualListToOffset(offset);
+            this.fetching = false;
+          });
+        }
+      }
+    },
+
+    onScroll() {
+      this.follow = false;
+    },
+
+    onScrollToBottom() {
+      this.follow = true;
+    },
+
+    setVirtualListToOffset(offset) {
+      if (this.$refs.vsl) {
+        this.$refs.vsl.scrollToOffset(offset);
+      }
+    },
+
+    setVirtualListToBottom() {
+      if (this.$refs.vsl) {
+        this.$refs.vsl.scrollToBottom();
+      }
+    },
   },
 };
 </script>

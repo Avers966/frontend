@@ -1,11 +1,12 @@
 <template>
-  <div class="im-chat__message-block">
+  <div>
     <!--  Please avoid to use margin between -->
     <!--  messages block or it will glitter on-->
     <!--  scroll-->
     <h5 class="im-chat__message-title" v-if="source.stubDate">
       {{ source.date | moment('DD MMMM YYYY') }}
     </h5>
+
     <div v-else class="im-chat__message-block" :class="{ me: source.isSentByMe }">
       <p class="im-chat__message-text">{{ source.messageText }}</p>
       <span class="im-chat__message-time">{{ source.time | moment('YYYY-MM-DD hh:mm') }}</span>
@@ -13,10 +14,14 @@
   </div>
 </template>
 
+
 <script>
 export default {
   name: 'InfiniteLoadingItem',
   props: {
+    index: { // index of current item
+      type: Number
+    },
     source: {
       type: Object,
       default() {
