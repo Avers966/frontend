@@ -45,7 +45,7 @@
         class="im-chat__infitite_list scroll-touch"
         :size="60"
         :keeps="120"
-        :data-key="'key'"
+        :data-key="'id'"
         :data-sources="messagesGrouped"
         :data-component="itemComponent"
         :wrap-class="'im-chat__message'"
@@ -122,7 +122,7 @@ export default {
           groups.push(makeHeader(headerDate));
         }
         msg.isSentByMe = msg.authorId === this.getInfo.id;
-        msg.key = `message-${i}`; // добавляем уникальный ключ
+        msg.id = `message-${i}`; // добавляем уникальный ключ
         groups.push(msg);
       }
       return groups;
