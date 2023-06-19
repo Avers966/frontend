@@ -46,7 +46,7 @@
         :size="60"
         :keeps="120"
         :data-key="'id'"
-        :data-sources="messagesGrouped"
+        :data-sources="messageDialog"
         :data-component="itemComponent"
         :wrap-class="'im-chat__message'"
         :root-tag="'section'"
@@ -104,7 +104,8 @@ export default {
     itemComponent: ChatMessage,
     fetching: false,
     lastId: -1,
-    infoChatUser: null
+    infoChatUser: null,
+    messageDialog: []
   }),
 
   computed: {
@@ -144,6 +145,10 @@ export default {
     messages() {
       if (this.follow) this.setVirtualListToBottom();
     },
+
+    getInfoConversationPartner() {
+      this.getMessageChat()
+    }
   },
 
 
@@ -157,7 +162,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('profile/dialogs', ['postMessage', 'loadOlderMessages', 'markReadedMessages']),
+    ...mapActions('profile/dialogs', ['postMessage', 'fetchMessages', 'loadOlderMessages', 'markReadedMessages']),
     ...mapGetters('profile/dialogs', ['isHistoryEndReached', 'getDialogs']),
     ...mapMutations('profile/dialogs', ['addOneMessage']),
     ...mapActions('profile/info', ['apiInfo']),
@@ -186,6 +191,7 @@ export default {
         },
       };
       this.addOneMessage(payload.data);
+      this.getMessageChat();
       this.$socket.sendMessage(payload);
       this.lastId -= 1;
       this.mes = '';
@@ -212,6 +218,16 @@ export default {
           });
         }
       }
+    },
+
+    getMessageChat() {
+      axios.get(`dialogs/messages?recipientId=${this.getInfoConversationPartner}&page=0&sort=time,asc`)
+      .then(response => {
+        this.messageDialog = response.data.content
+      })
+      .catch(error => {
+        console.log(error)
+      })
     },
 
     onScroll() {

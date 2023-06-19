@@ -16,7 +16,7 @@ export default {
   getters: {
     getDialogs: (s) => s.dialogs,
     getMessages: (s) => s.messages,
-    oldestKnownMessageId: (s) => (s.messages.length > 0 ? s.messages[0]['id'] : null),
+    oldestKnownMessageId: (s) => (s.messages),
     activeDialog: (s) => s.dialogs.find((el) => el.id == s.activeDialogId),
     getActiveDialogId: (s) => +s.activeId,
     dialogsLoaded: (s) => s.dialogsLoaded,
@@ -72,7 +72,6 @@ export default {
       if (!response.lastMessage) return;
       const messages = [{
         ...response.lastMessage,
-        time: new Date(response.lastMessage.time).getTime(),
       }];
       commit('clearMessages');
       commit('addMessages', {

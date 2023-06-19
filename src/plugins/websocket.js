@@ -91,14 +91,15 @@ export default {
           let msg = event.data;
           try {
             serverMessage = JSON.parse(msg);
-            //somthing strange, it throws error but parses to json
+            console.log('Сработал в файле websocket.js')
             console.log(serverMessage);
           } catch (e) {
             console.log(e);
           }
-          callback(serverMessage);
+          callback(serverMessage); // вызываем переданную колбэк функцию и передаем ей полученное сообщение
         };
       },
+
     };
   },
 };

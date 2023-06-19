@@ -4,10 +4,10 @@
     <!--  messages block or it will glitter on-->
     <!--  scroll-->
     <h5 class="im-chat__message-title" v-if="source.stubDate">
-      {{ source.date | moment('DD MMMM YYYY') }}
+      {{ source.date }}
     </h5>
 
-    <div v-else class="im-chat__message-block" :class="{ me: source.isSentByMe }">
+    <div v-else class="im-chat__message-block">
       <p class="im-chat__message-text">{{ source.messageText }}</p>
       <span class="im-chat__message-time">{{ source.time | moment('YYYY-MM-DD hh:mm') }}</span>
     </div>
@@ -16,6 +16,7 @@
 
 
 <script>
+
 export default {
   name: 'InfiniteLoadingItem',
   props: {
@@ -27,6 +28,14 @@ export default {
       default() {
         return {};
       },
+    },
+  },
+
+  computed: {
+    messageConversation() {
+      return this.source?.conversationPartner1 === this.info?.id ? this.source?.conversationPartner2 :
+           this.source?.conversationPartner2 === this.info?.id ? this.source?.conversationPartner1 :
+           null;
     },
   },
 };

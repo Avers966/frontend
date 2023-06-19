@@ -232,8 +232,7 @@ export default {
 .push__item
   display flex
   align-items center
-  padding 43px 5px
-  max-height 70px
+  padding 15px 5px
   overflow hidden
   transition all .2s ease-in-out
 
